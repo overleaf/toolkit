@@ -70,11 +70,6 @@ function check_dependencies() {
     fi
   }
 
-  number_of_tabs=2
-  function generate_tabs() {
-    printf %"$number_of_tabs"s | tr ' ' '\t'
-  }
-
   function check_for_binary() {
     binary_name="$1"
     print_sub_point "$binary_name"
