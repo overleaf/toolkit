@@ -1,0 +1,19 @@
+---
+version: '2.2'
+services:
+
+    redis:
+        restart: always
+        image: "${REDIS_IMAGE}"
+        volumes:
+            - "${REDIS_DATA_PATH}:/data"
+        container_name: redis
+        expose:
+            - 6379
+
+    sharelatex:
+      depends_on:
+        redis:
+          condition: service_started
+      links:
+        - redis

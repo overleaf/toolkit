@@ -1,0 +1,100 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+#### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+RC_FILE="$TOOLKIT_ROOT/config/overleaf.rc"
+
+function __main__() {
+  local SHARELATEX_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
+  local MONGO_IMAGE="mongo:3.6"
+  local REDIS_IMAGE="redis:5.0"
+
+  local MONGO_URL="mongodb://mongo/sharelatex"
+  local REDIS_HOST="redis"
+  local REDIS_PORT="6379"
+
+  if [[ ! "$SHARELATEX_IMAGE_VERSION" \
+          =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "ERROR: invalid version '${SHARELATEX_IMAGE_VERSION}'"
+    exit 1
+  fi
+
+  # Load vars from the rc file
+  # shellcheck disable=SC1090
+  source "$RC_FILE"
+
+  # Select which docker-compose files to load
+  local compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
+  if [[ "$REDIS_ENABLED" == "true" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.redis.yml")
+  fi
+  if [[ "$MONGO_ENABLED" == "true" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
+  fi
+  if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
+  fi
+
+  # Include docker-compose.override.yml if it is present
+  if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/config/docker-compose.override.yml")
+  fi
+
+  # Build up the flags to pass to docker-compose
+  local project_name="${PROJECT_NAME:-overleaf}"
+
+  local image_name="sharelatex/sharelatex"
+  if [[ "${SERVER_PRO:-null}" == "true" ]]; then
+    image_name="quay.io/sharelatex/sharelatex-pro"
+  fi
+
+  local full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
+
+  # Canonicalize data paths
+  SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
+  MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
+  REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
+
+  # Print debug info
+  if [[ "${RC_DEBUG:-null}" != "null" ]]; then
+    echo ">>>>>>VARS>>>>>>"
+    echo "$(set -o posix; set)" # print all vars
+    echo "IMAGE_VERSION=$SHARELATEX_IMAGE_VERSION"
+    echo "<<<<<<<<<<<<<<<<"
+    echo ">>>>COMPOSE-ARGS>>>>"
+    echo "-p $project_name"
+    echo "${compose_file_flags[@]}"
+    echo "$@"
+    echo "<<<<<<<<<<<<<<<<<<<<"
+  fi
+
+  # Export vars for use in docker-compose files
+  export IMAGE="$full_image_spec"
+  export SHARELATEX_DATA_PATH
+  export DOCKER_SOCKET_PATH
+  export MONGO_IMAGE
+  export MONGO_DATA_PATH
+  export MONGO_URL
+  export REDIS_IMAGE
+  export REDIS_DATA_PATH
+  export REDIS_HOST
+  export REDIS_PORT
+
+  # shellcheck disable=SC2068
+  exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
+}
+
+__main__ "$@"

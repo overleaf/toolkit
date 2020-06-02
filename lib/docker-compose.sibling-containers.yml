@@ -1,0 +1,12 @@
+---
+version: '2.2'
+services:
+  sharelatex:
+    volumes:
+      - "${DOCKER_SOCKET_PATH}:/var/run/docker.sock"
+    environment:
+      DOCKER_RUNNER: 'true'
+      SANDBOXED_COMPILES: 'true'
+      SANDBOXED_COMPILES_SIBLING_CONTAINERS: 'true'
+      SANDBOXED_COMPILES_HOST_DIR: "${SHARELATEX_DATA_PATH}/data/compiles"
+      SYNCTEX_BIN_HOST_PATH: "${SHARELATEX_DATA_PATH}/bin/synctex"

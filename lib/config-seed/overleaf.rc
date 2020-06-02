@@ -1,0 +1,19 @@
+#### Overleaf RC ####
+
+PROJECT_NAME=overleaf
+
+# Sharelatex container
+SHARELATEX_DATA_PATH=data/sharelatex
+SERVER_PRO=false
+
+# Sibling Containers
+SIBLING_CONTAINERS_ENABLED=false
+DOCKER_SOCKET_PATH=/var/run/docker.sock
+
+# Mongo configuration
+MONGO_ENABLED=true
+MONGO_DATA_PATH=data/mongo
+
+# Redis configuration
+REDIS_ENABLED=true
+REDIS_DATA_PATH=data/redis

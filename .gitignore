@@ -1,0 +1,11 @@
+.DS_Store
+.idea
+*.log
+tmp/
+*.swp
+
+config/**/*
+!config/.gitkeep
+
+data/**/*
+!data/.gitkeep

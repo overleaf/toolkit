@@ -1,0 +1,156 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+#### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+function usage() {
+  echo "Usage: bin/upgrade"
+  echo ""
+  echo "This script will check for updates to the toolkit code (via git),"
+  echo "and offer to pull the new changes. It will then check the latest"
+  echo "available version of the docker image, and offer to update the"
+  echo "locally configured image (in config/image) if applicable"
+  echo ""
+  echo "This script will prompt the user for confirmation at"
+  echo "each step along the way."
+}
+
+function services_up() {
+  local top_output="$("$TOOLKIT_ROOT/bin/docker-compose" top)"
+  if [[ -z "$top_output" ]]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+function git_pull_available() {
+  local branch="$1"
+  local fetch_output="$(git -C "$TOOLKIT_ROOT" fetch --dry-run origin "$branch" 2>&1)"
+  local filtered_fetch_output="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
+  if [[ -z "$filtered_fetch_output" ]]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+function handle_image_upgrade() {
+  local user_image_version="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
+  local seed_image_version="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
+
+  if [[ ! "$seed_image_version" > "$user_image_version" ]]; then
+    echo "No change to docker image version"
+    return 0
+  fi
+
+  echo "New docker image version available ($seed_image_version)"
+  echo "Current image version is '$user_image_version' (from config/version)"
+
+  local should_upgrade="n"
+  read -r -p "Upgrade image? [y/n] " should_upgrade
+
+  if [[ ! "$should_upgrade" =~ [Yy] ]]; then
+    echo "Keeping image version '$user_image_version'"
+    return 0
+  fi
+
+  echo "Upgrading config/version from $user_image_version to $seed_image_version"
+
+  ## Offer to stop docker services
+  local services_stopped="false"
+  if services_up; then
+    echo "docker services are up, stop them first?"
+    local should_stop="n"
+    read -r -p "Stop docker services? [y/n] " should_stop
+    if [[ ! "$should_stop" =~ [Yy] ]]; then
+      echo "exiting without stopping services"
+      exit 1
+    fi
+    services_stopped="true"
+    echo "Stopping docker services"
+    "$TOOLKIT_ROOT/bin/docker-compose" stop
+  fi
+
+  ## Advise the user to take a backup
+  ## (NOTE: we can't do this automatically because it will likely require
+  ##  sudo privileges. We leave it to the user to sort out for now)
+  echo "At this point, we recommend backing up your data before proceeding"
+  echo "!! WARNING: Only do this while the docker services are stopped!!"
+  local should_proceed="n"
+  read -r -p "Proceed? [y/n] " should_proceed
+  if [[ ! "$should_proceed" =~ [Yy] ]]; then
+    echo "Not proceeding with upgrade"
+    return 1
+  fi
+
+  ## Set the new image version
+  echo "Backing up old version file to config/__old-version"
+  cp "$TOOLKIT_ROOT/config/version" "$TOOLKIT_ROOT/config/__old-version"
+  echo "Over-writing config/version with $seed_image_version"
+  cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/version"
+
+  ## Maybe offer to start services again
+  if [[ "${services_stopped:-null}" == "true" ]]; then
+    local should_start="n"
+    read -r -p "Start docker services again? [y/n] " should_start
+    if [[ "$should_start" =~ [Yy] ]]; then
+      echo "Starting docker services"
+      "$TOOLKIT_ROOT/bin/docker-compose" up -d
+    fi
+  fi
+}
+
+function handle_git_update() {
+  local current_branch
+  current_branch="$(git -C "$TOOLKIT_ROOT" rev-parse --abbrev-ref HEAD)"
+  local current_commit
+  current_commit="$(git -C "$TOOLKIT_ROOT" rev-parse --short HEAD)"
+
+  if [[ ! "$current_branch" == "master" ]]; then
+    echo "Warning: current branch is not master, '$current_branch' instead"
+  fi
+
+  echo "Checking for code update..."
+
+  if ! git_pull_available "$current_branch"; then
+    echo "No code update available"
+  else
+    echo "Code update available! (current commit is $current_commit)"
+
+    local should_pull="n"
+    read -r -p "Proceed to pull update? [y/n] " should_pull
+
+    if [[ ! "$should_pull" =~ [Yy] ]]; then
+      echo "Continuing without pulling update"
+    else
+      echo "Pulling new code..."
+      git -C "$TOOLKIT_ROOT" pull origin "$current_branch"
+    fi
+  fi
+}
+
+function __main__() {
+  if [[ "${1:-null}" == "help" ]] \
+    || [[ "${1:-null}" == "--help" ]] ; then
+    usage && exit
+  fi
+  handle_git_update
+  handle_image_upgrade
+  echo "Done"
+  exit 0
+}
+
+__main__ "$@"

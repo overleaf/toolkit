@@ -1,0 +1,174 @@
+# Quick-Start Guide
+
+## Prerequisites
+
+The overleaf toolkit depends on the following programs:
+
+- bash
+- docker
+- docker-compose
+
+We recommend that you install the most recent version of docker and docker-compose that 
+are available on your system.
+
+
+## Install
+
+First, let's clone this git repository to your machine:
+
+```sh
+$ git clone git@github.com:overleaf/toolkit.git ./overleaf
+```
+
+Next let's move into this directory:
+
+```sh
+$ cd ./overleaf
+```
+
+For the rest of this guide, we will assume that you will run all subsequent commands from this directory.
+
+
+## Take a Look Around
+
+Let's take a look at the structure of the repostory:
+
+```sh
+$ ls -l
+```
+
+Which will print something like this:
+
+```
+    bin
+    config
+    data
+    doc
+    lib
+    README.md
+```
+
+The `README.md` file contains some useful information about the project, while the `doc` directory contains all of the documentation you will need to use the toolkit. The `config` directory will contain your own local configuration files (which we will create in just a moment), while the `bin` directory contains a collection of scripts that manage your overleaf instance.
+
+
+## Initialise Configuration
+
+
+Let's create our local configuration, by running `bin/init`:
+
+```sh
+$ bin/init
+```
+
+Now check the contents of the `config/` directory
+
+```sh
+$ ls config
+overleaf.rc     variables.env     version
+```
+
+These are the three configuration files you will interact with:
+
+- `overleaf.rc` : the main top-level configuration file
+- `variables.env` : environment variables loaded into the docker container
+- `version` : the version of the docker images to use
+
+
+## Starting Up
+
+The overleaf toolkit uses `docker-compose` to manage the overleaf docker containers. The toolkit provides a set of scripts which wrap `docker-compose`, and take care of most of the details for you.
+
+Let's start the docker services:
+
+```sh
+$ bin/up
+```
+
+You should see some log output from the docker containers, indicating that the containers are running. 
+If you press `CTRL-C` at the terminal, the services will shut down. You can start them up again (without attaching to the log output) by running `bin/start`. More generally, you can run `bin/docker-compose` to control the `docker-compose` system directly, if you find that the convenience scripts don't cover your use-case.
+
+
+## Create the first admin account
+
+In a browser, open `http://localhost/launchpad`. You should see a form with email and password fields.
+Fill these in with the credentials you want to use as the admin account, then click "Register".
+
+Then click the link to go to the login page (`http://localhost/login`). Enter the credentials.
+Once you are logged in, you will be taken to a welcome page.
+
+Click the green button at the bottom of the page to start using Overleaf. 
+
+
+## Create your first project
+
+On the `http://localhost/project` page, you will see a button prompting you to create your first
+project. Click the button and follow the instructions.
+
+You should then be taken to the new project, where you will see a text editor and a PDF preview.
+
+
+## (Optional) Check the logs
+
+Let's look at the logs inside the container:
+
+
+```sh
+$ bin/logs -f web
+```
+
+
+You can also look at the logs for multiple services at once:
+
+```sh
+$ bin/logs -f filestore docstore web clsi
+```
+
+
+
+## Consulting the Doctor
+
+The Overleaf Toolkit comes with a handy tool for debugging your installation: `bin/doctor`
+
+Let's run the `bin/doctor` script:
+
+```sh
+$ bin/doctor
+```
+
+We should see some output similar to this:
+
+```
+====== Overleaf Doctor ======
+- Host Information
+    - Linux
+    ...
+- Dependencies
+    - bash
+        - status: present
+        - version info: 5.0.17(1)-release
+    - docker
+        - status: present
+        - version info: Docker version 19.03.6, build 369ce74a3c
+    - docker-compose
+        - status: present
+        - version info: docker-compose version 1.24.0, build 0aa59064
+    ...
+====== Configuration ======
+    ...
+====== Warnings ======
+- None, all good
+====== End ======
+```
+
+First, we see some information about the host system (the machine that the toolkit is being run on), then some information about dependencies. If any dependencies are missing, we will see a warning here. Next, the doctor checks our local configuration. At the end, the doctor will print out some warnings, if any problems were encountered.
+
+When you run into problems with your toolkit, you should first run the doctor script and check it's output. 
+
+
+## Getting Help
+
+Users of the free Community Edition should [open an issue on github](https://github.com/overleaf/toolkit/issues). 
+
+Users of Server Pro should contact `support@overleaf.com` for assistance.
+
+In both cases, it is a good idea to include the output of the `bin/doctor` script in your message.

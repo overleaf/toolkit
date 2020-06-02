@@ -1,0 +1,70 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+#### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+function usage() {
+    echo "Usage: bin/backup-config [OPTIONS] [DESTINATION]"
+    echo ""
+    echo "Backup configuration files, to DESTINATION"
+    echo ""
+    echo "Options:"
+    echo "  -m              mode: zip | tar | copy (default=copy)"
+    echo ""
+    echo "Examples:"
+    echo ""
+    echo "    bin/backup-config -m zip ~/overleaf-config-backup.zip"
+    echo ""
+    echo "    bin/backup-config -m tar ~/overleaf-config-backup.tar"
+    echo ""
+    echo "    bin/backup-config -m copy ~/overleaf-config-backup"
+    echo ""
+    echo "    bin/backup-config ~/overleaf-config-backup"
+    echo ""
+}
+
+function __main__() {
+    mode='copy'
+
+    while getopts "m:" opt
+    do
+        case $opt in
+            m ) mode="${OPTARG}" ;;
+            \?) usage && exit ;;
+        esac
+    done
+    shift $(( OPTIND -1 ))
+
+    if [[ "${1:-null}" == "null" ]] \
+        || [[ "${1:-null}" == "help" ]] \
+        || [[ "${1:-null}" == "--help" ]] ; then
+        usage && exit
+    fi
+
+    destination="$1"
+
+    if [[ "$mode" == "copy" ]]; then
+        cp -r "$TOOLKIT_ROOT/config" "$destination"
+    elif [[ "$mode" == "zip" ]]; then
+        zip -j -r "$destination" "$TOOLKIT_ROOT/config"
+    elif [[ "$mode" == "tar" ]]; then
+        tar -cf "$destination" -C "$TOOLKIT_ROOT" config
+    else
+        echo "Error: unrecognized mode '$mode'"
+        exit 1
+    fi
+}
+
+__main__ "$@"
