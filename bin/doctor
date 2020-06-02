@@ -73,9 +73,9 @@ function check_dependencies() {
     binary_name="$1"
     if [[ -n $(command -v $binary_name) ]]; then
       version=$(get_version $binary_name)
-      print_sub_point "${binary_name}$(generate_tabs)(present, $version)"
+      print_sub_point "${binary_name}: present, $version"
     else
-      print_sub_point "${binary_name}$(generate_tabs)(MISSING) !"
+      print_sub_point "${binary_name}: MISSING !"
     fi
   }
 
@@ -84,6 +84,7 @@ function check_dependencies() {
     bash
     docker
     docker-compose
+    neitsra
   )
 
   for binary in "${binaries[@]}"; do
