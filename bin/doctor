@@ -19,16 +19,15 @@ function print_doctor_footer() {
 }
 
 function print_heading() {
-  _name="$1"
-  echo "- ${_name}"
+  echo "- $*"
 }
 
 function print_sub_point() {
-  echo "$(indent_to_level 1)- $@"
+  echo "$(indent_to_level 1)- $*"
 }
 
 function print_sub_sub_point() {
-  echo "$(indent_to_level 2)- $@"
+  echo "$(indent_to_level 2)- $*"
 }
 
 function check_for_binary() {
