@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SPACES_PER_INDENT=2
+SPACES_PER_INDENT=4
 
 function indent_to_level() {
   levels="$1"
@@ -17,11 +17,15 @@ function print_doctor_header() {
 
 function print_heading() {
   _name="$1"
-  echo "- ${_name}:"
+  echo "- ${_name}"
 }
 
 function print_sub_point() {
   echo "$(indent_to_level 1)- $@"
+}
+
+function print_sub_sub_point() {
+  echo "$(indent_to_level 2)- $@"
 }
 
 function check_for_binary() {
@@ -45,7 +49,7 @@ function check_host_information() {
   if [[ -n $(command -v lsb_release) ]]; then
     print_sub_point "Output of 'lsb_release -a':"
     lsb_release -a 2>&1 | while read -r _line; do
-      echo "$(indent_to_level 5)$_line"
+      echo "$(indent_to_level 3)$_line"
     done
   else
     print_sub_point "lsb_release not found !"
@@ -73,11 +77,13 @@ function check_dependencies() {
 
   function check_for_binary() {
     binary_name="$1"
+    print_sub_point "$binary_name"
     if [[ -n $(command -v $binary_name) ]]; then
+      print_sub_sub_point "status: present"
       version=$(get_version $binary_name)
-      print_sub_point "${binary_name}: present, $version"
+      print_sub_sub_point "version info: $version"
     else
-      print_sub_point "${binary_name}: MISSING !"
+      print_sub_sub_point "status: MISSING !"
     fi
   }
 
@@ -86,7 +92,7 @@ function check_dependencies() {
     bash
     docker
     docker-compose
-    neitsra
+    some-fake-program
     perl
   )
 
