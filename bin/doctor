@@ -75,9 +75,9 @@ function check_dependencies() {
   function check_for_binary() {
     binary_name="$1"
     print_sub_point "$binary_name"
-    if [[ -n $(command -v $binary_name) ]]; then
+    if [[ -n $(command -v "$binary_name") ]]; then
       print_sub_sub_point "status: present"
-      version=$(get_version $binary_name)
+      version=$(get_version "$binary_name")
       print_sub_sub_point "version info: $version"
     else
       print_sub_sub_point "status: MISSING !"
