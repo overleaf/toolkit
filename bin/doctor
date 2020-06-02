@@ -4,6 +4,13 @@ set -euo pipefail
 
 SPACES_PER_INDENT=4
 
+WARNINGS_FILE="$(mktemp)"
+echo ">> $WARNINGS_FILE"
+
+function add_warning() {
+  echo "$@" >> "$WARNINGS_FILE"
+}
+
 function indent_to_level() {
   levels="$1"
   number_of_spaces=$(( levels * SPACES_PER_INDENT ))
@@ -45,6 +52,7 @@ function check_host_information() {
     print_sub_point "Linux"
   else
     print_sub_point "Not Linux !"
+    add_warning "This system seems to not be Linux"
   fi
 
   # LSB Information (particular distribution of Linux, and version)
@@ -81,6 +89,7 @@ function check_dependencies() {
       print_sub_sub_point "version info: $version"
     else
       print_sub_sub_point "status: MISSING !"
+      add_warning "$binary_name not found"
     fi
   }
 
@@ -104,7 +113,21 @@ function check_docker_daemon() {
     print_sub_point "status: up"
   else
     print_sub_point "status: DOWN !"
+    add_warning "Docker daemon is not running"
   fi
+}
+
+function print_warnings() {
+  if [[ -n "$(head -n 1 $WARNINGS_FILE)" ]]; then
+    echo "== Warnings =="
+    while read -r _line; do
+      echo "! $_line"
+    done < "$WARNINGS_FILE"
+  fi
+}
+
+function cleanup() {
+  rm "$WARNINGS_FILE"
 }
 
 function __main__() {
@@ -112,7 +135,9 @@ function __main__() {
   check_host_information
   check_dependencies
   check_docker_daemon
+  print_warnings
   print_doctor_footer
+  cleanup
 }
 
 __main__ "$@"
