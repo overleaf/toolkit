@@ -96,10 +96,20 @@ function check_dependencies() {
   done
 }
 
+function check_docker_daemon() {
+  print_heading "Docker Daemon"
+  if docker ps &>/dev/null;  then
+    print_sub_point "status: up"
+  else
+    print_sub_point "status: down"
+  fi
+}
+
 function __main__() {
   print_doctor_header
   check_host_information
   check_dependencies
+  check_docker_daemon
 }
 
 __main__ "$@"
