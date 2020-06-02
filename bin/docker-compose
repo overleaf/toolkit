@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+function __main__() {
+  exec docker-compose \
+    -f ./config/docker-compose.yml \
+     "$@"
+}
+
+__main__ "$@"

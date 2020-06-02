@@ -1,0 +1,100 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+SPACES_PER_INDENT=2
+
+function indent_to_level() {
+  levels="$1"
+  number_of_spaces=$(( levels * SPACES_PER_INDENT ))
+  spaces="$(printf %${number_of_spaces}s)"
+  echo -n "${spaces}"
+}
+
+function print_doctor_header() {
+  echo "== Overleaf Doctor =="
+}
+
+function print_heading() {
+  _name="$1"
+  echo "- ${_name}:"
+}
+
+function print_sub_point() {
+  echo "$(indent_to_level 1)- $@"
+}
+
+function check_for_binary() {
+  local name="$1"
+  if [[ -z $(command -v "$name") ]]; then
+      report_error "$name not found"
+  fi
+}
+
+function check_host_information() {
+  print_heading "Host Information"
+
+  # Linux or not?
+  if [[ $(uname -a) =~ .*Linux.* ]]; then
+    print_sub_point "Linux"
+  else
+    print_sub_point "Not Linux !"
+  fi
+
+  # LSB Information (particular distribution of Linux, and version)
+  if [[ -n $(command -v lsb_release) ]]; then
+    print_sub_point "Output of 'lsb_release -a':"
+    lsb_release -a 2>&1 | while read -r _line; do
+      echo "$(indent_to_level 5)$_line"
+    done
+  else
+    print_sub_point "lsb_release not found !"
+  fi
+}
+
+
+function check_dependencies() {
+
+  function get_version() {
+    binary_name="$1"
+    if [[ "bash" == "$binary_name" ]]; then
+      bash -c 'echo $BASH_VERSION'
+    else
+      $binary_name --version
+    fi
+  }
+
+  number_of_tabs=2
+  function generate_tabs() {
+    printf %"$number_of_tabs"s | tr ' ' '\t'
+  }
+
+  function check_for_binary() {
+    binary_name="$1"
+    if [[ -n $(command -v $binary_name) ]]; then
+      version=$(get_version $binary_name)
+      print_sub_point "${binary_name}$(generate_tabs)(present, $version)"
+    else
+      print_sub_point "${binary_name}$(generate_tabs)(MISSING) !"
+    fi
+  }
+
+  print_heading "Dependencies"
+  declare -a binaries=(
+    bash
+    docker
+    docker-compose
+  )
+
+  for binary in "${binaries[@]}"; do
+    check_for_binary "$binary"
+  done
+}
+
+function __main__() {
+  print_doctor_header
+  check_host_information
+  check_dependencies
+}
+
+__main__ "$@"

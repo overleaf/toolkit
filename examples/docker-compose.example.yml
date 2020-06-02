@@ -1,0 +1,46 @@
+version: '2.2'
+services:
+  sharelatex:
+    restart: always
+    # Server Pro users:
+    # image: quay.io/sharelatex/sharelatex-pro
+    image: sharelatex/sharelatex
+    container_name: sharelatex
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    privileged: true
+    ports:
+      - 80:80
+    links:
+      - mongo
+      - redis
+    volumes:
+      - ~/data/sharelatex_data:/var/lib/sharelatex
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file: ./private/environment
+
+  mongo:
+    restart: always
+    image: mongo
+    container_name: mongo
+    expose:
+      - 27017
+    volumes:
+      - ~/mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    restart: always
+    image: redis
+    container_name: redis
+    expose:
+      - 6379
+    volumes:
+      - ~/redis_data:/data
