@@ -101,7 +101,7 @@ function check_docker_daemon() {
   if docker ps &>/dev/null;  then
     print_sub_point "status: up"
   else
-    print_sub_point "status: down"
+    print_sub_point "status: DOWN !"
   fi
 }
 
