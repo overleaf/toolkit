@@ -5,7 +5,6 @@ set -euo pipefail
 SPACES_PER_INDENT=4
 
 WARNINGS_FILE="$(mktemp)"
-echo ">> $WARNINGS_FILE"
 
 function add_warning() {
   echo "$@" >> "$WARNINGS_FILE"
