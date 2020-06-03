@@ -114,7 +114,7 @@ function check_docker_daemon() {
 }
 
 function print_warnings() {
-  if [[ -n "$(head -n 1 $WARNINGS_FILE)" ]]; then
+  if [[ -n $(head -n 1 "$WARNINGS_FILE") ]]; then
     print_section_separator "Warnings"
     while read -r _line; do
       echo "! $_line"
