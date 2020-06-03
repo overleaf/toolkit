@@ -33,13 +33,6 @@ function print_sub_sub_point() {
   echo "$(indent_to_level 2)- $*"
 }
 
-function check_for_binary() {
-  local name="$1"
-  if [[ -z $(command -v "$name") ]]; then
-      report_error "$name not found"
-  fi
-}
-
 function check_host_information() {
   print_heading "Host Information"
 
