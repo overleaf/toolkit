@@ -17,11 +17,8 @@ function indent_to_level() {
   echo -n "${spaces}"
 }
 
-function print_doctor_header() {
-  echo "== Overleaf Doctor =="
-}
-function print_doctor_footer() {
-  echo "== End =="
+function print_section_separator() {
+  echo "== $* =="
 }
 
 function print_heading() {
@@ -118,7 +115,7 @@ function check_docker_daemon() {
 
 function print_warnings() {
   if [[ -n "$(head -n 1 $WARNINGS_FILE)" ]]; then
-    echo "== Warnings =="
+    print_section_separator "Warnings"
     while read -r _line; do
       echo "! $_line"
     done < "$WARNINGS_FILE"
@@ -130,12 +127,12 @@ function cleanup() {
 }
 
 function __main__() {
-  print_doctor_header
+  print_section_separator "Overleaf Doctor"
   check_host_information
   check_dependencies
   check_docker_daemon
   print_warnings
-  print_doctor_footer
+  print_section_separator "End"
   cleanup
 }
 
