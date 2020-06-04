@@ -3,5 +3,8 @@
 *.log
 tmp/
 
-config/docker-compose.yml
-config/local.yml
+config/**/*
+!config/.gitkeep
+
+data/**/*
+!data/.gitkeep
