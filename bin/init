@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+function set_up_config_files() {
+    cp ./examples/docker-compose.yml ./config/docker-compose.yml
+    cp ./examples/local.yml ./config/local.yml
+    cp ./variables.env ./config/variables.env
+}
+
+function __main__() {
+    set_up_config_files
+}
+
+__main__ "$@"
