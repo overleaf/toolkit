@@ -115,6 +115,28 @@ function print_warnings() {
   fi
 }
 
+function check_config_files() {
+  print_section_separator "Configuration"
+
+  docker_compose_file="config/docker-compose.yml"
+  print_sub_point "$docker_compose_file"
+  if [[ ! -f "$docker_compose_file" ]]; then
+    print_sub_sub_point "status: MISSING !"
+    add_warning "configuration file $docker_compose_file not found"
+  else
+    print_sub_sub_point "status: present"
+  fi
+
+  local_conf_file="config/local.yml"
+  print_sub_point "$local_conf_file"
+  if [[ ! -f "$local_conf_file" ]]; then
+    print_sub_sub_point "status: MISSING !"
+    add_warning "configuration file $local_conf_file not found"
+  else
+    print_sub_sub_point "status: present"
+  fi
+}
+
 function cleanup() {
   rm "$WARNINGS_FILE"
 }
@@ -124,6 +146,7 @@ function __main__() {
   check_host_information
   check_dependencies
   check_docker_daemon
+  check_config_files
   print_warnings
   print_section_separator "End"
   cleanup

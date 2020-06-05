@@ -9,6 +9,8 @@ function set_up_config_files() {
 }
 
 function __main__() {
+    # TODO:
+    # - check if the user wants to overwrite existing config
     set_up_config_files
 }
 

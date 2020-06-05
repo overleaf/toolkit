@@ -2,7 +2,15 @@
 
 set -euo pipefail
 
+function check_config() {
+  if [[ ! -f config/docker-compose.yml ]] || [[ ! -f config/local.yml ]]; then
+    echo "Config files not found! exiting"
+    exit 1
+  fi
+}
+
 function __main__() {
+  check_config
   exec ./bin/docker-compose up
 }
 
