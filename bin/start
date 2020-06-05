@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+function __main__() {
+  exec ./bin/docker-compose start "$@"
+}
+
+__main__ "$@"
