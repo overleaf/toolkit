@@ -1,3 +1,70 @@
 #! /usr/bin/env bash
 
 set -euo pipefail
+
+DEFAULT_LINES=20
+
+function usage() {
+    echo "Usage: bin/logs [OPTIONS] [SERVICES...]"
+    echo ""
+    echo "Services:  chat, clsi, contacts, docstore, document-updater,"
+    echo "           filestore, notifications, real-time, spelling,"
+    echo "           tags, track-changes, web"
+    echo ""
+    echo "Options:"
+    echo "  -f              follow log output"
+    echo "  -n {number}     number of lines to print (default $DEFAULT_LINES)"
+    echo ""
+    echo "Examples:"
+    echo ""
+    echo "    bin/logs -n 50 web clsi"
+    echo ""
+    echo "    bin/logs -f web"
+    echo ""
+    echo "    bin/logs -f web chat docstore"
+    echo ""
+    echo "    bin/logs -n 100 -f filestore "
+    echo ""
+    echo "    bin/logs -f"
+}
+
+function __main__() {
+    LINES="$DEFAULT_LINES"
+    FOLLOW_FLAG=""
+
+    if [[ "$1" == "help" ]] || [[ "$1" == "--help" ]]; then
+        usage
+        exit
+    fi
+
+    while getopts "fn:" opt
+    do
+        case $opt in
+            f ) FOLLOW_FLAG="-f" ;;
+            n ) LINES="${OPTARG}" ;;
+            \?) usage && exit ;;
+        esac
+    done
+    shift $(( OPTIND -1 ))
+
+    log_base_path="/var/log/sharelatex"
+
+    declare -a services
+    IFS=" " read -r -a services <<< "$*"
+
+    path_spec="$log_base_path/*.log"
+
+    if [[ ! "0" == "${#services[@]}" ]]; then
+        log_paths=()
+        for service in "${services[@]}"; do
+            log_paths+=("$log_base_path/${service}.log")
+        done
+        path_spec="${log_paths[*]}"
+    fi
+
+    bash_exec_command_string="tail $FOLLOW_FLAG -n $LINES $path_spec"
+
+    exec ./bin/docker-compose exec sharelatex bash -c "$bash_exec_command_string"
+}
+
+__main__ "$@"
