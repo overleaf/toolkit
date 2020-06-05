@@ -1,3 +1,10 @@
 #! /usr/bin/env bash
 
 set -euo pipefail
+
+function __main__() {
+    # preserve the '==>' labels from tail output
+    bin/logs "$@" | grep -E '(^==>.*$|^.*level":50.*$)' --color=never
+}
+
+__main__ "$@"
