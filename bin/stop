@@ -3,7 +3,7 @@
 set -euo pipefail
 
 function __main__() {
-  exec ./bin/docker-compose stop
+  exec ./bin/docker-compose stop "$@"
 }
 
 __main__ "$@"
