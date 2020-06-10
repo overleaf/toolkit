@@ -2,7 +2,35 @@
 
 set -euo pipefail
 
+function usage() {
+    echo "Usage: bin/error-logs [OPTIONS] [SERVICES...]"
+    echo ""
+    echo "Services:  chat, clsi, contacts, docstore, document-updater,"
+    echo "           filestore, notifications, real-time, spelling,"
+    echo "           tags, track-changes, web"
+    echo ""
+    echo "Options:"
+    echo "  -f              follow log output"
+    echo "  -n {number}     number of lines to print (default 20)"
+    echo ""
+    echo "Examples:"
+    echo ""
+    echo "    bin/error-logs -n 50 web clsi"
+    echo ""
+    echo "    bin/error-logs -f web"
+    echo ""
+    echo "    bin/error-logs -f web chat docstore"
+    echo ""
+    echo "    bin/error-logs -n 100 -f filestore "
+    echo ""
+    echo "    bin/error-logs -f"
+}
+
 function __main__() {
+    if [[ "${1:-null}" == "help" ]] || [[ "${1:-null}" == "--help" ]]; then
+        usage
+        exit
+    fi
     # preserve the '==>' labels from tail output
     bin/logs "$@" | grep -E '(^==>.*$|^.*level":50.*$)' --color=never
 }
