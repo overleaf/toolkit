@@ -4,14 +4,6 @@ set -euo pipefail
 
 RC_FILE="config/overleaf.rc"
 
-# function rc_lookup() {
-#   local key="$1"
-#   grep -v '^#' "$RC_FILE" |     # load the rc file, skip lines starting with '#'
-#       grep "^$key="  |          # grep for lines starting with the key, followed by '='
-#       tail -n 1 |               # select the last match
-#       cut -d '=' -f 2-          # select everything after the first '=' on the line
-# }
-
 function __main__() {
 
   # Load vars from the rc file, prefixed with 'RC_ '
