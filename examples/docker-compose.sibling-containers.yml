@@ -1,0 +1,6 @@
+---
+version: '2.2'
+services:
+  sharelatex:
+    volumes:
+      - "${RC_DOCKER_SOCKET_PATH}:/var/run/docker.sock"

@@ -1,0 +1,24 @@
+---
+version: '2.2'
+services:
+
+    mongo:
+        restart: always
+        image: "${RC_MONGO_IMAGE}"
+        container_name: mongo
+        volumes:
+            - "${RC_MONGO_DATA_PATH}:/data/db"
+        expose:
+            - 27017
+        healthcheck:
+            test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+            interval: 10s
+            timeout: 10s
+            retries: 5
+
+    sharelatex:
+      depends_on:
+        mongo:
+          condition: service_healthy
+      links:
+        - mongo
