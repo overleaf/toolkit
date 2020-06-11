@@ -29,14 +29,6 @@ function __main__() {
     echo "<<<<<<<<<<<<"
   fi
 
-  export RC_IMAGE
-  export RC_SHARELATEX_DATA_PATH
-  export RC_DOCKER_SOCKET_PATH
-  export RC_MONGO_IMAGE
-  export RC_MONGO_DATA_PATH
-  export RC_REDIS_IMAGE
-  export RC_REDIS_DATA_PATH
-
   compose_file_flags=("-f config/compose/docker-compose.base.yml")
   if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f config/compose/docker-compose.redis.yml")
@@ -56,6 +48,14 @@ function __main__() {
   fi
 
   exit
+
+  export RC_IMAGE
+  export RC_SHARELATEX_DATA_PATH
+  export RC_DOCKER_SOCKET_PATH
+  export RC_MONGO_IMAGE
+  export RC_MONGO_DATA_PATH
+  export RC_REDIS_IMAGE
+  export RC_REDIS_DATA_PATH
 
   exec "$compose_invocation"
 }
