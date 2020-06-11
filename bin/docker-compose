@@ -2,10 +2,62 @@
 
 set -euo pipefail
 
+RC_FILE="config/overleaf.rc"
+
+# function rc_lookup() {
+#   local key="$1"
+#   grep -v '^#' "$RC_FILE" |     # load the rc file, skip lines starting with '#'
+#       grep "^$key="  |          # grep for lines starting with the key, followed by '='
+#       tail -n 1 |               # select the last match
+#       cut -d '=' -f 2-          # select everything after the first '=' on the line
+# }
+
 function __main__() {
-  exec docker-compose \
-    -f ./config/docker-compose.yml \
-     "$@"
+
+  # Load vars from the rc file, prefixed with 'RC_ '
+  # shellcheck disable=SC1090
+  source <(
+      grep -v '^#' "$RC_FILE" |     # remove lines starting with '#'
+          grep . |                  # remove blank lines
+          grep -E '^[A-Z_]+=' |     # filter down to variable assignments
+          awk '{print "RC_" $0}'    # prefix with 'RC_'
+  )
+
+  if [[ "${RC_DEBUG:-null}" != "null" ]]; then
+    echo ">>>>VARS>>>>"
+    echo "$(set -o posix; set | grep ^RC_)"
+    echo "<<<<<<<<<<<<"
+  fi
+
+  export RC_IMAGE
+  export RC_SHARELATEX_DATA_PATH
+  export RC_DOCKER_SOCKET_PATH
+  export RC_MONGO_IMAGE
+  export RC_MONGO_DATA_PATH
+  export RC_REDIS_IMAGE
+  export RC_REDIS_DATA_PATH
+
+  compose_file_flags=("-f config/compose/docker-compose.base.yml")
+  if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
+    compose_file_flags+=("-f config/compose/docker-compose.redis.yml")
+  fi
+  if [[ "$RC_MONGO_ENABLED" == "true" ]]; then
+    compose_file_flags+=("-f config/compose/docker-compose.mongo.yml")
+  fi
+
+  project_name_flag="-p ${RC_PROJECT_NAME:-overleaf}"
+  args="$*"
+  compose_invocation="docker-compose $project_name_flag ${compose_file_flags[*]} $args"
+
+  if [[ "${RC_DEBUG:-null}" != "null" ]]; then
+    echo ">>>>COMPOSE>>>>"
+    echo "$compose_invocation"
+    echo "<<<<<<<<<<<<<<<"
+  fi
+
+  exit
+
+  exec "$compose_invocation"
 }
 
 __main__ "$@"
