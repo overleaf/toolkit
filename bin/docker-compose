@@ -21,25 +21,23 @@ function __main__() {
     echo "<<<<<<<<<<<<"
   fi
 
-  compose_file_flags=("-f config/compose/docker-compose.base.yml")
+  compose_file_flags=("-f ./config/compose/docker-compose.base.yml")
   if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f config/compose/docker-compose.redis.yml")
+    compose_file_flags+=("-f ./config/compose/docker-compose.redis.yml")
   fi
   if [[ "$RC_MONGO_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f config/compose/docker-compose.mongo.yml")
+    compose_file_flags+=("-f ./config/compose/docker-compose.mongo.yml")
   fi
 
   project_name_flag="-p ${RC_PROJECT_NAME:-overleaf}"
   args="$*"
-  compose_invocation="docker-compose $project_name_flag ${compose_file_flags[*]} $args"
+  compose_args=" $project_name_flag ${compose_file_flags[*]}  $args"
 
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
-    echo ">>>>COMPOSE>>>>"
-    echo "$compose_invocation"
-    echo "<<<<<<<<<<<<<<<"
+    echo ">>>>COMPOSE-ARGS>>>>"
+    echo "$compose_args"
+    echo "<<<<<<<<<<<<<<<<<<<<"
   fi
-
-  exit
 
   export RC_IMAGE
   export RC_SHARELATEX_DATA_PATH
@@ -49,7 +47,8 @@ function __main__() {
   export RC_REDIS_IMAGE
   export RC_REDIS_DATA_PATH
 
-  exec "$compose_invocation"
+  # shellcheck disable=SC2086
+  exec docker-compose $compose_args
 }
 
 __main__ "$@"
