@@ -21,12 +21,12 @@ function __main__() {
     echo "<<<<<<<<<<<<"
   fi
 
-  compose_file_flags=("-f ./config/compose/docker-compose.base.yml")
+  compose_file_flags=("-f ./config/docker-compose.base.yml")
   if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./config/compose/docker-compose.redis.yml")
+    compose_file_flags+=("-f ./config/docker-compose.redis.yml")
   fi
   if [[ "$RC_MONGO_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./config/compose/docker-compose.mongo.yml")
+    compose_file_flags+=("-f ./config/docker-compose.mongo.yml")
   fi
 
   project_name_flag="-p ${RC_PROJECT_NAME:-overleaf}"
