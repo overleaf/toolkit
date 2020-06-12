@@ -89,6 +89,7 @@ function check_dependencies() {
     docker-compose
     some-fake-program
     perl
+    awk
   )
 
   for binary in "${binaries[@]}"; do
