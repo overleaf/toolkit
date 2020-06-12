@@ -4,8 +4,9 @@ set -euo pipefail
 
 function set_up_config_files() {
     echo "Copying config files"
-    cp ./examples/docker-compose.example.yml ./config/docker-compose.yml
-    cp ./examples/local.example.yml ./config/local.yml
+    cp ./examples/*.yml ./config/
+    cp ./examples/overleaf.rc ./config/
+    cp ./examples/variables.env ./config/
 }
 
 function __main__() {
