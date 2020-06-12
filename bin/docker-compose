@@ -30,6 +30,10 @@ function __main__() {
     compose_file_flags+=("-f ./config/docker-compose.mongo.yml")
   fi
 
+  # Include docker-compose.override.yml if it is present
+  if [[ -f './config/docker-compose.override.yml' ]]; then
+    compose_file_flags+=("-f ./config/docker-compose.override.yml")
+  fi
   # Build up the flags to pass to docker-compose
   project_name_flag="-p ${RC_PROJECT_NAME:-overleaf}"
   args="$*"
