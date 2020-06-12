@@ -32,11 +32,6 @@ function __main__() {
     LINES="$DEFAULT_LINES"
     FOLLOW_FLAG=""
 
-    if [[ "${1:-null}" == "help" ]] || [[ "${1:-null}" == "--help" ]]; then
-        usage
-        exit
-    fi
-
     while getopts "fn:" opt
     do
         case $opt in
@@ -46,6 +41,12 @@ function __main__() {
         esac
     done
     shift $(( OPTIND -1 ))
+
+    if [[ "${1:-null}" == "null" ]] \
+        || [[ "${1:-null}" == "help" ]] \
+        || [[ "${1:-null}" == "--help" ]] ; then
+        usage && exit
+    fi
 
     log_base_path="/var/log/sharelatex"
 
