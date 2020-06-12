@@ -15,19 +15,36 @@ Run `bin/doctor` for debug output
 
 ## Config files
 
-- `config/docker-compose.yml`
-  - base config file for docker-compose, not meant to be edited
-- `config/local.yml`
-  - local overrides, and environment configuration, editable
+- `config/overleaf.rc`
+- `config/variables.env`
+- `config/docker-compose.base.yml`
+- `config/docker-compose.mongo.yml`
+- `config/docker-compose.redis.yml`
+- `config/docker-compose.sibling-containers.yml`
 
 
-## Data directories
+### Overleaf.rc
+
+The `config/overleaf.rc` file controls top-level configuration,
+such as the docker image to use, data paths, etc. This is used
+to configure the invocaton to docker-compose.
+
+
+### Variables.env
+
+Environment variables loaded in the overleaf container as application
+settings.
+
+
+## Data directories (default)
 
 - `data/mongo`
 - `data/redis`
 - `data/sharelatex`
 
 All are persisted outside of the containers. 
+
+These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 
 ## TODO
