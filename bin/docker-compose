@@ -21,6 +21,7 @@ function __main__() {
     echo "<<<<<<<<<<<<"
   fi
 
+  # Select which docker-compose files to load
   compose_file_flags=("-f ./config/docker-compose.base.yml")
   if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f ./config/docker-compose.redis.yml")
@@ -29,6 +30,7 @@ function __main__() {
     compose_file_flags+=("-f ./config/docker-compose.mongo.yml")
   fi
 
+  # Build up the flags to pass to docker-compose
   project_name_flag="-p ${RC_PROJECT_NAME:-overleaf}"
   args="$*"
   compose_args=" $project_name_flag ${compose_file_flags[*]}  $args"
@@ -39,6 +41,7 @@ function __main__() {
     echo "<<<<<<<<<<<<<<<<<<<<"
   fi
 
+  # Export vars for use in docker-compose files
   export RC_IMAGE
   export RC_SHARELATEX_DATA_PATH
   export RC_DOCKER_SOCKET_PATH
