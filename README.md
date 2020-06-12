@@ -33,9 +33,8 @@ All are persisted outside of the containers.
 ## TODO
 
 - [ ] Improve the init script
-- [ ] Figure out if we can have a separate `image.txt` file
-- [ ] Cleaner config, especially in `local.yml`
-  - [ ] Re-assess naming of config files
+- [ ] Investigate how we can support using external mongo/redis easily
+  - Docker networking, etc
 - [ ] Consistent `--help` output from each tool
 - [ ] Full documentation
    - [ ] New user walkthrough
