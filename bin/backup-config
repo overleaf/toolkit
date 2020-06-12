@@ -48,6 +48,9 @@ function __main__() {
         zip -r "$destination" config
     elif [[ "$mode" == "tar" ]]; then
         tar -cf "$destination" config/*
+    else
+        echo "Error: unrecognized mode '$mode'"
+        exit 1
     fi
 }
 
