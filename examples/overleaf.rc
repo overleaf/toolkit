@@ -3,7 +3,7 @@
 PROJECT_NAME=overleaf
 
 # Sharelatex container
-IMAGE=sharelatex/sharelatex
+IMAGE=sharelatex/sharelatex:2.3.0
 SHARELATEX_DATA_PATH=../data/sharelatex
 
 # Sibling Containers
