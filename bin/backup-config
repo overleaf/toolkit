@@ -1,0 +1,54 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+function usage() {
+    echo "Usage: bin/backup-config [OPTIONS] [DESTINATION]"
+    echo ""
+    echo "Backup configuration files, to DESTINATION"
+    echo ""
+    echo "Options:"
+    echo "  -m              mode: zip | tar | copy (default=copy)"
+    echo ""
+    echo "Examples:"
+    echo ""
+    echo "    bin/backup-config -m zip ~/overleaf-config-backup.zip"
+    echo ""
+    echo "    bin/backup-config -m tar ~/overleaf-config-backup.tar"
+    echo ""
+    echo "    bin/backup-config -m copy ~/overleaf-config-backup"
+    echo ""
+    echo "    bin/backup-config ~/overleaf-config-backup"
+    echo ""
+}
+
+function __main__() {
+    mode='copy'
+
+    while getopts "m:" opt
+    do
+        case $opt in
+            m ) mode="${OPTARG}" ;;
+            \?) usage && exit ;;
+        esac
+    done
+    shift $(( OPTIND -1 ))
+
+    if [[ "${1:-null}" == "null" ]] \
+        || [[ "${1:-null}" == "help" ]] \
+        || [[ "${1:-null}" == "--help" ]] ; then
+        usage && exit
+    fi
+
+    destination="$1"
+
+    if [[ "$mode" == "copy" ]]; then
+        cp -r config "$destination"
+    elif [[ "$mode" == "zip" ]]; then
+        zip -r "$destination" config
+    elif [[ "$mode" == "tar" ]]; then
+        tar -cf "$destination" config/*
+    fi
+}
+
+__main__ "$@"
