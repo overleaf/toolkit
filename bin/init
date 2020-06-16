@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+function check_existing_config() {
+    if [[ -f ./config/overleaf.rc ]] || [[ -f ./config/variables.env ]]; then
+        echo "ERROR: Config files already exist, exiting "
+        exit 1
+    fi
+}
+
 function set_up_config_files() {
     echo "Copying config files"
     cp ./examples/*.yml ./config/
@@ -10,8 +17,7 @@ function set_up_config_files() {
 }
 
 function __main__() {
-    # TODO:
-    # - check if the user wants to overwrite existing config
+    check_existing_config
     set_up_config_files
 }
 
