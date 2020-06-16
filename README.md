@@ -29,6 +29,8 @@ are convenience wrappers around `bin/docker-compose`.
 - `config/docker-compose.redis.yml`
 - `config/docker-compose.sibling-containers.yml`
 
+If `config/docker-compose.override.yml` is present, it will also be loaded.
+
 
 ### overleaf.rc
 
