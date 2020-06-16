@@ -54,7 +54,7 @@ All are persisted outside of the containers.
 These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 
-## How Too
+## How To 
 
 ### Change Image
 
