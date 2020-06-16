@@ -45,15 +45,3 @@ settings.
 All are persisted outside of the containers. 
 
 These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
-
-
-## TODO
-
-- [ ] Improve the init script
-- [ ] Investigate how we can support using external mongo/redis easily
-  - Docker networking, etc
-- [ ] Consistent `--help` output from each tool
-- [ ] Full documentation
-   - [ ] New user walkthrough
-   - [ ] Documentation for each file
-   - [ ] Documentation for each tool in the bin folder
