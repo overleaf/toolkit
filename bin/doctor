@@ -65,7 +65,7 @@ function check_dependencies() {
     elif [[ "perl" == "$binary_name" ]]; then
       perl -e 'print $];'
     else
-      $binary_name --version
+      $binary_name --version | head -n 1
     fi
   }
 
