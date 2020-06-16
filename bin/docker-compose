@@ -29,8 +29,9 @@ function __main__() {
   if [[ "$RC_MONGO_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f ./config/docker-compose.mongo.yml")
   fi
-
-  # TODO: include sibling containers?
+  if [[ "$RC_SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+    compose_file_flags+=("-f ./config/docker-compose.sibling-containers.yml")
+  fi
 
   # Include docker-compose.override.yml if it is present
   if [[ -f './config/docker-compose.override.yml' ]]; then
