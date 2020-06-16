@@ -10,7 +10,7 @@ function check_existing_config() {
 }
 
 function set_up_config_files() {
-    echo "Copying config files"
+    echo "Copying config files to 'config/'"
     cp ./examples/*.yml ./config/
     cp ./examples/overleaf.rc ./config/
     cp ./examples/variables.env ./config/
