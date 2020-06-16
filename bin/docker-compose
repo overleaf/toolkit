@@ -30,18 +30,20 @@ function __main__() {
     compose_file_flags+=("-f ./config/docker-compose.mongo.yml")
   fi
 
+  # TODO: include sibling containers?
+
   # Include docker-compose.override.yml if it is present
   if [[ -f './config/docker-compose.override.yml' ]]; then
     compose_file_flags+=("-f ./config/docker-compose.override.yml")
   fi
+
   # Build up the flags to pass to docker-compose
-  project_name_flag="-p ${RC_PROJECT_NAME:-overleaf}"
-  args="$*"
-  compose_args=" $project_name_flag ${compose_file_flags[*]}  $args"
+  project_name="${RC_PROJECT_NAME:-overleaf}"
 
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
     echo ">>>>COMPOSE-ARGS>>>>"
-    echo "$compose_args"
+    echo $project_name
+    echo ${compose_file_flags[@]}
     echo "<<<<<<<<<<<<<<<<<<<<"
   fi
 
@@ -54,8 +56,8 @@ function __main__() {
   export RC_REDIS_IMAGE
   export RC_REDIS_DATA_PATH
 
-  # shellcheck disable=SC2086
-  exec docker-compose $compose_args
+  # shellcheck disable=SC2068
+  exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
 }
 
 __main__ "$@"
