@@ -16,9 +16,9 @@ function __main__() {
   )
 
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
-    echo ">>>>VARS>>>>"
+    echo ">>>>>>VARS>>>>>>"
     echo "$(set -o posix; set | grep ^RC_)"
-    echo "<<<<<<<<<<<<"
+    echo "<<<<<<<<<<<<<<<<"
   fi
 
   # Select which docker-compose files to load
@@ -42,8 +42,9 @@ function __main__() {
 
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
     echo ">>>>COMPOSE-ARGS>>>>"
-    echo $project_name
-    echo ${compose_file_flags[@]}
+    echo "-p $project_name"
+    echo "${compose_file_flags[@]}"
+    echo "$@"
     echo "<<<<<<<<<<<<<<<<<<<<"
   fi
 
