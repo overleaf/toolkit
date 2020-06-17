@@ -4,7 +4,7 @@
 #       be edited manually.                                           #
 #                                                                     #
 #       Local configuration and environment should be set             #
-#       in local.yml                                                  #
+#       in overleaf.rc and variables.env                              #
 #                                                                     #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ---
