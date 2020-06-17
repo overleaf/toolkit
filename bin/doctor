@@ -133,8 +133,9 @@ function check_config_files() {
       add_warning "configuration file $config_file not found"
     else
       print_point 1 "status: present"
+      # If this is the RC file, print additional info
       if [[ "$config_file" == "config/overleaf.rc" ]]; then
-        print_point 1 "values:"
+        print_point 1 "values"
         # Load vars from the rc file, prefixed with 'RC_ '
         # shellcheck disable=SC1090
         source <(
