@@ -22,13 +22,13 @@ function print_section_separator() {
 }
 
 function print_point() {
-  level="0"
+  indent_level="0"
   if [[ "${1:-null}" =~ [0-9]{1} ]]; then
-    level="$1"
+    indent_level="$1"
     shift
   fi
   # shellcheck disable=SC2086
-  echo "$(indent_to_level $level)- $*"
+  echo "$(indent_to_level $indent_level)- $*"
 }
 
 function check_host_information() {
