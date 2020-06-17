@@ -18,7 +18,7 @@ function indent_to_level() {
 }
 
 function print_section_separator() {
-  echo "== $* =="
+  echo "====== $* ======"
 }
 
 function print_point() {
