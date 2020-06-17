@@ -21,41 +21,35 @@ function print_section_separator() {
   echo "== $* =="
 }
 
-function print_heading() {
-  echo "- $*"
-}
-
-function print_sub_point() {
-  echo "$(indent_to_level 1)- $*"
-}
-
-function print_sub_sub_point() {
-  echo "$(indent_to_level 2)- $*"
-}
-
-function print_sub_sub_sub_point() {
-  echo "$(indent_to_level 3)- $*"
+function print_point() {
+  level="0"
+  if [[ "${1:-null}" =~ [0-9]{1} ]]; then
+    level="$1"
+    shift
+  fi
+  # shellcheck disable=SC2086
+  echo "$(indent_to_level $level)- $*"
 }
 
 function check_host_information() {
-  print_heading "Host Information"
+  print_point 0 "Host Information"
 
   # Linux or not?
   if [[ $(uname -a) =~ .*Linux.* ]]; then
-    print_sub_point "Linux"
+    print_point 1 "Linux"
   else
-    print_sub_point "Not Linux !"
+    print_point 1 "Not Linux !"
     add_warning "This system seems to not be Linux"
   fi
 
   # LSB Information (particular distribution of Linux, and version)
   if [[ -n $(command -v lsb_release) ]]; then
-    print_sub_point "Output of 'lsb_release -a':"
+    print_point 1 "Output of 'lsb_release -a':"
     lsb_release -a 2>&1 | while read -r _line; do
       echo "$(indent_to_level 3)$_line"
     done
   else
-    print_sub_point "lsb_release not found !"
+    print_point 1 "lsb_release not found !"
   fi
 }
 
@@ -75,18 +69,18 @@ function check_dependencies() {
 
   function check_for_binary() {
     binary_name="$1"
-    print_sub_point "$binary_name"
+    print_point 1 "$binary_name"
     if [[ -n $(command -v "$binary_name") ]]; then
-      print_sub_sub_point "status: present"
+      print_point 2 "status: present"
       version=$(get_version "$binary_name")
-      print_sub_sub_point "version info: $version"
+      print_point 2 "version info: $version"
     else
-      print_sub_sub_point "status: MISSING !"
+      print_point 2 "status: MISSING !"
       add_warning "$binary_name not found"
     fi
   }
 
-  print_heading "Dependencies"
+  print_point 0 "Dependencies"
   declare -a binaries=(
     bash
     docker
@@ -102,11 +96,11 @@ function check_dependencies() {
 }
 
 function check_docker_daemon() {
-  print_heading "Docker Daemon"
+  print_point 0 "Docker Daemon"
   if docker ps &>/dev/null;  then
-    print_sub_point "status: up"
+    print_point 1 "status: up"
   else
-    print_sub_point "status: DOWN !"
+    print_point 1 "status: DOWN !"
     add_warning "Docker daemon is not running"
   fi
 }
@@ -133,14 +127,14 @@ function check_config_files() {
   )
   for config_file in "${config_files[@]}"
   do
-    print_sub_point "$config_file"
+    print_point 1 "$config_file"
     if [[ ! -f "$config_file" ]]; then
-      print_sub_sub_point "status: MISSING !"
+      print_point 2 "status: MISSING !"
       add_warning "configuration file $config_file not found"
     else
-      print_sub_sub_point "status: present"
+      print_point 2 "status: present"
       if [[ "$config_file" == "config/overleaf.rc" ]]; then
-        print_sub_sub_point "values:"
+        print_point 2 "values:"
         # Load vars from the rc file, prefixed with 'RC_ '
         # shellcheck disable=SC1090
         source <(
@@ -150,15 +144,15 @@ function check_config_files() {
                 awk '{print "RC_" $0}'    # prefix with 'RC_'
         )
         if [[ "${RC_IMAGE:-null}" != "null" ]]; then
-          print_sub_sub_sub_point "IMAGE: $RC_IMAGE"
+          print_point 3 "IMAGE: $RC_IMAGE"
         else
-          print_sub_sub_point "IMAGE: MISSING !"
+          print_point 2 "IMAGE: MISSING !"
           add_warning "rc file, IMAGE not set"
         fi
         if [[ "${RC_SHARELATEX_DATA_PATH:-null}" != "null" ]]; then
-          print_sub_sub_sub_point "SHARELATEX_DATA_PATH: $RC_SHARELATEX_DATA_PATH"
+          print_point 3 "SHARELATEX_DATA_PATH: $RC_SHARELATEX_DATA_PATH"
         else
-          print_sub_sub_point "SHARELATEX_DATA_PATH: MISSING !"
+          print_point 2 "SHARELATEX_DATA_PATH: MISSING !"
           add_warning "rc file, SHARELATEX_DATA_PATH not set"
         fi
       fi
