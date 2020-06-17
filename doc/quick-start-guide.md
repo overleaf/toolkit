@@ -18,7 +18,7 @@ are available on your system.
 Clone this repo to your machine:
 
 ```sh
-$ git clone git@github.com:overleaf/server-pro-toolkit.git
+$ git clone git@github.com:overleaf/overleaf-toolkit.git
 ```
 
 We assume that you will run all subsequent commands from the base directory of this
