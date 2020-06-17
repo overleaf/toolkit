@@ -112,4 +112,4 @@ You should then be taken to the new project, where you will see a text editor an
 
 ## Next Steps
 
-?
+Run the `bin/doctor` script again, and check the output. 
