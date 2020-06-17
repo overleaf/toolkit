@@ -33,6 +33,10 @@ function print_sub_sub_point() {
   echo "$(indent_to_level 2)- $*"
 }
 
+function print_sub_sub_sub_point() {
+  echo "$(indent_to_level 3)- $*"
+}
+
 function check_host_information() {
   print_heading "Host Information"
 
@@ -135,6 +139,29 @@ function check_config_files() {
       add_warning "configuration file $config_file not found"
     else
       print_sub_sub_point "status: present"
+      if [[ "$config_file" == "config/overleaf.rc" ]]; then
+        print_sub_sub_point "values:"
+        # Load vars from the rc file, prefixed with 'RC_ '
+        # shellcheck disable=SC1090
+        source <(
+            grep -v '^#' "$config_file" |     # remove lines starting with '#'
+                grep . |                  # remove blank lines
+                grep -E '^[A-Z_]+=' |     # filter down to variable assignments
+                awk '{print "RC_" $0}'    # prefix with 'RC_'
+        )
+        if [[ "${RC_IMAGE:-null}" != "null" ]]; then
+          print_sub_sub_sub_point "IMAGE: $RC_IMAGE"
+        else
+          print_sub_sub_point "IMAGE: MISSING !"
+          add_warning "rc file, IMAGE not set"
+        fi
+        if [[ "${RC_SHARELATEX_DATA_PATH:-null}" != "null" ]]; then
+          print_sub_sub_sub_point "SHARELATEX_DATA_PATH: $RC_SHARELATEX_DATA_PATH"
+        else
+          print_sub_sub_point "SHARELATEX_DATA_PATH: MISSING !"
+          add_warning "rc file, SHARELATEX_DATA_PATH not set"
+        fi
+      fi
     fi
   done
 }
