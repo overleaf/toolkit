@@ -2,6 +2,7 @@
 .idea
 *.log
 tmp/
+*.swp
 
 config/**/*
 !config/.gitkeep
