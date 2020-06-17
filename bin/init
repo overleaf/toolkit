@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+function usage() {
+    echo "Usage: bin/init"
+    echo ""
+    echo "Initialises local configuration files in the 'config/' directory"
+    echo ""
+}
+
 function check_existing_config() {
     if [[ -f ./config/overleaf.rc ]] || [[ -f ./config/variables.env ]]; then
         echo "ERROR: Config files already exist, exiting "
@@ -17,6 +24,10 @@ function set_up_config_files() {
 }
 
 function __main__() {
+    if [[ "${1:-null}" == "help" ]] || [[ "${1:-null}" == "--help" ]]; then
+        usage
+        exit
+    fi
     check_existing_config
     set_up_config_files
 }
