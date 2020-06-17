@@ -2,10 +2,7 @@
 
 ## Getting Started
 
-- Run `bin/init`
-  - this will populate config files in `config/`
-- Run `bin/up`
-  - this will start the service with docker-compose
+See the [Quick Start Guide](./doc/quick-start-guide.md).
 
 
 ## Doctor
