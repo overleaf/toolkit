@@ -21,12 +21,16 @@ are convenience wrappers around `bin/docker-compose`.
 
 - `config/overleaf.rc`
 - `config/variables.env`
-- `config/docker-compose.base.yml`
-- `config/docker-compose.mongo.yml`
-- `config/docker-compose.redis.yml`
-- `config/docker-compose.sibling-containers.yml`
 
 If `config/docker-compose.override.yml` is present, it will also be loaded.
+
+
+## Docker Compose files
+
+- `lib/docker-compose.base.yml`
+- `lib/docker-compose.mongo.yml`
+- `lib/docker-compose.redis.yml`
+- `lib/docker-compose.sibling-containers.yml`
 
 
 ### overleaf.rc

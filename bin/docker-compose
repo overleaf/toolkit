@@ -22,15 +22,15 @@ function __main__() {
   fi
 
   # Select which docker-compose files to load
-  compose_file_flags=("-f ./config/docker-compose.base.yml")
+  compose_file_flags=("-f ./lib/docker-compose.base.yml")
   if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./config/docker-compose.redis.yml")
+    compose_file_flags+=("-f ./lib/docker-compose.redis.yml")
   fi
   if [[ "$RC_MONGO_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./config/docker-compose.mongo.yml")
+    compose_file_flags+=("-f ./lib/docker-compose.mongo.yml")
   fi
   if [[ "$RC_SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./config/docker-compose.sibling-containers.yml")
+    compose_file_flags+=("-f ./lib/docker-compose.sibling-containers.yml")
   fi
 
   # Include docker-compose.override.yml if it is present

@@ -120,10 +120,6 @@ function check_config_files() {
   config_files=(
     "config/overleaf.rc"
     "config/variables.env"
-    "config/docker-compose.base.yml"
-    "config/docker-compose.mongo.yml"
-    "config/docker-compose.redis.yml"
-    "config/docker-compose.sibling-containers.yml"
   )
   for config_file in "${config_files[@]}"
   do

@@ -68,12 +68,11 @@ Now check the contents of the `config/` directory
 
 ```sh
 $ ls config
-docker-compose.base.yml   docker-compose.redis.yml               overleaf.rc
-docker-compose.mongo.yml  docker-compose.sibling-containers.yml  variables.env
+overleaf.rc     variables.env
 ```
 
-You can mostly ignore the `docker-compose.*` files. The two files you will interact with
-are:
+
+These are the two configuration files you will interact with:
 
 - `overleaf.rc` : top-level configuration
 - `variables.env` : environment variables loaded into the docker container
