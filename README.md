@@ -59,9 +59,14 @@ These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 ## How To 
 
+### Switch to Server Pro
+
+- In `overleaf.rc`, set `SERVER_PRO=true`
+
+
 ### Change Image
 
-- in `overleaf.rc`, set `IMAGE` to the desired image name
+(Hypothetically, check out a git tag for the appropriate version)
 
 
 ### Using an external mongo/redis
