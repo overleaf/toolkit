@@ -5,6 +5,9 @@ set -euo pipefail
 RC_FILE="config/overleaf.rc"
 
 function __main__() {
+  SHARELATEX_IMAGE_VERSION="$(head -z -n 1 ./lib/sharelatex-image-version)"
+  MONGO_IMAGE="mongo:3.6"
+  REDIS_IMAGE="redis:5.0.0"
 
   # Load vars from the rc file, prefixed with 'RC_ '
   # shellcheck disable=SC1090
@@ -18,6 +21,9 @@ function __main__() {
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
     echo ">>>>>>VARS>>>>>>"
     echo "$(set -o posix; set | grep ^RC_)"
+    echo "IMAGE_VERSION=$SHARELATEX_IMAGE_VERSION"
+    echo "MONGO_IMAGE=$MONGO_IMAGE"
+    echo "REDIS_IMAGE=$REDIS_IMAGE"
     echo "<<<<<<<<<<<<<<<<"
   fi
 
@@ -49,14 +55,23 @@ function __main__() {
     echo "<<<<<<<<<<<<<<<<<<<<"
   fi
 
+  image_name="sharelatex/sharelatex"
+  if [[ "${RC_SERVER_PRO:-null}" == "true" ]]; then
+    image_name="quay.io/sharelatex/sharelatex-pro"
+  fi
+
+  full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
+
   # Export vars for use in docker-compose files
-  export RC_IMAGE
+  export RC_IMAGE="$full_image_spec"
   export RC_SHARELATEX_DATA_PATH
   export RC_DOCKER_SOCKET_PATH
-  export RC_MONGO_IMAGE
+  export RC_MONGO_IMAGE="$MONGO_IMAGE"
   export RC_MONGO_DATA_PATH
-  export RC_REDIS_IMAGE
+  export RC_REDIS_IMAGE="$REDIS_IMAGE"
   export RC_REDIS_DATA_PATH
+
+  echo ">> Running with sharelatex-image=$RC_IMAGE"
 
   # shellcheck disable=SC2068
   exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
