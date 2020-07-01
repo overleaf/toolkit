@@ -18,8 +18,8 @@ function check_existing_config() {
 
 function set_up_config_files() {
     echo "Copying config files to 'config/'"
-    cp ./examples/overleaf.rc ./config/
-    cp ./examples/variables.env ./config/
+    cp ./lib/examples/overleaf.rc ./config/
+    cp ./lib/examples/variables.env ./config/
 }
 
 function __main__() {
