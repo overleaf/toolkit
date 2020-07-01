@@ -18,15 +18,6 @@ function __main__() {
           awk '{print "RC_" $0}'    # prefix with 'RC_'
   )
 
-  if [[ "${RC_DEBUG:-null}" != "null" ]]; then
-    echo ">>>>>>VARS>>>>>>"
-    echo "$(set -o posix; set | grep ^RC_)"
-    echo "IMAGE_VERSION=$SHARELATEX_IMAGE_VERSION"
-    echo "MONGO_IMAGE=$MONGO_IMAGE"
-    echo "REDIS_IMAGE=$REDIS_IMAGE"
-    echo "<<<<<<<<<<<<<<<<"
-  fi
-
   # Select which docker-compose files to load
   compose_file_flags=("-f ./lib/docker-compose.base.yml")
   if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
@@ -47,20 +38,32 @@ function __main__() {
   # Build up the flags to pass to docker-compose
   project_name="${RC_PROJECT_NAME:-overleaf}"
 
-  if [[ "${RC_DEBUG:-null}" != "null" ]]; then
-    echo ">>>>COMPOSE-ARGS>>>>"
-    echo "-p $project_name"
-    echo "${compose_file_flags[@]}"
-    echo "$@"
-    echo "<<<<<<<<<<<<<<<<<<<<"
-  fi
-
   image_name="sharelatex/sharelatex"
   if [[ "${RC_SERVER_PRO:-null}" == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   fi
 
   full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
+
+  # Canonicalize data paths
+  RC_SHARELATEX_DATA_PATH=$(cd config; realpath "$RC_SHARELATEX_DATA_PATH")
+  RC_MONGO_DATA_PATH=$(cd config; realpath "$RC_MONGO_DATA_PATH")
+  RC_REDIS_DATA_PATH=$(cd config; realpath "$RC_REDIS_DATA_PATH")
+
+  # Print debug info
+  if [[ "${RC_DEBUG:-null}" != "null" ]]; then
+    echo ">>>>>>VARS>>>>>>"
+    echo "$(set -o posix; set | grep ^RC_)"
+    echo "IMAGE_VERSION=$SHARELATEX_IMAGE_VERSION"
+    echo "MONGO_IMAGE=$MONGO_IMAGE"
+    echo "REDIS_IMAGE=$REDIS_IMAGE"
+    echo "<<<<<<<<<<<<<<<<"
+    echo ">>>>COMPOSE-ARGS>>>>"
+    echo "-p $project_name"
+    echo "${compose_file_flags[@]}"
+    echo "$@"
+    echo "<<<<<<<<<<<<<<<<<<<<"
+  fi
 
   # Export vars for use in docker-compose files
   export RC_IMAGE="$full_image_spec"

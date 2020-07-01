@@ -85,5 +85,3 @@ Run `git pull`, and check out the latest tag. (TODO: improve this).
 
 - In `overleaf.rc` set `SIBLING_CONTAINERS_ENABLED=true`
 - In `overleaf.rc`, ensure `DOCKER_SOCKET_PATH` is set
-- In `variables.env`, un-comment the block starting with `DOCKER_RUNNER=...`,
-  and set the appropriate values

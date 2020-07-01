@@ -4,3 +4,9 @@ services:
   sharelatex:
     volumes:
       - "${RC_DOCKER_SOCKET_PATH}:/var/run/docker.sock"
+    environment:
+      DOCKER_RUNNER: 'true'
+      SANDBOXED_COMPILES: 'true'
+      SANDBOXED_COMPILES_SIBLING_CONTAINERS: 'true'
+      SANDBOXED_COMPILES_HOST_DIR: "${RC_SHARELATEX_DATA_PATH}/data/compiles"
+      SYNCTEX_BIN_HOST_PATH: "${RC_SHARELATEX_DATA_PATH}/bin/synctex"
