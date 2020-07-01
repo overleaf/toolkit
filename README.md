@@ -59,6 +59,12 @@ These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 ## How To 
 
+### Update to the latest version
+
+This project uses tags to mark releases on the `master` branch.
+Run `git pull`, and check out the latest tag. (TODO: improve this).
+
+
 ### Switch to Server Pro
 
 - In `overleaf.rc`, set `SERVER_PRO=true`
