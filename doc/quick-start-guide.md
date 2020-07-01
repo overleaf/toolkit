@@ -109,6 +109,31 @@ project. Click the button and follow the instructions.
 You should then be taken to the new project, where you will see a text editor and a PDF preview.
 
 
+## Check the logs
+
+
+Let's look at the logs inside the container:
+
+
+```sh
+$ bin/logs -f web
+```
+
+
+You can look at the logs for multiple services at once:
+
+```sh
+$ bin/logs -f filestore docstore web clsi
+```
+
+
+Or, you can look at error logs specifically:
+
+```sh
+$ bin/error-logs -f web
+```
+
+
 ## Next Steps
 
 Run the `bin/doctor` script again, and check the output. 
