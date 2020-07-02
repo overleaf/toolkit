@@ -1,0 +1,25 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+function usage() {
+    echo "Usage: bin/images"
+    echo ""
+    echo "Prints information about overleaf docker images on the system"
+}
+
+function __main__() {
+    if [[ "${1:-null}" == "help" ]] \
+        || [[ "${1:-null}" == "--help" ]] ; then
+        usage && exit
+    fi
+
+    echo "---- Community Edition Images ----"
+    docker images | grep '^sharelatex/sharelatex\s'
+    echo "---- Server Pro Images ----"
+    docker images | grep '^quay.io/sharelatex/sharelatex-pro\s'
+    echo "---- TexLive Images ----"
+    docker images | grep '^quay.io/sharelatex/texlive'
+}
+
+__main__ "$@"
