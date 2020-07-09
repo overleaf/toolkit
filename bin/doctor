@@ -123,19 +123,25 @@ function check_config_files() {
   )
   for config_file in "${config_files[@]}"
   do
+
     print_point 0 "$config_file"
+
     if [[ ! -f "$config_file" ]]; then
       print_point 1 "status: MISSING !"
       add_warning "configuration file $config_file not found"
     else
+
       print_point 1 "status: present"
+
       if [[ "$config_file" == "config/version" ]]; then
         print_point 1 "version: $(head -n 1 "$config_file")"
       elif [[ "$config_file" == "config/overleaf.rc" ]]; then
         print_point 1 "values"
+
         # Load vars from the rc file
         # shellcheck disable=SC1090
         source "$config_file"
+
         # Check some vars from the RC file
         if [[ "${SHARELATEX_DATA_PATH:-null}" != "null" ]]; then
           print_point 2 "SHARELATEX_DATA_PATH: $SHARELATEX_DATA_PATH"
@@ -143,6 +149,7 @@ function check_config_files() {
           print_point 2 "SHARELATEX_DATA_PATH: MISSING !"
           add_warning "rc file, SHARELATEX_DATA_PATH not set"
         fi
+
         print_point 2 "SERVER_PRO: $SERVER_PRO"
         print_point 2 "MONGO_ENABLED: $MONGO_ENABLED"
         print_point 2 "REDIS_ENABLED: $REDIS_ENABLED"
