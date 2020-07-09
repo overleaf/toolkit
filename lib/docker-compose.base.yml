@@ -4,10 +4,10 @@ services:
 
     sharelatex:
         restart: always
-        image: "${RC_IMAGE}"
+        image: "${IMAGE}"
         container_name: sharelatex
         volumes:
-            - "${RC_SHARELATEX_DATA_PATH}:/var/lib/sharelatex"
+            - "${SHARELATEX_DATA_PATH}:/var/lib/sharelatex"
         ports:
             - 80:80
         env_file: ../config/variables.env

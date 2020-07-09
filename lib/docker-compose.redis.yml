@@ -4,9 +4,9 @@ services:
 
     redis:
         restart: always
-        image: "${RC_REDIS_IMAGE}"
+        image: "${REDIS_IMAGE}"
         volumes:
-            - "${RC_REDIS_DATA_PATH}:/data"
+            - "${REDIS_DATA_PATH}:/data"
         container_name: redis
         expose:
             - 6379

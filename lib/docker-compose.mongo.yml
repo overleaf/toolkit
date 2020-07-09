@@ -4,10 +4,10 @@ services:
 
     mongo:
         restart: always
-        image: "${RC_MONGO_IMAGE}"
+        image: "${MONGO_IMAGE}"
         container_name: mongo
         volumes:
-            - "${RC_MONGO_DATA_PATH}:/data/db"
+            - "${MONGO_DATA_PATH}:/data/db"
         expose:
             - 27017
         healthcheck:

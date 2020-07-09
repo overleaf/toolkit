@@ -9,24 +9,19 @@ function __main__() {
   MONGO_IMAGE="mongo:3.6"
   REDIS_IMAGE="redis:5.0.0"
 
-  # Load vars from the rc file, prefixed with 'RC_ '
+  # Load vars from the rc file
   # shellcheck disable=SC1090
-  source <(
-      grep -v '^#' "$RC_FILE" |     # remove lines starting with '#'
-          grep . |                  # remove blank lines
-          grep -E '^[A-Z_]+=' |     # filter down to variable assignments
-          awk '{print "RC_" $0}'    # prefix with 'RC_'
-  )
+  source "$RC_FILE"
 
   # Select which docker-compose files to load
   compose_file_flags=("-f ./lib/docker-compose.base.yml")
-  if [[ "$RC_REDIS_ENABLED" == "true" ]]; then
+  if [[ "$REDIS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f ./lib/docker-compose.redis.yml")
   fi
-  if [[ "$RC_MONGO_ENABLED" == "true" ]]; then
+  if [[ "$MONGO_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f ./lib/docker-compose.mongo.yml")
   fi
-  if [[ "$RC_SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+  if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f ./lib/docker-compose.sibling-containers.yml")
   fi
 
@@ -36,27 +31,25 @@ function __main__() {
   fi
 
   # Build up the flags to pass to docker-compose
-  project_name="${RC_PROJECT_NAME:-overleaf}"
+  project_name="${PROJECT_NAME:-overleaf}"
 
   image_name="sharelatex/sharelatex"
-  if [[ "${RC_SERVER_PRO:-null}" == "true" ]]; then
+  if [[ "${SERVER_PRO:-null}" == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   fi
 
   full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
 
   # Canonicalize data paths
-  RC_SHARELATEX_DATA_PATH=$(cd config; realpath "$RC_SHARELATEX_DATA_PATH")
-  RC_MONGO_DATA_PATH=$(cd config; realpath "$RC_MONGO_DATA_PATH")
-  RC_REDIS_DATA_PATH=$(cd config; realpath "$RC_REDIS_DATA_PATH")
+  SHARELATEX_DATA_PATH=$(cd config; realpath "$SHARELATEX_DATA_PATH")
+  MONGO_DATA_PATH=$(cd config; realpath "$MONGO_DATA_PATH")
+  REDIS_DATA_PATH=$(cd config; realpath "$REDIS_DATA_PATH")
 
   # Print debug info
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
     echo ">>>>>>VARS>>>>>>"
-    echo "$(set -o posix; set | grep ^RC_)"
+    echo "$(set -o posix; set)" # print all vars
     echo "IMAGE_VERSION=$SHARELATEX_IMAGE_VERSION"
-    echo "MONGO_IMAGE=$MONGO_IMAGE"
-    echo "REDIS_IMAGE=$REDIS_IMAGE"
     echo "<<<<<<<<<<<<<<<<"
     echo ">>>>COMPOSE-ARGS>>>>"
     echo "-p $project_name"
@@ -66,15 +59,15 @@ function __main__() {
   fi
 
   # Export vars for use in docker-compose files
-  export RC_IMAGE="$full_image_spec"
-  export RC_SHARELATEX_DATA_PATH
-  export RC_DOCKER_SOCKET_PATH
-  export RC_MONGO_IMAGE="$MONGO_IMAGE"
-  export RC_MONGO_DATA_PATH
-  export RC_REDIS_IMAGE="$REDIS_IMAGE"
-  export RC_REDIS_DATA_PATH
+  export IMAGE="$full_image_spec"
+  export SHARELATEX_DATA_PATH
+  export DOCKER_SOCKET_PATH
+  export MONGO_IMAGE
+  export MONGO_DATA_PATH
+  export REDIS_IMAGE
+  export REDIS_DATA_PATH
 
-  echo ">> Running with sharelatex-image=$RC_IMAGE"
+  echo ">> Running with sharelatex-image=$IMAGE"
 
   # shellcheck disable=SC2068
   exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
