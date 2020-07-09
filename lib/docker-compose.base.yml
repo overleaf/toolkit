@@ -10,4 +10,8 @@ services:
             - "${SHARELATEX_DATA_PATH}:/var/lib/sharelatex"
         ports:
             - 80:80
+        environment:
+          SHARELATEX_MONGO_URL: "${MONGO_URL}"
+          SHARELATEX_REDIS_HOST: "${REDIS_HOST}"
+          REDIS_HOST: "${REDIS_HOST}"
         env_file: ../config/variables.env

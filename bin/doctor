@@ -151,8 +151,25 @@ function check_config_files() {
         fi
 
         print_point 2 "SERVER_PRO: $SERVER_PRO"
+
         print_point 2 "MONGO_ENABLED: $MONGO_ENABLED"
+        if [[ "${MONGO_URL:-null}" != "null" ]]; then
+          print_point 2 "MONGO_URL: [set here]"
+        fi
+        if [[ "${MONGO_IMAGE:-null}" != "null" ]]; then
+          print_point 2 "MONGO_IMAGE: $MONGO_IMAGE"
+        fi
+
         print_point 2 "REDIS_ENABLED: $REDIS_ENABLED"
+        if [[ "${REDIS_HOST:-null}" != "null" ]]; then
+          print_point 2 "REDIS_HOST: [set here]"
+        fi
+        if [[ "${REDIS_PORT:-null}" != "null" ]]; then
+          print_point 2 "REDIS_PORT: [set here]"
+        fi
+        if [[ "${REDIS_IMAGE:-null}" != "null" ]]; then
+          print_point 2 "REDIS_IMAGE: $REDIS_IMAGE"
+        fi
       fi
     fi
   done
