@@ -80,8 +80,6 @@ function __main__() {
   export REDIS_HOST
   export REDIS_PORT
 
-  echo ">> Running with sharelatex-image=$IMAGE"
-
   # shellcheck disable=SC2068
   exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
 }
