@@ -68,14 +68,15 @@ Now check the contents of the `config/` directory
 
 ```sh
 $ ls config
-overleaf.rc     variables.env
+overleaf.rc     variables.env     version
 ```
 
 
-These are the two configuration files you will interact with:
+These are the three configuration files you will interact with:
 
 - `overleaf.rc` : top-level configuration
 - `variables.env` : environment variables loaded into the docker container
+- `version` : version of the docker images to use
 
 
 ## Starting Up

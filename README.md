@@ -21,6 +21,7 @@ are convenience wrappers around `bin/docker-compose`.
 
 - `config/overleaf.rc`
 - `config/variables.env`
+- `config/version`
 
 If `config/docker-compose.override.yml` is present, it will also be loaded.
 
@@ -61,8 +62,7 @@ These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 ### Update to the latest version
 
-This project uses tags to mark releases on the `master` branch.
-Run `git pull`, and check out the latest tag. (TODO: improve this).
+- Change the contents of `config/version`
 
 
 ### Switch to Server Pro
