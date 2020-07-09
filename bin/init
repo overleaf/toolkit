@@ -10,7 +10,9 @@ function usage() {
 }
 
 function check_existing_config() {
-    if [[ -f ./config/overleaf.rc ]] || [[ -f ./config/variables.env ]]; then
+    if [[ -f ./config/overleaf.rc ]] \
+        || [[ -f ./config/variables.env ]] \
+        || [[ -f ./config/version ]]; then
         echo "ERROR: Config files already exist, exiting "
         exit 1
     fi
@@ -20,6 +22,7 @@ function set_up_config_files() {
     echo "Copying config files to 'config/'"
     cp ./lib/config-seed/overleaf.rc ./config/
     cp ./lib/config-seed/variables.env ./config/
+    cp ./lib/config-seed/version ./config/
 }
 
 function __main__() {
