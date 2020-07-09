@@ -5,7 +5,7 @@ set -euo pipefail
 RC_FILE="config/overleaf.rc"
 
 function __main__() {
-  SHARELATEX_IMAGE_VERSION="$(head -z -n 1 ./lib/sharelatex-image-version)"
+  SHARELATEX_IMAGE_VERSION="$(head -n 1 ./lib/sharelatex-image-version)"
   MONGO_IMAGE="mongo:3.6"
   REDIS_IMAGE="redis:5.0.0"
 
