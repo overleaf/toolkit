@@ -116,10 +116,8 @@ function print_warnings() {
 function check_config_files() {
   print_section_separator "Configuration"
 
-  image_version="$(head -z -n 1 ./lib/sharelatex-image-version)"
-  print_point 0 "image version: $image_version"
-
   config_files=(
+    "config/version"
     "config/overleaf.rc"
     "config/variables.env"
   )
@@ -131,8 +129,9 @@ function check_config_files() {
       add_warning "configuration file $config_file not found"
     else
       print_point 1 "status: present"
-      # If this is the RC file, print additional info
-      if [[ "$config_file" == "config/overleaf.rc" ]]; then
+      if [[ "$config_file" == "config/version" ]]; then
+        print_point 1 "version: $(head -n 1 $config_file)"
+      elif [[ "$config_file" == "config/overleaf.rc" ]]; then
         print_point 1 "values"
         # Load vars from the rc file
         # shellcheck disable=SC1090
