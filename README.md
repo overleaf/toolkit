@@ -62,7 +62,9 @@ These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 ### Update to the latest version
 
-- Change the contents of `config/version`
+- `git pull`
+
+(TODO: add a `bin/upgrade` script)
 
 
 ### Switch to Server Pro
@@ -72,13 +74,15 @@ These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 ### Change Image
 
-(Hypothetically, check out a git tag for the appropriate version)
+- Change the contents of `config/version`
 
 
 ### Using an external mongo/redis
 
-- Set `MONGO_ENABLED=false` in `overleaf.rc`
-- In `variables.env`, set `SHARELATEX_MONGO_URL` to the appropriate url
+- Mongo
+  - Set `MONGO_ENABLED=false`, and `MONGO_URL=...` in `overleaf.rc`
+- Redis
+  - Set `REDIS_ENABLED=false`, and `REDIS_HOST=...` and/or `REDIS_PORT=...` in `overleaf.rc`
 
 
 ### Using Sibling-Containers
