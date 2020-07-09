@@ -85,7 +85,6 @@ function check_dependencies() {
     bash
     docker
     docker-compose
-    some-fake-program
     perl
     awk
   )
