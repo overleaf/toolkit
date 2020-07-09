@@ -130,7 +130,7 @@ function check_config_files() {
     else
       print_point 1 "status: present"
       if [[ "$config_file" == "config/version" ]]; then
-        print_point 1 "version: $(head -n 1 $config_file)"
+        print_point 1 "version: $(head -n 1 "$config_file")"
       elif [[ "$config_file" == "config/overleaf.rc" ]]; then
         print_point 1 "values"
         # Load vars from the rc file
