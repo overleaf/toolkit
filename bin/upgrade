@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+function usage() {
+  echo "Usage: bin/upgrade"
+}
+
+function __main__() {
+  echo ">> hi"
+  exit 0
+}
+
+__main__ "$@"
