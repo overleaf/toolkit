@@ -2,29 +2,6 @@
 
 set -euo pipefail
 
-# Plan:
-#   [Preflight]
-#   - check current branch
-#     - warn if not on master
-#   - check current commit
-#     - save it somewhere?
-#   - check git status
-#     - any dirty changes?
-#
-#   [Get new commits]
-#   - check latest commit from remote
-#   - prompt for upgrade
-#   - fetch new commits
-#
-#   [Upgrade image version]
-#   - determine if the image version has changed
-#     - if yes
-#       - prompt for upgrade
-#       - shut down services
-#       - back up data
-#       - update config/image
-#       - start up again
-
 backup_dir="/tmp/overleaf-data-backup"
 
 function usage() {
