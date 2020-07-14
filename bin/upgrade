@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-
 function usage() {
   echo "Usage: bin/upgrade"
 }
@@ -19,8 +18,8 @@ function services_up() {
 function git_pull_available() {
   branch="$1"
   fetch_output="$(git fetch --dry-run origin "$branch" 2>&1)"
-  filtered="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
-  if [[ -z "$filtered" ]]; then
+  filtered_fetch_output="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
+  if [[ -z "$filtered_fetch_output" ]]; then
     return 1
   else
     return 0
@@ -36,7 +35,6 @@ function handle_image_upgrade() {
     return 0
   fi
 
-  # TODO: prompt for confirmation
   echo "New docker image version available ($seed_image_version)"
   echo "Current image version is '$user_image_version' (from config/version)"
 
@@ -65,7 +63,9 @@ function handle_image_upgrade() {
     bin/docker-compose stop
   fi
 
-  ## Offer to take a backup
+  ## Advise the user to take a backup
+  ## (NOTE: we can't do this automatically because it will likely require
+  ##  sudo privileges. We leave it to the user to sort out for now)
   echo "At this point, we recommend backing up your data before proceeding"
   echo "!! WARNING: Only do this while the docker services are stopped!!"
   should_proceed="n"

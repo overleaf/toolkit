@@ -62,9 +62,9 @@ These can be changed by setting `MONGO_DATA_PATH` (etc) in `overleaf.rc`
 
 ### Update to the latest version
 
-- `git pull`
-
-(TODO: add a `bin/upgrade` script)
+- Run `bin/upgrade`, and follow the instructions
+  - This will fetch any available code updates and offer to upgrade the
+    locally configured docker image version, if a new version is available
 
 
 ### Switch to Server Pro
