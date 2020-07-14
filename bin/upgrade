@@ -32,62 +32,61 @@ function handle_image_upgrade() {
   user_image_version="$(head -n 1 config/version)"
   seed_image_version="$(head -n 1 lib/config-seed/version)"
 
-  if [[ "$seed_image_version" > "$user_image_version" ]]; then
-    # TODO: prompt for confirmation
-    echo "New docker image version available ($seed_image_version)"
-    echo "Current image version is '$user_image_version' (from config/version)"
-
-    should_upgrade="n"
-    read -r -p "Upgrade image? [y/n] " should_upgrade
-
-    if [[ ! "$should_upgrade" =~ [Yy] ]]; then
-      echo "Keeping image version '$user_image_version'"
-      return 0
-    fi
-
-    echo "Upgrading config/version from $user_image_version to $seed_image_version"
-
-    ## Offer to stop docker services
-    services_stopped="false"
-    if services_up; then
-      echo "docker services are up, stop them first?"
-      should_stop="n"
-      read -r -p "Stop docker services? [y/n] " should_stop
-      if [[ ! "$should_stop" =~ [Yy] ]]; then
-        echo "exiting without stopping services"
-        exit 1
-      fi
-      services_stopped="true"
-      echo "Stopping docker services"
-      bin/docker-compose stop
-    fi
-
-    ## Offer to take a backup
-    echo  "Backup up data directories to $backup_dir before upgrade?"
-    echo  "!! WARNING: Only do this while the docker services are stopped!!"
-    should_backup="n"
-    read -r -p "Backup? [y/n] " should_backup
-    if [[ "$should_backup" =~ [Yy] ]]; then
-      backup_data
-    fi
-
-    ## Set the new image version
-    echo "Over-writing config/version with $seed_image_version"
-    cp lib/config-seed/version config/version
-
-    ## Maybe offer to start services again
-    if [[ "${services_stopped:-null}" == "true" ]]; then
-      should_start="n"
-      read -r -p "Start docker services again? [y/n] " should_start
-      if [[ "$should_start" =~ [Yy] ]]; then
-        echo "Starting docker services"
-        bin/docker-compose up -d
-      fi
-    fi
-
-  else
+  if [[ ! "$seed_image_version" > "$user_image_version" ]]; then
     echo "No change to docker image version"
     return 0
+  fi
+
+  # TODO: prompt for confirmation
+  echo "New docker image version available ($seed_image_version)"
+  echo "Current image version is '$user_image_version' (from config/version)"
+
+  should_upgrade="n"
+  read -r -p "Upgrade image? [y/n] " should_upgrade
+
+  if [[ ! "$should_upgrade" =~ [Yy] ]]; then
+    echo "Keeping image version '$user_image_version'"
+    return 0
+  fi
+
+  echo "Upgrading config/version from $user_image_version to $seed_image_version"
+
+  ## Offer to stop docker services
+  services_stopped="false"
+  if services_up; then
+    echo "docker services are up, stop them first?"
+    should_stop="n"
+    read -r -p "Stop docker services? [y/n] " should_stop
+    if [[ ! "$should_stop" =~ [Yy] ]]; then
+      echo "exiting without stopping services"
+      exit 1
+    fi
+    services_stopped="true"
+    echo "Stopping docker services"
+    bin/docker-compose stop
+  fi
+
+  ## Offer to take a backup
+  echo  "Backup up data directories to $backup_dir before upgrade?"
+  echo  "!! WARNING: Only do this while the docker services are stopped!!"
+  should_backup="n"
+  read -r -p "Backup? [y/n] " should_backup
+  if [[ "$should_backup" =~ [Yy] ]]; then
+    backup_data
+  fi
+
+  ## Set the new image version
+  echo "Over-writing config/version with $seed_image_version"
+  cp lib/config-seed/version config/version
+
+  ## Maybe offer to start services again
+  if [[ "${services_stopped:-null}" == "true" ]]; then
+    should_start="n"
+    read -r -p "Start docker services again? [y/n] " should_start
+    if [[ "$should_start" =~ [Yy] ]]; then
+      echo "Starting docker services"
+      bin/docker-compose up -d
+    fi
   fi
 }
 
