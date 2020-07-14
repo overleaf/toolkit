@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-backup_dir="/tmp/overleaf-data-backup"
 
 function usage() {
   echo "Usage: bin/upgrade"
@@ -20,7 +19,7 @@ function services_up() {
 function git_pull_available() {
   branch="$1"
   fetch_output="$(git fetch --dry-run origin "$branch" 2>&1)"
-  filtered="$(echo "$fetch_output" | grep '\-> origin/master')"
+  filtered="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
   if [[ -z "$filtered" ]]; then
     return 1
   else
@@ -67,15 +66,18 @@ function handle_image_upgrade() {
   fi
 
   ## Offer to take a backup
-  echo  "Backup up data directories to $backup_dir before upgrade?"
-  echo  "!! WARNING: Only do this while the docker services are stopped!!"
-  should_backup="n"
-  read -r -p "Backup? [y/n] " should_backup
-  if [[ "$should_backup" =~ [Yy] ]]; then
-    backup_data
+  echo "At this point, we recommend backing up your data before proceeding"
+  echo "!! WARNING: Only do this while the docker services are stopped!!"
+  should_proceed="n"
+  read -r -p "Proceed? [y/n] " should_proceed
+  if [[ ! "$should_proceed" =~ [Yy] ]]; then
+    echo "Not proceeding with upgrade"
+    return 1
   fi
 
   ## Set the new image version
+  echo "Backing up old version file to config/__old-version"
+  cp config/version config/__old-version
   echo "Over-writing config/version with $seed_image_version"
   cp lib/config-seed/version config/version
 
@@ -90,42 +92,12 @@ function handle_image_upgrade() {
   fi
 }
 
-function backup_data() {
-  mkdir -p "$backup_dir"
-  # shellcheck disable=SC1091
-  source config/overleaf.rc
-
-  ## Sharelatex
-  if [[ -z "$SHARELATEX_DATA_PATH" ]]; then
-    echo "Error: SHARELATEX_DATA_PATH not set"
-  else
-    echo "Copying sharelatex data directory to $backup_dir"
-    cp -R "$SHARELATEX_DATA_PATH" "$backup_dir/sharelatex"
-  fi
-
-  ## Mongo
-  if [[ -z "$MONGO_DATA_PATH" ]]; then
-    echo "Warning: MONGO_DATA_PATH not set"
-  else
-    echo "Copying mongo data directory to $backup_dir"
-    cp -R "$MONGO_DATA_PATH" "$backup_dir/mongo"
-  fi
-
-  ## Redis
-  if [[ -z "$REDIS_DATA_PATH" ]]; then
-    echo "Warning: REDIS_DATA_PATH not set"
-  else
-    echo "Copying redis data directory to $backup_dir"
-    cp -R "$REDIS_DATA_PATH" "$backup_dir/redis"
-  fi
-}
-
 function handle_git_update() {
   current_branch="$(git rev-parse --abbrev-ref HEAD)"
   current_commit="$(git rev-parse --short HEAD)"
 
   if [[ ! "$current_branch" == "master" ]]; then
-    echo "Error: current branch is not master, '$current_branch' instead"
+    echo "Warning: current branch is not master, '$current_branch' instead"
   fi
 
   echo "Checking for code update..."
@@ -150,6 +122,7 @@ function handle_git_update() {
 function __main__() {
   handle_git_update
   handle_image_upgrade
+  echo "Done"
   exit 0
 }
 
