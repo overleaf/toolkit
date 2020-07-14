@@ -2,12 +2,178 @@
 
 set -euo pipefail
 
+# Plan:
+#   [Preflight]
+#   - check current branch
+#     - warn if not on master
+#   - check current commit
+#     - save it somewhere?
+#   - check git status
+#     - any dirty changes?
+#
+#   [Get new commits]
+#   - check latest commit from remote
+#   - prompt for upgrade
+#   - fetch new commits
+#
+#   [Upgrade image version]
+#   - determine if the image version has changed
+#     - if yes
+#       - prompt for upgrade
+#       - shut down services
+#       - back up data
+#       - update config/image
+#       - start up again
+
+backup_dir="/tmp/overleaf-data-backup"
+
 function usage() {
   echo "Usage: bin/upgrade"
 }
 
+function services_up() {
+  top_output="$(bin/docker-compose top)"
+  if [[ -z "$top_output" ]]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+function git_pull_available() {
+  branch="$1"
+  fetch_output="$(git fetch --dry-run origin "$branch" 2>&1)"
+  filtered="$(echo "$fetch_output" | grep '\-> origin/master')"
+  if [[ -z "$filtered" ]]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+function handle_image_upgrade() {
+  user_image_version="$(head -n 1 config/version)"
+  seed_image_version="$(head -n 1 lib/config-seed/version)"
+
+  if [[ "$seed_image_version" > "$user_image_version" ]]; then
+    # TODO: prompt for confirmation
+    echo "New docker image version available ($seed_image_version)"
+    echo "Current image version is '$user_image_version' (from config/version)"
+
+    should_upgrade="n"
+    read -r -p "Upgrade image? [y/n] " should_upgrade
+
+    if [[ ! "$should_upgrade" =~ [Yy] ]]; then
+      echo "Keeping image version '$user_image_version'"
+      return 0
+    fi
+
+    echo "Upgrading config/version from $user_image_version to $seed_image_version"
+
+    ## Offer to stop docker services
+    services_stopped="false"
+    if services_up; then
+      echo "docker services are up, stop them first?"
+      should_stop="n"
+      read -r -p "Stop docker services? [y/n] " should_stop
+      if [[ ! "$should_stop" =~ [Yy] ]]; then
+        echo "exiting without stopping services"
+        exit 1
+      fi
+      services_stopped="true"
+      echo "Stopping docker services"
+      bin/docker-compose stop
+    fi
+
+    ## Offer to take a backup
+    echo  "Backup up data directories to $backup_dir before upgrade?"
+    echo  "!! WARNING: Only do this while the docker services are stopped!!"
+    should_backup="n"
+    read -r -p "Backup? [y/n] " should_backup
+    if [[ "$should_backup" =~ [Yy] ]]; then
+      backup_data
+    fi
+
+    ## Set the new image version
+    echo "Over-writing config/version with $seed_image_version"
+    cp lib/config-seed/version config/version
+
+    ## Maybe offer to start services again
+    if [[ "${services_stopped:-null}" == "true" ]]; then
+      should_start="n"
+      read -r -p "Start docker services again? [y/n] " should_start
+      if [[ "$should_start" =~ [Yy] ]]; then
+        echo "Starting docker services"
+        bin/docker-compose up -d
+      fi
+    fi
+
+  else
+    echo "No change to docker image version"
+    return 0
+  fi
+}
+
+function backup_data() {
+  mkdir -p "$backup_dir"
+  # shellcheck disable=SC1091
+  source config/overleaf.rc
+
+  ## Sharelatex
+  if [[ -z "$SHARELATEX_DATA_PATH" ]]; then
+    echo "Error: SHARELATEX_DATA_PATH not set"
+  else
+    echo "Copying sharelatex data directory to $backup_dir"
+    cp -R "$SHARELATEX_DATA_PATH" "$backup_dir/sharelatex"
+  fi
+
+  ## Mongo
+  if [[ -z "$MONGO_DATA_PATH" ]]; then
+    echo "Warning: MONGO_DATA_PATH not set"
+  else
+    echo "Copying mongo data directory to $backup_dir"
+    cp -R "$MONGO_DATA_PATH" "$backup_dir/mongo"
+  fi
+
+  ## Redis
+  if [[ -z "$REDIS_DATA_PATH" ]]; then
+    echo "Warning: REDIS_DATA_PATH not set"
+  else
+    echo "Copying redis data directory to $backup_dir"
+    cp -R "$REDIS_DATA_PATH" "$backup_dir/redis"
+  fi
+}
+
+function handle_git_update() {
+  current_branch="$(git rev-parse --abbrev-ref HEAD)"
+  current_commit="$(git rev-parse --short HEAD)"
+
+  if [[ ! "$current_branch" == "master" ]]; then
+    echo "Error: current branch is not master, '$current_branch' instead"
+  fi
+
+  echo "Checking for code update..."
+
+  if ! git_pull_available "$current_branch"; then
+    echo "No code update available"
+  else
+    echo "Code update available! (current commit is $current_commit)"
+
+    should_pull="n"
+    read -r -p "Procced to pull update? [y/n] "
+
+    if [[ ! "$should_pull" =~ [Yy] ]]; then
+      echo "continuing without pulling update"
+    else
+      echo "Pulling new code..."
+      git pull origin "$current_branch"
+    fi
+  fi
+}
+
 function __main__() {
-  echo ">> hi"
+  handle_git_update
+  handle_image_upgrade
   exit 0
 }
 
