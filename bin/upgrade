@@ -4,6 +4,14 @@ set -euo pipefail
 
 function usage() {
   echo "Usage: bin/upgrade"
+  echo ""
+  echo "This script will check for updates to the toolkit code (via git),"
+  echo "and offer to pull the new changes. It will then check the latest"
+  echo "available version of the docker image, and offer to update the"
+  echo "locally configured image (in config/image) if applicable"
+  echo ""
+  echo "This script will prompt the user for confirmation at"
+  echo "each step along the way."
 }
 
 function services_up() {
