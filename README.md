@@ -1,5 +1,9 @@
 # Overleaf Toolkit
 
+(Note: this software is currently in beta testing. Functionality and documentation
+may be incomplete)
+
+
 ## Getting Started
 
 See the [Quick Start Guide](./doc/quick-start-guide.md).
