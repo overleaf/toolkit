@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+PROJECT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+
 function usage() {
     echo "Usage: bin/backup-config [OPTIONS] [DESTINATION]"
     echo ""
@@ -43,11 +47,11 @@ function __main__() {
     destination="$1"
 
     if [[ "$mode" == "copy" ]]; then
-        cp -r config "$destination"
+        cp -r "$PROJECT_ROOT/config" "$destination"
     elif [[ "$mode" == "zip" ]]; then
-        zip -r "$destination" config
+        zip -j -r "$destination" "$PROJECT_ROOT/config"
     elif [[ "$mode" == "tar" ]]; then
-        tar -cf "$destination" config/*
+        tar -cf "$destination" -C "$PROJECT_ROOT" config
     else
         echo "Error: unrecognized mode '$mode'"
         exit 1
