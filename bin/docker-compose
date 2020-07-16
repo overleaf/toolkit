@@ -60,7 +60,6 @@ function __main__() {
   full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
 
   # Canonicalize data paths
-  # TODO: remove the need for .. here
   SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$SHARELATEX_DATA_PATH")
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$REDIS_DATA_PATH")
