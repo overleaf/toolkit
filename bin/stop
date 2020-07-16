@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 set -euo pipefail
+
 #### Detect Toolkit Project Root ####
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
