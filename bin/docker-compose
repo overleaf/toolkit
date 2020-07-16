@@ -2,10 +2,19 @@
 
 set -euo pipefail
 
-RC_FILE="config/overleaf.rc"
+#### Detect Toolkit Project Root ####
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+RC_FILE="$TOOLKIT_ROOT/config/overleaf.rc"
 
 function __main__() {
-  SHARELATEX_IMAGE_VERSION="$(head -n 1 ./config/version)"
+  SHARELATEX_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
   MONGO_IMAGE="mongo:3.6"
   REDIS_IMAGE="redis:5.0"
 
@@ -24,20 +33,20 @@ function __main__() {
   source "$RC_FILE"
 
   # Select which docker-compose files to load
-  compose_file_flags=("-f ./lib/docker-compose.base.yml")
+  compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
   if [[ "$REDIS_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./lib/docker-compose.redis.yml")
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.redis.yml")
   fi
   if [[ "$MONGO_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./lib/docker-compose.mongo.yml")
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
   fi
   if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
-    compose_file_flags+=("-f ./lib/docker-compose.sibling-containers.yml")
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   fi
 
   # Include docker-compose.override.yml if it is present
-  if [[ -f './config/docker-compose.override.yml' ]]; then
-    compose_file_flags+=("-f ./config/docker-compose.override.yml")
+  if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/config/docker-compose.override.yml")
   fi
 
   # Build up the flags to pass to docker-compose
@@ -51,9 +60,10 @@ function __main__() {
   full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
 
   # Canonicalize data paths
-  SHARELATEX_DATA_PATH=$(cd config; realpath "$SHARELATEX_DATA_PATH")
-  MONGO_DATA_PATH=$(cd config; realpath "$MONGO_DATA_PATH")
-  REDIS_DATA_PATH=$(cd config; realpath "$REDIS_DATA_PATH")
+  # TODO: remove the need for .. here
+  SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$SHARELATEX_DATA_PATH")
+  MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$MONGO_DATA_PATH")
+  REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$REDIS_DATA_PATH")
 
   # Print debug info
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
