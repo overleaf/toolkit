@@ -2,6 +2,15 @@
 
 set -euo pipefail
 
+#### Detect Toolkit Project Root ####
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
 SPACES_PER_INDENT=4
 
 WARNINGS_FILE="$(mktemp)"
@@ -126,7 +135,7 @@ function check_config_files() {
 
     print_point 0 "$config_file"
 
-    if [[ ! -f "$config_file" ]]; then
+    if [[ ! -f "$TOOLKIT_ROOT/$config_file" ]]; then
       print_point 1 "status: MISSING !"
       add_warning "configuration file $config_file not found"
     else
@@ -134,13 +143,13 @@ function check_config_files() {
       print_point 1 "status: present"
 
       if [[ "$config_file" == "config/version" ]]; then
-        print_point 1 "version: $(head -n 1 "$config_file")"
+        print_point 1 "version: $(head -n 1 "$TOOLKIT_ROOT/$config_file")"
       elif [[ "$config_file" == "config/overleaf.rc" ]]; then
         print_point 1 "values"
 
         # Load vars from the rc file
         # shellcheck disable=SC1090
-        source "$config_file"
+        source "$TOOLKIT_ROOT/$config_file"
 
         # Check some vars from the RC file
         if [[ "${SHARELATEX_DATA_PATH:-null}" != "null" ]]; then
