@@ -3,6 +3,10 @@
 set -euo pipefail
 
 #### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
@@ -83,6 +87,12 @@ function check_dependencies() {
       print_point 2 "status: present"
       version=$(get_version "$binary_name")
       print_point 2 "version info: $version"
+      if [[ "$binary_name" == "realpath" ]] \
+          && [[ "$(command -V "$binary_name")" =~ .*function.* ]]; then
+        message="Could not find 'realpath' binary, falling back to custom function"
+        print_point 2 "WARNING: $message"
+        add_warning "$message"
+      fi
     else
       print_point 2 "status: MISSING !"
       add_warning "$binary_name not found"
@@ -94,6 +104,7 @@ function check_dependencies() {
     bash
     docker
     docker-compose
+    realpath
     perl
     awk
   )
@@ -114,11 +125,13 @@ function check_docker_daemon() {
 }
 
 function print_warnings() {
+  print_section_separator "Warnings"
   if [[ -n $(head -n 1 "$WARNINGS_FILE") ]]; then
-    print_section_separator "Warnings"
     while read -r _line; do
       echo "! $_line"
     done < "$WARNINGS_FILE"
+  else
+    echo "- None, all good"
   fi
 }
 
