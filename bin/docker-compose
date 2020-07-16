@@ -60,9 +60,9 @@ function __main__() {
   full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
 
   # Canonicalize data paths
-  SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$SHARELATEX_DATA_PATH")
-  MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$MONGO_DATA_PATH")
-  REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT/config"; realpath "$REDIS_DATA_PATH")
+  SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
+  MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
+  REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
 
   # Print debug info
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then

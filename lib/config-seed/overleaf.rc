@@ -3,7 +3,7 @@
 PROJECT_NAME=overleaf
 
 # Sharelatex container
-SHARELATEX_DATA_PATH=../data/sharelatex
+SHARELATEX_DATA_PATH=data/sharelatex
 SERVER_PRO=false
 
 # Sibling Containers
@@ -12,8 +12,8 @@ DOCKER_SOCKET_PATH=/var/run/docker.sock
 
 # Mongo configuration
 MONGO_ENABLED=true
-MONGO_DATA_PATH=../data/mongo
+MONGO_DATA_PATH=data/mongo
 
 # Redis configuration
 REDIS_ENABLED=true
-REDIS_DATA_PATH=../data/redis
+REDIS_DATA_PATH=data/redis
