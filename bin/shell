@@ -2,8 +2,17 @@
 
 set -euo pipefail
 
+#### Detect Toolkit Project Root ####
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
 function __main__() {
-  exec ./bin/docker-compose exec sharelatex bash
+  exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash
 }
 
 __main__ "$@"
