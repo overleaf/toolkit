@@ -173,6 +173,20 @@ function check_config_files() {
         fi
 
         print_point 2 "SERVER_PRO: $SERVER_PRO"
+        if [[ "${SERVER_PRO:-null}" == "true" ]]; then
+          local logged_in
+          logged_in="$(grep -q xxquay.io ~/.docker/config.json && echo 'true' || echo 'false')"
+          print_point 3 "logged in to quay.io: $logged_in"
+          if [[ "${logged_in}" == "false" ]]; then
+            local warning_message=(
+              "Server Pro enabled, but not logged in to quay.io repository."
+              "These credentials are supplied by Overleaf with a Server Pro"
+              "license. See https://www.overleaf.com/for/enterprises/features"
+              "for more details."
+            )
+            add_warning "${warning_message[@]}"
+          fi
+        fi
 
         print_point 2 "MONGO_ENABLED: $MONGO_ENABLED"
         if [[ "${MONGO_URL:-null}" != "null" ]]; then
