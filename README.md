@@ -3,35 +3,32 @@
 (Note: this software is currently in beta testing. Functionality and documentation
 may be incomplete)
 
+This repository contains the Overleaf Toolkit, the standard tools for running a local
+instance of [Overleaf](https://overleaf.com). This toolkit will help you to set up and administer both Overleaf Community Edition (free to use, and community supported), and Overleaf Server Pro (commercial, with professional support).
+
 
 ## Getting Started
 
-See the [Quick Start Guide](./doc/quick-start-guide.md).
+Clone this repository locally:
+
+``` sh
+git clone https://github.com/overleaf/toolkit.git overleaf-toolkit
+```
+
+Then follow the [Quick Start Guide](./doc/quick-start-guide.md).
 
 
-## Dependencies
+## Documentation
 
-This project requires a modern unix system as a base (such as Ubuntu Linux).
-It also requires `bash`, `docker`, and `docker-compose`. 
-
-The `bin/doctor` script can be used to check for missing dependencies.
-
-Note: MacOS does not ship with a `realpath` program. In this case we fall
-back to a custom shell function to imitate some of what `realpath` does, but
-it is relatively limited. We recommend users on MacOS install the gnu coreutils
-with `brew install coreutils`, to get a working version of `realpath`.
+See [Documentation Index](./doc/index.md)
 
 
-## Doctor
+## Getting Help
 
-Run `bin/doctor` for debug output
+Users of the free Community Edition should [open an issue on github](https://github.com/overleaf/toolkit/issues). 
 
+Users of Server Pro should contact `support@overleaf.com` for assistance.
 
-## Docker Compose Wrappers
-
-The `bin/docker-compose` script is a wrapper around `docker-compose`, 
-and automatically loads the project configuration. `bin/up`, `bin/start`, etc,
-are convenience wrappers around `bin/docker-compose`.
 
 
 ## Config files
