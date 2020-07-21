@@ -129,7 +129,7 @@ function handle_git_update() {
     echo "Code update available! (current commit is $current_commit)"
 
     should_pull="n"
-    read -r -p "Procced to pull update? [y/n] " should_pull
+    read -r -p "Proceed to pull update? [y/n] " should_pull
 
     if [[ ! "$should_pull" =~ [Yy] ]]; then
       echo "Continuing without pulling update"
