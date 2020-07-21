@@ -175,7 +175,7 @@ function check_config_files() {
         print_point 2 "SERVER_PRO: $SERVER_PRO"
         if [[ "${SERVER_PRO:-null}" == "true" ]]; then
           local logged_in
-          logged_in="$(grep -q xxquay.io ~/.docker/config.json && echo 'true' || echo 'false')"
+          logged_in="$(grep -q quay.io ~/.docker/config.json && echo 'true' || echo 'false')"
           print_point 3 "logged in to quay.io: $logged_in"
           if [[ "${logged_in}" == "false" ]]; then
             local warning_message=(
