@@ -182,7 +182,8 @@ function check_config_files() {
               "Server Pro enabled, but not logged in to quay.io repository."
               "These credentials are supplied by Overleaf with a Server Pro"
               "license. See https://www.overleaf.com/for/enterprises/features"
-              "for more details."
+              "for more details about Server Pro, or contact support@overleaf.com"
+              "if you have any questions."
             )
             add_warning "${warning_message[@]}"
           fi
