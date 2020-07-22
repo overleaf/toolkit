@@ -25,7 +25,7 @@ The toolkit uses [Docker](https://www.docker.com) and [Docker-Compose](https://d
 
 ## How do I get the Toolkit?
 
-The toolkit is distributed as a git repository, here: [https://github.com/overleaf/toolkit]
+The toolkit is distributed as a git repository, here: https://github.com/overleaf/toolkit
 
 If you want to get started right now, we recommend you take a look at the
 [Quick-Start Guide](./quick-start-guide.md).
@@ -64,4 +64,4 @@ The `bin/` directory contains a collection of scripts, which will be your main i
 
 ### Documentation
 
-You will find all of the documentation you need in the `doc/` directory. This documentation can also be viewed online, here: [https://github.com/overleaf/toolkit/tree/master/doc/_index.md]
+You will find all of the documentation you need in the `doc/` directory. This documentation can also be viewed online, here: https://github.com/overleaf/toolkit/tree/master/doc/_index.md
