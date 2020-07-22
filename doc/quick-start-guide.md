@@ -14,54 +14,50 @@ are available on your system.
 
 ## Install
 
-
-Clone this repo to your machine:
+First, let's clone this git repository to your machine:
 
 ```sh
-$ git clone git@github.com:overleaf/overleaf-toolkit.git
+$ git clone git@github.com:overleaf/toolkit.git ./overleaf-toolkit
 ```
 
-We assume that you will run all subsequent commands from the base directory of this
-repository.
+Next let's move into this directory:
 
-
-## Running the doctor script
-
-
-Run `bin/doctor` to check the present state of things:
-
-```
-$ bin/doctor
-====== Overleaf Doctor ======
-- Host Information
-    - Linux
-    - Output of 'lsb_release -a':
-            No LSB modules are available.
-            Distributor ID:	Ubuntu
-            Description:	Ubuntu 20.04 LTS
-            Release:	20.04
-            Codename:	focal
-- Dependencies
-    - bash
-        - status: present
-        - version info: 5.0.16(1)-release
-
-...
+```sh
+$ cd ./overleaf-toolkit
 ```
 
-You'll see some warnings at the bottom, indicating that some essential configuration files
-are missing. This is fine, let's move on to the next step.
+For the rest of this guide, we will assume that you will run all subsequent commands from the this directory.
 
+
+## Take a Look Around
+
+Let's take a look at the structure of the repostory:
+
+```sh
+$ ls -l
+```
+
+Which will print something like this:
+
+```
+    bin
+    config
+    data
+    doc
+    lib
+    README.md
+```
+
+The `README.md` file contains some useful information about the project, while the `doc` directory contains all of the documentation you will need to use the toolkit. The `config` directory will contain your own local configuration files (which we will create in just a moment), while the `bin` directory contains a collection of scripts that manage your overleaf instance.
 
 
 ## Initialise Configuration
 
 
-Run `bin/init`:
+Let's create our local configuration, by running `bin/init`:
 
 ```sh
 $ bin/init
-Copying config files to 'config/'
 ```
 
 Now check the contents of the `config/` directory
@@ -71,24 +67,25 @@ $ ls config
 overleaf.rc     variables.env     version
 ```
 
-
 These are the three configuration files you will interact with:
 
-- `overleaf.rc` : top-level configuration
+- `overleaf.rc` : the main top-level configuration file
 - `variables.env` : environment variables loaded into the docker container
-- `version` : version of the docker images to use
+- `version` : the version of the docker images to use
 
 
 ## Starting Up
 
+The overleaf toolkit uses `docker-compose` to manage the overleaf docker containers. The toolkit provides a set of scripts which wrap `docker-compose`, and take care of most of the details for you.
 
-Let's start the server:
+Let's start the docker services:
 
 ```sh
 $ bin/up
 ```
 
-You should see some log output from the docker containers.
+You should see some log output from the docker containers, indicating that the containers are running. 
+If you press `CTRL-C` at the terminal, the services will shut down. You can start them up again (without attaching to the log output) by running `bin/start`. More generally, you can run `bin/docker-compose` to control the `docker-compose` system directly, if you find that the convenience scripts don't cover your use-case.
 
 
 ## Create the first admin account
@@ -110,8 +107,7 @@ project. Click the button and follow the instructions.
 You should then be taken to the new project, where you will see a text editor and a PDF preview.
 
 
-## Check the logs
-
+## (Optional) Check the logs
 
 Let's look at the logs inside the container:
 
@@ -121,20 +117,84 @@ $ bin/logs -f web
 ```
 
 
-You can look at the logs for multiple services at once:
+You can also look at the logs for multiple services at once:
 
 ```sh
 $ bin/logs -f filestore docstore web clsi
 ```
 
 
-Or, you can look at error logs specifically:
+
+## Consulting the Doctor
+
+The Overleaf Toolkit comes with a handy tool for debugging your installation: `bin/doctor`
+
+Let's run the `bin/doctor` script:
 
 ```sh
-$ bin/error-logs -f web
+$ bin/doctor
 ```
 
+We should see some output similar to this:
 
-## Next Steps
+```
+====== Overleaf Doctor ======
+- Host Information
+    - Linux
+    - Output of 'lsb_release -a':
+            No LSB modules are available.
+            Distributor ID:	Ubuntu
+            Description:	Ubuntu 20.04 LTS
+            Release:	20.04
+            Codename:	focal
+- Dependencies
+    - bash
+        - status: present
+        - version info: 5.0.17(1)-release
+    - docker
+        - status: present
+        - version info: Docker version 19.03.6, build 369ce74a3c
+    - docker-compose
+        - status: present
+        - version info: docker-compose version 1.24.0, build 0aa59064
+    - realpath
+        - status: present
+        - version info: realpath (GNU coreutils) 8.30
+    - perl
+        - status: present
+        - version info: 5.030000
+    - awk
+        - status: present
+        - version info: GNU Awk 5.0.1, API: 2.0 (GNU MPFR 4.0.2, GNU MP 6.2.0)
+- Docker Daemon
+    - status: up
+====== Configuration ======
+- config/version
+    - status: present
+    - version: 2.3.1
+- config/overleaf.rc
+    - status: present
+    - values
+        - SHARELATEX_DATA_PATH: data/sharelatex
+        - SERVER_PRO: false
+        - MONGO_ENABLED: true
+        - REDIS_ENABLED: true
+- config/variables.env
+    - status: present
+====== Warnings ======
+- None, all good
+====== End ======
+```
 
-Run the `bin/doctor` script again, and check the output. 
+First, we see some information about the host system (the machine that the toolkit is being run on), then some information about dependencies. If any dependencies are missing, we will see a warning here. Next, the doctor checks our local configuration. At the end, the doctor will print out some warnings, if any problems were encountered.
+
+When you run into problems with your toolkit, you should first run the doctor script and check it's output. 
+
+
+## Getting Help
+
+Users of the free Community Edition should [open an issue on github](https://github.com/overleaf/toolkit/issues). 
+
+Users of Server Pro should contact `support@overleaf.com` for assistance.
+
+In both cases, it is a good idea to include the output of the `bin/doctor` script in your message, so the Overleaf team can help debug the problem.

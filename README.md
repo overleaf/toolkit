@@ -29,6 +29,7 @@ Users of the free Community Edition should [open an issue on github](https://git
 
 Users of Server Pro should contact `support@overleaf.com` for assistance.
 
+In both cases, it is a good idea to include the output of the `bin/doctor` script in your message, so the Overleaf team can help debug the problem.
 
 
 ## Config files

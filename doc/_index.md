@@ -21,3 +21,9 @@ Welcome to the documentation for the Overleaf Toolkit.
 
 - [Configuration Overview](./configuration.md)
 - [overleaf.rc](./overleaf-rc.md)
+
+
+## Server Pro
+
+- [Getting Server Pro](./getting-server-pro.md)
+- [Sandboxed Compiles](./sandboxed-compiles.md)
