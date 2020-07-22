@@ -1,7 +1,9 @@
 # Documentation 
 
-
 Welcome to the documentation for the Overleaf Toolkit.
+
+This documentation is under construction. You can still find the legacy
+documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 
 
 ## Getting Started
