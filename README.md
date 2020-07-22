@@ -20,7 +20,7 @@ Then follow the [Quick Start Guide](./doc/quick-start-guide.md).
 
 ## Documentation
 
-See [Documentation Index](./doc/index.md)
+See [Documentation Index](./doc/_index.md)
 
 
 ## Getting Help
