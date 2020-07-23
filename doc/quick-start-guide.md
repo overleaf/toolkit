@@ -17,13 +17,13 @@ are available on your system.
 First, let's clone this git repository to your machine:
 
 ```sh
-$ git clone git@github.com:overleaf/toolkit.git ./overleaf-toolkit
+$ git clone git@github.com:overleaf/toolkit.git ./overleaf
 ```
 
 Next let's move into this directory:
 
 ```sh
-$ cd ./overleaf-toolkit
+$ cd ./overleaf
 ```
 
 For the rest of this guide, we will assume that you will run all subsequent commands from this directory.
