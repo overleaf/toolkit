@@ -187,6 +187,7 @@ function check_config_files() {
             )
             add_warning "${warning_message[@]}"
           fi
+          print_point 2 "SIBLING_CONTAINERS_ENABLED: $SIBLING_CONTAINERS_ENABLED"
         fi
 
         print_point 2 "MONGO_ENABLED: $MONGO_ENABLED"
