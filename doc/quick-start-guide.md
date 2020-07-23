@@ -26,7 +26,7 @@ Next let's move into this directory:
 $ cd ./overleaf-toolkit
 ```
 
-For the rest of this guide, we will assume that you will run all subsequent commands from the this directory.
+For the rest of this guide, we will assume that you will run all subsequent commands from this directory.
 
 
 ## Take a Look Around
