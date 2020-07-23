@@ -15,8 +15,8 @@ documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 
 ## Using the Toolkit
 
-- The Doctor
-- Working with Docker-Compose Services
+- [The Doctor](./the-doctor.md)
+- [Working with Docker-Compose Services](./docker-compose.md)
 
 
 ## Configuration
@@ -25,7 +25,17 @@ documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 - [overleaf.rc](./overleaf-rc.md)
 
 
+## Persistent Data
+
+- [Persistent Data Overview](./persistent-data.md)
+
+
 ## Server Pro
 
 - [Getting Server Pro](./getting-server-pro.md)
 - [Sandboxed Compiles](./sandboxed-compiles.md)
+
+
+## Upgrades
+
+- [Upgrading the Toolkit](./upgrading.md)

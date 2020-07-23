@@ -141,12 +141,7 @@ We should see some output similar to this:
 ====== Overleaf Doctor ======
 - Host Information
     - Linux
-    - Output of 'lsb_release -a':
-            No LSB modules are available.
-            Distributor ID:	Ubuntu
-            Description:	Ubuntu 20.04 LTS
-            Release:	20.04
-            Codename:	focal
+    ...
 - Dependencies
     - bash
         - status: present
@@ -157,30 +152,9 @@ We should see some output similar to this:
     - docker-compose
         - status: present
         - version info: docker-compose version 1.24.0, build 0aa59064
-    - realpath
-        - status: present
-        - version info: realpath (GNU coreutils) 8.30
-    - perl
-        - status: present
-        - version info: 5.030000
-    - awk
-        - status: present
-        - version info: GNU Awk 5.0.1, API: 2.0 (GNU MPFR 4.0.2, GNU MP 6.2.0)
-- Docker Daemon
-    - status: up
+    ...
 ====== Configuration ======
-- config/version
-    - status: present
-    - version: 2.3.1
-- config/overleaf.rc
-    - status: present
-    - values
-        - SHARELATEX_DATA_PATH: data/sharelatex
-        - SERVER_PRO: false
-        - MONGO_ENABLED: true
-        - REDIS_ENABLED: true
-- config/variables.env
-    - status: present
+    ...
 ====== Warnings ======
 - None, all good
 ====== End ======

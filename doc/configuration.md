@@ -35,9 +35,14 @@ See [The full specification](./overleaf-rc.md) for more details on the supported
 
 ## The `variables.env` File
 
-
+The `config/variables.env` file contains environment variables that are loaded into the overleaf docker container, and used to configure the overleaf microservices. These include the name of the application, as displayed in the header of the web interface, settings for sending emails, and settings for using LDAP with Server Pro.
 
 
 ## The `version` File
 
 The `config/version` file contains the version number of the docker images that will be used to create the running instance of Overleaf.
+
+
+## The `docker-compose.override.yml` File
+
+If present, the `config/docker-compose.override.yml` file will be included in the invocation to `docker-compose`. This is useful for overriding configuration specific to docker-compose.
