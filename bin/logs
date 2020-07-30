@@ -42,8 +42,8 @@ function usage() {
 }
 
 function __main__() {
-    LINES="$DEFAULT_LINES"
-    FOLLOW_FLAG=""
+    local LINES="$DEFAULT_LINES"
+    local FOLLOW_FLAG=""
 
     while getopts "fn:" opt
     do
@@ -61,22 +61,22 @@ function __main__() {
         usage && exit
     fi
 
-    log_base_path="/var/log/sharelatex"
+    local log_base_path="/var/log/sharelatex"
 
     declare -a services
     IFS=" " read -r -a services <<< "$*"
 
-    path_spec="$log_base_path/*.log"
+    local path_spec="$log_base_path/*.log"
 
     if [[ ! "0" == "${#services[@]}" ]]; then
-        log_paths=()
+        local log_paths=()
         for service in "${services[@]}"; do
             log_paths+=("$log_base_path/${service}.log")
         done
         path_spec="${log_paths[*]}"
     fi
 
-    bash_exec_command_string="tail $FOLLOW_FLAG -n $LINES $path_spec"
+    local bash_exec_command_string="tail $FOLLOW_FLAG -n $LINES $path_spec"
 
     exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$bash_exec_command_string"
 }

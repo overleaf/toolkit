@@ -18,13 +18,13 @@ fi
 RC_FILE="$TOOLKIT_ROOT/config/overleaf.rc"
 
 function __main__() {
-  SHARELATEX_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  MONGO_IMAGE="mongo:3.6"
-  REDIS_IMAGE="redis:5.0"
+  local SHARELATEX_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
+  local MONGO_IMAGE="mongo:3.6"
+  local REDIS_IMAGE="redis:5.0"
 
-  MONGO_URL="mongodb://mongo/sharelatex"
-  REDIS_HOST="redis"
-  REDIS_PORT="6379"
+  local MONGO_URL="mongodb://mongo/sharelatex"
+  local REDIS_HOST="redis"
+  local REDIS_PORT="6379"
 
   if [[ ! "$SHARELATEX_IMAGE_VERSION" \
           =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -37,7 +37,7 @@ function __main__() {
   source "$RC_FILE"
 
   # Select which docker-compose files to load
-  compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
+  local compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
   if [[ "$REDIS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.redis.yml")
   fi
@@ -54,14 +54,14 @@ function __main__() {
   fi
 
   # Build up the flags to pass to docker-compose
-  project_name="${PROJECT_NAME:-overleaf}"
+  local project_name="${PROJECT_NAME:-overleaf}"
 
-  image_name="sharelatex/sharelatex"
+  local image_name="sharelatex/sharelatex"
   if [[ "${SERVER_PRO:-null}" == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   fi
 
-  full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
+  local full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
 
   # Canonicalize data paths
   SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")

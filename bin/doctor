@@ -24,9 +24,9 @@ function add_warning() {
 }
 
 function indent_to_level() {
-  levels="$1"
-  number_of_spaces=$(( levels * SPACES_PER_INDENT ))
-  spaces="$(printf %${number_of_spaces}s)"
+  local levels="$1"
+  local number_of_spaces=$(( levels * SPACES_PER_INDENT ))
+  local spaces="$(printf %${number_of_spaces}s)"
   echo -n "${spaces}"
 }
 
@@ -35,7 +35,7 @@ function print_section_separator() {
 }
 
 function print_point() {
-  indent_level="0"
+  local indent_level="0"
   if [[ "${1:-null}" =~ [0-9]{1} ]]; then
     indent_level="$1"
     shift
@@ -70,7 +70,7 @@ function check_host_information() {
 function check_dependencies() {
 
   function get_version() {
-    binary_name="$1"
+    local binary_name="$1"
     if [[ "bash" == "$binary_name" ]]; then
       bash -c 'echo $BASH_VERSION'
     elif [[ "perl" == "$binary_name" ]]; then
@@ -81,15 +81,15 @@ function check_dependencies() {
   }
 
   function check_for_binary() {
-    binary_name="$1"
+    local binary_name="$1"
     print_point 1 "$binary_name"
     if [[ -n $(command -v "$binary_name") ]]; then
       print_point 2 "status: present"
-      version=$(get_version "$binary_name")
+      local version=$(get_version "$binary_name")
       print_point 2 "version info: $version"
       if [[ "$binary_name" == "realpath" ]] \
           && [[ "$(command -V "$binary_name")" =~ .*function.* ]]; then
-        message="Could not find 'realpath' binary, falling back to custom function"
+        local message="Could not find 'realpath' binary, falling back to custom function"
         print_point 2 "WARNING: $message"
         add_warning "$message"
       fi
@@ -138,7 +138,7 @@ function print_warnings() {
 function check_config_files() {
   print_section_separator "Configuration"
 
-  config_files=(
+  local config_files=(
     "config/version"
     "config/overleaf.rc"
     "config/variables.env"

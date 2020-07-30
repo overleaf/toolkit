@@ -28,7 +28,7 @@ function usage() {
 }
 
 function services_up() {
-  top_output="$("$TOOLKIT_ROOT/bin/docker-compose" top)"
+  local top_output="$("$TOOLKIT_ROOT/bin/docker-compose" top)"
   if [[ -z "$top_output" ]]; then
     return 1
   else
@@ -37,9 +37,9 @@ function services_up() {
 }
 
 function git_pull_available() {
-  branch="$1"
-  fetch_output="$(git -C "$TOOLKIT_ROOT" fetch --dry-run origin "$branch" 2>&1)"
-  filtered_fetch_output="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
+  local branch="$1"
+  local fetch_output="$(git -C "$TOOLKIT_ROOT" fetch --dry-run origin "$branch" 2>&1)"
+  local filtered_fetch_output="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
   if [[ -z "$filtered_fetch_output" ]]; then
     return 1
   else
@@ -48,8 +48,8 @@ function git_pull_available() {
 }
 
 function handle_image_upgrade() {
-  user_image_version="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  seed_image_version="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
+  local user_image_version="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
+  local seed_image_version="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
 
   if [[ ! "$seed_image_version" > "$user_image_version" ]]; then
     echo "No change to docker image version"
@@ -59,7 +59,7 @@ function handle_image_upgrade() {
   echo "New docker image version available ($seed_image_version)"
   echo "Current image version is '$user_image_version' (from config/version)"
 
-  should_upgrade="n"
+  local should_upgrade="n"
   read -r -p "Upgrade image? [y/n] " should_upgrade
 
   if [[ ! "$should_upgrade" =~ [Yy] ]]; then
@@ -70,10 +70,10 @@ function handle_image_upgrade() {
   echo "Upgrading config/version from $user_image_version to $seed_image_version"
 
   ## Offer to stop docker services
-  services_stopped="false"
+  local services_stopped="false"
   if services_up; then
     echo "docker services are up, stop them first?"
-    should_stop="n"
+    local should_stop="n"
     read -r -p "Stop docker services? [y/n] " should_stop
     if [[ ! "$should_stop" =~ [Yy] ]]; then
       echo "exiting without stopping services"
@@ -89,7 +89,7 @@ function handle_image_upgrade() {
   ##  sudo privileges. We leave it to the user to sort out for now)
   echo "At this point, we recommend backing up your data before proceeding"
   echo "!! WARNING: Only do this while the docker services are stopped!!"
-  should_proceed="n"
+  local should_proceed="n"
   read -r -p "Proceed? [y/n] " should_proceed
   if [[ ! "$should_proceed" =~ [Yy] ]]; then
     echo "Not proceeding with upgrade"
@@ -104,7 +104,7 @@ function handle_image_upgrade() {
 
   ## Maybe offer to start services again
   if [[ "${services_stopped:-null}" == "true" ]]; then
-    should_start="n"
+    local should_start="n"
     read -r -p "Start docker services again? [y/n] " should_start
     if [[ "$should_start" =~ [Yy] ]]; then
       echo "Starting docker services"
@@ -114,7 +114,9 @@ function handle_image_upgrade() {
 }
 
 function handle_git_update() {
+  local current_branch
   current_branch="$(git -C "$TOOLKIT_ROOT" rev-parse --abbrev-ref HEAD)"
+  local current_commit
   current_commit="$(git -C "$TOOLKIT_ROOT" rev-parse --short HEAD)"
 
   if [[ ! "$current_branch" == "master" ]]; then
@@ -128,7 +130,7 @@ function handle_git_update() {
   else
     echo "Code update available! (current commit is $current_commit)"
 
-    should_pull="n"
+    local should_pull="n"
     read -r -p "Proceed to pull update? [y/n] " should_pull
 
     if [[ ! "$should_pull" =~ [Yy] ]]; then
