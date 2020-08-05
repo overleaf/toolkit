@@ -12,7 +12,7 @@ instance of [Overleaf](https://overleaf.com). This toolkit will help you to set 
 Clone this repository locally:
 
 ``` sh
-git clone https://github.com/overleaf/toolkit.git overleaf-toolkit
+git clone https://github.com/overleaf/toolkit.git ./overleaf
 ```
 
 Then follow the [Quick Start Guide](./doc/quick-start-guide.md).
