@@ -39,3 +39,4 @@ documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 ## Upgrades
 
 - [Upgrading the Toolkit](./upgrading.md)
+- [Community Edition: Upgrading TexLive](./ce-upgrading-texlive.md)
