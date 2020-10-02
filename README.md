@@ -23,6 +23,11 @@ Then follow the [Quick Start Guide](./doc/quick-start-guide.md).
 See [Documentation Index](./doc/README.md)
 
 
+## Contributing
+
+See the [CONTRIBUTING](./CONTRIBUTING) file.
+
+
 ## Getting Help
 
 Users of the free Community Edition should [open an issue on github](https://github.com/overleaf/toolkit/issues). 
