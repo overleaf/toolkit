@@ -17,7 +17,7 @@ are available on your system.
 First, let's clone this git repository to your machine:
 
 ```sh
-$ git clone git@github.com:overleaf/toolkit.git ./overleaf
+$ git clone https://github.com/overleaf/toolkit.git ./overleaf
 ```
 
 Next let's move into this directory:
