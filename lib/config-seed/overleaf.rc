@@ -5,6 +5,7 @@ PROJECT_NAME=overleaf
 # Sharelatex container
 SHARELATEX_DATA_PATH=data/sharelatex
 SERVER_PRO=false
+SHARELATEX_PORT=80
 
 # Sibling Containers
 SIBLING_CONTAINERS_ENABLED=false
