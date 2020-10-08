@@ -22,6 +22,13 @@ Sets the path to the directory that will be mounted into the main `sharelatex` c
 - Default: data/sharelatex
 
 
+### `SHARELATEX_PORT`
+
+Sets the host port that the container will bind to. For example, if this is set to `8099`, then the web interface will be available on `http://localhost:8099`.
+
+- Default: 80
+
+
 ### `SERVER_PRO`
 
 When set to `true`, tells the toolkit to use the Server Pro image (`quay.io/sharelatex/sharelatex-pro`), rather than the default Community Edition image (`sharelatex/sharelatex`). 
