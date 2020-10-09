@@ -189,6 +189,9 @@ function check_config_files() {
           fi
           print_point 2 "SIBLING_CONTAINERS_ENABLED: $SIBLING_CONTAINERS_ENABLED"
         fi
+        if [[ "${SHARELATEX_PORT:-null}" != "null" ]]; then
+          print_point 2 "SHARELATEX_PORT: ${SHARELATEX_PORT}"
+        fi
 
         print_point 2 "MONGO_ENABLED: $MONGO_ENABLED"
         if [[ "${MONGO_URL:-null}" != "null" ]]; then
