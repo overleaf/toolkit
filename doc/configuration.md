@@ -8,6 +8,12 @@ This document describes the configuration files that are used to configure the O
 All user-owned configuration files are found in the `config/` directory.
 This directory is excluded from the git revision control system, so it will not be changed by updating the toolkit code. The toolkit will not change any data in the `config/` directory without your permission.
 
+Note that changes to the configuration files will not be automatically applied
+to existing containers, even if the container is stopped and restarted (with
+`bin/stop` and `bin/start`). To apply the changes, run `bin/up`, and
+`docker-compose` will automatically apply the configuration changes to a new
+container. (Or, run `bin/up -d`, if you prefer to not attach to the docker logs)
+
 
 ## Initializing the Configuration
 
