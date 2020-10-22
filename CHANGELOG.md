@@ -1,5 +1,10 @@
 # Changelog
 
+## 2020-10-22
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to 2.4.2
+
+
 ## 2020-10-21
 ### Added
 - `bin/up` now passes along any supplied flags to `docker-compose`,
