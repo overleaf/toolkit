@@ -19,7 +19,7 @@ RC_FILE="$TOOLKIT_ROOT/config/overleaf.rc"
 
 function __main__() {
   local SHARELATEX_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  local MONGO_IMAGE="mongo:3.6"
+  local MONGO_IMAGE="mongo:4.0"
   local REDIS_IMAGE="redis:5.0"
 
   local MONGO_URL="mongodb://mongo/sharelatex"
