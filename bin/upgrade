@@ -166,16 +166,7 @@ function handle_git_update() {
     echo "No code update available for download"
   else
     echo "Code update available for download!"
-
-    local should_fetch="n"
-    read -r -p "Proceed to download update? [y/n] " should_fetch
-
-    if [[ ! "$should_fetch" =~ [Yy] ]]; then
-      echo "Continuing without downloading update"
-    else
-      echo "Downloading new code..."
-      git -C "$TOOLKIT_ROOT" fetch origin "$current_branch"
-    fi
+    git -C "$TOOLKIT_ROOT" fetch origin "$current_branch"
   fi
 
   if ! is_up_to_date_with_remote "$current_branch"; then

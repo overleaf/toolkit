@@ -2,7 +2,7 @@
 
 ## TBD
 ### Added
-- `bin/upgrade` displays any changes to the changelog and requires extra
+- `bin/upgrade` displays any changes to the changelog and prompts for
    confirmation before applying the remote changes to the local branch.
 
 ## 2020-11-19
