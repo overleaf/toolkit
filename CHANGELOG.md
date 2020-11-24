@@ -1,5 +1,10 @@
 # Changelog
 
+## TBD
+### Added
+- `bin/upgrade` displays any changes to the changelog and requires extra
+   confirmation before applying the remote changes to the local branch.
+
 ## 2020-11-19
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to 2.5.0
