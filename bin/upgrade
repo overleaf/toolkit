@@ -28,7 +28,8 @@ function usage() {
 }
 
 function services_up() {
-  local top_output="$("$TOOLKIT_ROOT/bin/docker-compose" top)"
+  local top_output
+  top_output="$("$TOOLKIT_ROOT/bin/docker-compose" top)"
   if [[ -z "$top_output" ]]; then
     return 1
   else
@@ -38,8 +39,10 @@ function services_up() {
 
 function git_pull_available() {
   local branch="$1"
-  local fetch_output="$(git -C "$TOOLKIT_ROOT" fetch --dry-run origin "$branch" 2>&1)"
-  local filtered_fetch_output="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
+  local fetch_output
+  fetch_output="$(git -C "$TOOLKIT_ROOT" fetch --dry-run origin "$branch" 2>&1)"
+  local filtered_fetch_output
+  filtered_fetch_output="$(echo "$fetch_output" | grep '\-> origin/'"$branch")"
   if [[ -z "$filtered_fetch_output" ]]; then
     return 1
   else
@@ -85,8 +88,10 @@ function show_changes() {
 }
 
 function handle_image_upgrade() {
-  local user_image_version="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  local seed_image_version="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
+  local user_image_version
+  user_image_version="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
+  local seed_image_version
+  seed_image_version="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
 
   if [[ ! "$seed_image_version" > "$user_image_version" ]]; then
     echo "No change to docker image version"
