@@ -47,6 +47,43 @@ function git_pull_available() {
   fi
 }
 
+function git_diff() {
+  git -C "$TOOLKIT_ROOT" diff "$@"
+}
+
+function is_up_to_date_with_remote() {
+  local branch="$1"
+  git_diff --quiet HEAD "origin/$branch"
+}
+
+function show_changes() {
+  local branch="$1"
+
+  if git_diff --quiet HEAD "origin/$branch" -- CHANGELOG.md; then
+    echo "No changelog available"
+    return 0
+  fi
+
+  # show CHANGELOG.md changes
+  # git diff --unified=0  hide diff context
+  # tail -n+6             hide the patch header
+
+  # Example output
+  #
+  # Changelog:
+  # ----------
+  # +## 2020-11-19
+  # +### Added
+  # +- Updated ...
+  # ----------
+
+  echo "Changelog:"
+  echo "----------"
+  git_diff --color --unified=0 HEAD "origin/$branch" -- CHANGELOG.md \
+  | tail -n+6
+  echo "----------"
+}
+
 function handle_image_upgrade() {
   local user_image_version="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
   local seed_image_version="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
@@ -126,17 +163,23 @@ function handle_git_update() {
   echo "Checking for code update..."
 
   if ! git_pull_available "$current_branch"; then
-    echo "No code update available"
+    echo "No code update available for download"
   else
-    echo "Code update available! (current commit is $current_commit)"
+    echo "Code update available for download!"
+    git -C "$TOOLKIT_ROOT" fetch origin "$current_branch"
+  fi
+
+  if ! is_up_to_date_with_remote "$current_branch"; then
+    show_changes "$current_branch"
 
     local should_pull="n"
-    read -r -p "Proceed to pull update? [y/n] " should_pull
+    read -r -p "Perform code update? [y/n] " should_pull
 
     if [[ ! "$should_pull" =~ [Yy] ]]; then
-      echo "Continuing without pulling update"
+      echo "Continuing without updating code"
     else
-      echo "Pulling new code..."
+      echo "Current commit is $current_commit"
+      echo "Updating code..."
       git -C "$TOOLKIT_ROOT" pull origin "$current_branch"
     fi
   fi
