@@ -26,7 +26,8 @@ function add_warning() {
 function indent_to_level() {
   local levels="$1"
   local number_of_spaces=$(( levels * SPACES_PER_INDENT ))
-  local spaces="$(printf %${number_of_spaces}s)"
+  local spaces
+  spaces="$(printf %${number_of_spaces}s)"
   echo -n "${spaces}"
 }
 
@@ -85,7 +86,8 @@ function check_dependencies() {
     print_point 1 "$binary_name"
     if [[ -n $(command -v "$binary_name") ]]; then
       print_point 2 "status: present"
-      local version=$(get_version "$binary_name")
+      local version
+      version=$(get_version "$binary_name")
       print_point 2 "version info: $version"
       if [[ "$binary_name" == "realpath" ]] \
           && [[ "$(command -V "$binary_name")" =~ .*function.* ]]; then
