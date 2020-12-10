@@ -34,6 +34,8 @@ documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 
 - [Getting Server Pro](./getting-server-pro.md)
 - [Sandboxed Compiles](./sandboxed-compiles.md)
+- [LDAP integration](./ldap.md)
+- [SAML integration](./saml.md)
 
 
 ## Upgrades
