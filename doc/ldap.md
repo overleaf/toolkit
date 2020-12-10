@@ -8,10 +8,10 @@ LDAP is configured via [`variables.env`](./configuration.md)
 
 - `SHARELATEX_LDAP_URL` =
     Url of the LDAP server,
-    E.g. 'ldaps://ldap.example.com:636'
+    E.g. `ldaps://ldap.example.com:636`
 
 - `SHARELATEX_LDAP_EMAIL_ATT` =
-  The email attribute the LDAP server will return, defaults to 'mail'
+  The email attribute the LDAP server will return, defaults to `mail`
 
 - `SHARELATEX_LDAP_NAME_ATT` =
   The property name holding the name of the user which is used in the application
@@ -20,64 +20,64 @@ LDAP is configured via [`variables.env`](./configuration.md)
   If your LDAP server has a first and last name then this can be used in conjuction with `SHARELATEX_LDAP_NAME_ATT`
 
 - `SHARELATEX_LDAP_PLACEHOLDER` =
-  The placeholder for the login form, defaults to 'Username'
+  The placeholder for the login form, defaults to `Username`
 
 - `SHARELATEX_LDAP_UPDATE_USER_DETAILS_ON_LOGIN` =
-  If set to 'true', will update the user first_name and last_name field on each login, and turn off the user-details form on /user/settings page.
+  If set to `true`, will update the user first_name and last_name field on each login, and turn off the user-details form on /user/settings page.
   Otherwise, details will be fetched only on first login.
 
 - `SHARELATEX_LDAP_BIND_DN` =
-    Optional, e.g. 'uid=myapp,ou=users,o=example.com'.
+    Optional, e.g. `uid=myapp,ou=users,o=example.com`.
 
 - `SHARELATEX_LDAP_BIND_CREDENTIALS` =
     Password for bindDn.
 
 - `SHARELATEX_LDAP_BIND_PROPERTY` =
-    Optional, default 'dn'. Property of user to bind against client
-    e.g. 'name', 'email'
+    Optional, default `dn`. Property of user to bind against client
+    e.g. `name`, `email`
 
 - `SHARELATEX_LDAP_SEARCH_BASE` =
     The base DN from which to search for users by username.
-     E.g. 'ou=users,o=example.com'
+     E.g. `ou=users,o=example.com`
 
 - `SHARELATEX_LDAP_SEARCH_FILTER` =
     LDAP search filter with which to find a user by username, e.g.
-    '(uid={{username}})'. Use the literal '{{username}}' to have the
+    `(uid={{username}})`. Use the literal `{{username}}` to have the
     given username be interpolated in for the LDAP search.
 
 - `SHARELATEX_LDAP_SEARCH_SCOPE` =
-    Optional, default 'sub'. Scope of the search, one of 'base',
-    'one', or 'sub'.
+    Optional, default `sub`. Scope of the search, one of `base`,
+    `one`, or `sub`.
 
 - `SHARELATEX_LDAP_SEARCH_ATTRIBUTES` =
     Optional, default all. Json array of attributes to fetch from LDAP server.
 
 - `SHARELATEX_LDAP_GROUP_DN_PROPERTY` =
-    Optional, default 'dn'. The property of user object to use in
-    '{{dn}}' interpolation of groupSearchFilter.
+    Optional, default `dn`. The property of user object to use in
+    `{{dn}}` interpolation of groupSearchFilter.
 
 - `SHARELATEX_LDAP_GROUP_SEARCH_BASE` =
     Optional. The base DN from which to search for groups. If defined,
     also groupSearchFilter must be defined for the search to work.
 
 - `SHARELATEX_LDAP_GROUP_SEARCH_SCOPE` =
-    Optional, default 'sub'.
+    Optional, default `sub`.
 
 - `SHARELATEX_LDAP_GROUP_SEARCH_FILTER` =
     Optional. LDAP search filter for groups. The following literals are
-    interpolated from the found user object: '{{dn}}' the property
-    configured with groupDnProperty. Optionally you can also assign a function instead,
+    interpolated from the found user object: `{{dn}}` the property
+    configured with `groupDnProperty`. Optionally you can also assign a function instead,
     which passes a user object, from this a dynamic groupsearchfilter can be retrieved.
 
 - `SHARELATEX_LDAP_GROUP_SEARCH_ATTRIBUTES` =
     Optional, default all. Json array of attributes to fetch from LDAP server.
 
 - `SHARELATEX_LDAP_CACHE` =
-    Optional, default 'false'. If 'true', then up to 100 credentials at a
+    Optional, default `false`. If `true`, then up to 100 credentials at a
     time will be cached for 5 minutes.
 
 - `SHARELATEX_LDAP_TIMEOUT` =
-    Optional, default Infinity. How long the client should let
+    Optional, default `Infinity`. How long the client should let
     operations live for before timing out.
 
 - `SHARELATEX_LDAP_CONNECT_TIMEOUT` =
@@ -89,9 +89,9 @@ LDAP is configured via [`variables.env`](./configuration.md)
 	E.g. `-env SHARELATEX_LDAP_TLS_OPTS_CA_PATH='["/var/one.pem", "/var/two.pem"]' `
 
 - `SHARELATEX_LDAP_TLS_OPTS_REJECT_UNAUTH` =
-   If 'true', the server certificate is verified against the list of supplied CAs.
+   If `true`, the server certificate is verified against the list of supplied CAs.
 
-## Example
+## Example
 
 At Overleaf, we test the LDAP integration against a [test openldap server](https://github.com/rroemhild/docker-test-openldap). The following is an example of a working configuration:
 
@@ -129,7 +129,7 @@ LDAP users will appear in Overleaf Admin Panel once they log in first time with 
 As LDAP is heavily configurable and flexible by nature it can be a good starting point to have a working example with ldapsearch or even used by another application.
 
 ```sh
-ldapsearch -H ldap://ad.mydomain.com:389 -x -D ENUMuser@mydomain.com -w ENUMpass  -b ou=people,dc=mydomain,dc=com "CN=\*ENUMuser\*" mail
+ldapsearch -H ldap://ad.mydomain.com:389 -x -D ENUMuser@mydomain.com -w ENUMpass -b ou=people,dc=mydomain,dc=com "CN=\*ENUMuser\*" mail
 ```
 
 ## Internals
