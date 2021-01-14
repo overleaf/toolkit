@@ -9,3 +9,7 @@ config/**/*
 
 data/**/*
 !data/.gitkeep
+
+certificate
+http*
+html
