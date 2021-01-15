@@ -8,6 +8,7 @@ services:
         container_name: sharelatex
         volumes:
             - "${SHARELATEX_DATA_PATH}:/var/lib/sharelatex"
+            - "${SHARELATEX_DOCUMENTS_PATH}:/var/www/Documents"
         ports:
             - "${SHARELATEX_PORT:-80}:80"
         environment:
