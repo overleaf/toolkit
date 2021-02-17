@@ -29,7 +29,7 @@ SHARELATEX_LDAP_UPDATE_USER_DETAILS_ON_LOGIN=true
 The `openldap` needs to run in the same network as the `sharelatex` container (which by default would be `overleaf_default`), so we'll proceed with the following steps:
 
 - Run `docker network create overleaf_default` (will possibly fail due to a `network with name overleaf_default already exists` error, that's ok).
-- Start `openldap` container with `docker run --network=overleaf_default --name=ldap rroemhild/test-openldap`
+- Start `openldap` container with `docker run --network=overleaf_default --name=ldap rroemhild/test-openldap:1.1`
 - Edit `variables.env` to add the LDAP Environment Variables as listed above.
 - Restart Server Pro
 
