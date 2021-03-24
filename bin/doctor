@@ -76,6 +76,12 @@ function check_dependencies() {
       bash -c 'echo $BASH_VERSION'
     elif [[ "perl" == "$binary_name" ]]; then
       perl -e 'print $];'
+    elif [[ "awk" == "$binary_name" ]]; then
+      if awk -Wversion > /dev/null 2>&1; then
+        awk -Wversion 2>&1 | head -n 1
+      else
+        awk --version | head -n 1
+      fi
     else
       $binary_name --version | head -n 1
     fi
