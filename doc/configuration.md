@@ -38,6 +38,8 @@ The `config/overleaf.rc` file is the most important contains the most important 
 
 See [The full specification](./overleaf-rc.md) for more details on the supported options. 
 
+Note: we recommend that you re-create the docker containers after changing anything in `overleaf.rc` or `variables.env`, by running `bin/docker-compose down`, followed by `bin/up`
+
 
 ## The `variables.env` File
 
