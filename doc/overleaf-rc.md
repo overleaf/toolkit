@@ -105,3 +105,7 @@ Specifies the Redis port to use when `REDIS_ENABLED` is `false`
 Sets the path to the directory that will be mounted into the `redis` container, and used to store the Redis database. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit. This option only affects the local `redis` container that is created when `REDIS_ENABLED` is `true`.
 
 - Default: data/redis
+
+### `OL_DOMAINS`
+
+A comma separated list of host names for which a TLS certificate will be generated when using the [TLS Proxy](./tls-proxy.md)

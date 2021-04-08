@@ -18,3 +18,7 @@ MONGO_DATA_PATH=data/mongo
 # Redis configuration
 REDIS_ENABLED=true
 REDIS_DATA_PATH=data/redis
+
+# TLS Proxy
+NGINX_ENABLED=false
+OL_DOMAINS=localhost,*.localhost,overleaf-toolkit.com,*.overleaf-toolkit.com

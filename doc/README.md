@@ -23,6 +23,7 @@ documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 
 - [Configuration Overview](./configuration.md)
 - [overleaf.rc](./overleaf-rc.md)
+- [TLS proxy](./tls-proxy.md)
 
 
 ## Persistent Data

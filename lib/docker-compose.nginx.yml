@@ -1,0 +1,16 @@
+---
+version: '2.2'
+services:
+
+  tls_proxy:
+    build: ../tls_proxy
+    ports:
+      - 127.0.0.1:443:18443
+    volumes:
+      - ./../tls_proxy/certs:/certs
+      - ./../tls_proxy/nginx.conf:/etc/nginx/nginx.conf
+    environment:
+      OL_DOMAINS: "${OL_DOMAINS}"
+    restart: on-failure:5
+    depends_on:
+      - sharelatex

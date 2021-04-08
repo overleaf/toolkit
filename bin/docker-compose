@@ -48,6 +48,10 @@ function __main__() {
   if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   fi
+  if [[ "$NGINX_ENABLED" == "true" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
+  fi
+
 
   # Include docker-compose.override.yml if it is present
   if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
@@ -94,6 +98,7 @@ function __main__() {
   export REDIS_DATA_PATH
   export REDIS_HOST
   export REDIS_PORT
+  export OL_DOMAINS
 
   # shellcheck disable=SC2068
   exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
