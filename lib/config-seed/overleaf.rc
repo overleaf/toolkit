@@ -21,4 +21,6 @@ REDIS_DATA_PATH=data/redis
 
 # TLS Proxy
 NGINX_ENABLED=false
-OL_DOMAINS=localhost,*.localhost,overleaf-toolkit.com,*.overleaf-toolkit.com
+NGINX_CONFIG_PATH=config/nginx/nginx.conf
+NGINX_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
+NGINX_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem

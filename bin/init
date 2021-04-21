@@ -38,6 +38,18 @@ function set_up_config_files() {
     cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/"
 }
 
+function set_up_tls_proxy() {
+    PRIVATE_KEY="$TOOLKIT_ROOT/config/nginx/certs/overleaf_key.pem"
+    CERT_SIGN_REQ="$TOOLKIT_ROOT/config/nginx/certs/overleaf_csr.pem"
+    CERT="$TOOLKIT_ROOT/config/nginx/certs/overleaf_certificate.pem"
+    echo "Generate example self-signed TLS cert"
+    mkdir -p config/nginx/certs
+    cp "$TOOLKIT_ROOT/lib/config-seed/nginx.conf" "$TOOLKIT_ROOT/config/nginx/"
+    openssl req -new -nodes -keyout $PRIVATE_KEY -out $CERT_SIGN_REQ -batch
+    chmod 600 $PRIVATE_KEY
+    openssl x509 -req -days 365 -in $CERT_SIGN_REQ  -signkey $PRIVATE_KEY -out $CERT
+}
+
 function __main__() {
     if [[ "${1:-null}" == "help" ]] || [[ "${1:-null}" == "--help" ]]; then
         usage
@@ -45,6 +57,7 @@ function __main__() {
     fi
     check_existing_config
     set_up_config_files
+    set_up_tls_proxy
 }
 
 __main__ "$@"

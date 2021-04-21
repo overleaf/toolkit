@@ -2,15 +2,15 @@
 version: '2.2'
 services:
 
-  tls_proxy:
-    build: ../tls_proxy
+  nginx:
+    image: "${NGINX_IMAGE}"
     ports:
       - 127.0.0.1:443:18443
     volumes:
-      - ./../tls_proxy/certs:/certs
-      - ./../tls_proxy/nginx.conf:/etc/nginx/nginx.conf
-    environment:
-      OL_DOMAINS: "${OL_DOMAINS}"
+      - "${NGINX_PRIVATE_KEY_PATH}:/certs/nginx_key.pem"
+      - "${NGINX_CERTIFICATE_PATH}:/certs/nginx_certificate.pem"
+      - "${NGINX_CONFIG_PATH}:/etc/nginx/nginx.conf"
     restart: on-failure:5
+    container_name: nginx
     depends_on:
       - sharelatex
