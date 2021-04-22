@@ -106,6 +106,7 @@ function __main__() {
   export NGINX_PRIVATE_KEY_PATH
   export NGINX_CERTIFICATE_PATH
   export NGINX_CONFIG_PATH
+  export TLS_PORT
 
   # shellcheck disable=SC2068
   exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
