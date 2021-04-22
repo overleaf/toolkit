@@ -76,6 +76,8 @@ function check_dependencies() {
       bash -c 'echo $BASH_VERSION'
     elif [[ "perl" == "$binary_name" ]]; then
       perl -e 'print $];'
+    elif [[ "openssl" == "$binary_name" ]]; then
+      openssl version
     elif [[ "awk" == "$binary_name" ]]; then
       if awk -Wversion > /dev/null 2>&1; then
         awk -Wversion 2>&1 | head -n 1
@@ -115,6 +117,7 @@ function check_dependencies() {
     realpath
     perl
     awk
+    openssl
   )
 
   for binary in "${binaries[@]}"; do
