@@ -106,6 +106,32 @@ Sets the path to the directory that will be mounted into the `redis` container, 
 
 - Default: data/redis
 
-### `OL_DOMAINS`
+### `NGINX_ENABLED`
 
-A comma separated list of host names for which a TLS certificate will be generated when using the [TLS Proxy](./tls-proxy.md)
+When set to `true`, tells the toolkit to create an NGINX container, to act as a [TLS Proxy](tls-proxy.md).
+
+- Default: false
+
+### `NGINX_CONFIG_PATH`
+
+Path to the NGINX config file to use for the [TLS Proxy](tls-proxy.md).
+
+- Default: config/nginx/nginx.conf
+
+### `NGINX_PRIVATE_KEY_PATH`
+
+Path to the private key to use for the [TLS Proxy](tls-proxy.md).
+
+- Default: config/nginx/certs/overleaf_key.pem
+
+### `NGINX_CERTIFICATE_PATH`
+
+Path to the public certificate to use for the [TLS Proxy](tls-proxy.md).
+
+- Default: config/nginx/certs/overleaf_certificate.pem
+
+### `TLS_PORT`
+
+Sets the host port that the [TLS Proxy](tls-proxy.md) container will bind to. For example, if this is set to `8443`, then the https web interface will be available on `https://localhost:8443`.
+
+- Default: 443
