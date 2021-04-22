@@ -118,13 +118,13 @@ Path to the NGINX config file to use for the [TLS Proxy](tls-proxy.md).
 
 - Default: config/nginx/nginx.conf
 
-### `NGINX_PRIVATE_KEY_PATH`
+### `TLS_PRIVATE_KEY_PATH`
 
 Path to the private key to use for the [TLS Proxy](tls-proxy.md).
 
 - Default: config/nginx/certs/overleaf_key.pem
 
-### `NGINX_CERTIFICATE_PATH`
+### `TLS_CERTIFICATE_PATH`
 
 Path to the public certificate to use for the [TLS Proxy](tls-proxy.md).
 

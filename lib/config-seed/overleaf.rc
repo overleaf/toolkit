@@ -22,6 +22,6 @@ REDIS_DATA_PATH=data/redis
 # TLS Proxy
 NGINX_ENABLED=false
 NGINX_CONFIG_PATH=config/nginx/nginx.conf
-NGINX_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
-NGINX_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem
+TLS_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
+TLS_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem
 TLS_PORT=443
