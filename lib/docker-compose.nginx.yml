@@ -5,7 +5,7 @@ services:
   nginx:
     image: "${NGINX_IMAGE}"
     ports:
-      - "127.0.0.1:${TLS_PORT:-443}:18443"
+      - "127.0.0.1:${TLS_PORT:-443}:443"
     volumes:
       - "${TLS_PRIVATE_KEY_PATH}:/certs/nginx_key.pem"
       - "${TLS_CERTIFICATE_PATH}:/certs/nginx_certificate.pem"
