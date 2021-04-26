@@ -7,9 +7,9 @@ services:
     ports:
       - "127.0.0.1:${TLS_PORT:-443}:443"
     volumes:
-      - "${TLS_PRIVATE_KEY_PATH}:/certs/nginx_key.pem"
-      - "${TLS_CERTIFICATE_PATH}:/certs/nginx_certificate.pem"
-      - "${NGINX_CONFIG_PATH}:/etc/nginx/nginx.conf"
+      - "${TLS_PRIVATE_KEY_PATH}:/certs/nginx_key.pem:ro"
+      - "${TLS_CERTIFICATE_PATH}:/certs/nginx_certificate.pem:ro"
+      - "${NGINX_CONFIG_PATH}:/etc/nginx/nginx.conf:ro"
     restart: always
     container_name: nginx
     depends_on:
