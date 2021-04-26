@@ -6,4 +6,6 @@ The toolkit is initialised with a sample private key in `config/nginx/certs/over
 
 A default config for NGINX is provided in `config/nginx/nginx.conf` which may be customised to your requirements. The path to the config file can be changed with the `NGINX_CONFIG_PATH` variable.
 
+When the [SHARELATEX_PORT](overleaf-rc.md#sharelatex_port) variable is set, the port in the `proxy_pass` statement in `nginx.conf` needs to be changed to match.
+
 By default the https web interface will be available on `https://localhost:443`. The port can be changed via the `TLS_PORT` variable. 
