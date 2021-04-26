@@ -91,22 +91,22 @@ function __main__() {
   fi
 
   # Export vars for use in docker-compose files
-  export IMAGE="$full_image_spec"
-  export SHARELATEX_DATA_PATH
-  export SHARELATEX_PORT
   export DOCKER_SOCKET_PATH
-  export MONGO_IMAGE
+  export IMAGE="$full_image_spec"
   export MONGO_DATA_PATH
+  export MONGO_IMAGE
   export MONGO_URL
-  export REDIS_IMAGE
+  export NGINX_CONFIG_PATH
+  export NGINX_IMAGE
   export REDIS_DATA_PATH
   export REDIS_HOST
+  export REDIS_IMAGE
   export REDIS_PORT
-  export NGINX_IMAGE
-  export TLS_PRIVATE_KEY_PATH
+  export SHARELATEX_DATA_PATH
+  export SHARELATEX_PORT
   export TLS_CERTIFICATE_PATH
-  export NGINX_CONFIG_PATH
   export TLS_PORT
+  export TLS_PRIVATE_KEY_PATH
 
   # shellcheck disable=SC2068
   exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
