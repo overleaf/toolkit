@@ -1,6 +1,6 @@
 # The Doctor
 
-The Overleaf toolkit comes with a handy `doctor` script, to help with debugging. Just run `bin/doctor` and the script will print out information about your host environment, your configuration, and the dependencies the toolkit needs. This output can also help the Overleaf support team to help you figure out what has gone wrong, in the case of a Server Pro installation.
+The Overleaf Toolkit comes with a handy `doctor` script, to help with debugging. Just run `bin/doctor` and the script will print out information about your host environment, your configuration, and the dependencies the toolkit needs. This output can also help the Overleaf support team to help you figure out what has gone wrong, in the case of a Server Pro installation.
 
 
 ## Getting Help

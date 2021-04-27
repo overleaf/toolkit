@@ -1,6 +1,6 @@
 # Persistent Data Overview
 
-The Overleaf toolkit needs to store persistent data, such as the files required to compile LaTeX projects, and the contents of the MongoDB database. This is achieved by mounting a few directories from the host machine into the docker containers, and writing the data to those directories.
+The Overleaf Toolkit needs to store persistent data, such as the files required to compile LaTeX projects, and the contents of the MongoDB database. This is achieved by mounting a few directories from the host machine into the docker containers, and writing the data to those directories.
 
 
 ## Data Directories

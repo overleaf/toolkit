@@ -13,4 +13,4 @@ with `brew install coreutils`, to get a working version of `realpath`.
 
 ## Host Environment
 
-The Overleaf toolkit is tested on Ubuntu Linux, but we expect that most modern Linux systems will be able to run the toolkit without problems. Although it is possible to run the toolkit on other platforms, they are not officially supported.
+The Overleaf Toolkit is tested on Ubuntu Linux, but we expect that most modern Linux systems will be able to run the toolkit without problems. Although it is possible to run the toolkit on other platforms, they are not officially supported.

@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-The overleaf toolkit depends on the following programs:
+The Overleaf Toolkit depends on the following programs:
 
 - bash
 - docker
@@ -76,7 +76,7 @@ These are the three configuration files you will interact with:
 
 ## Starting Up
 
-The overleaf toolkit uses `docker-compose` to manage the overleaf docker containers. The toolkit provides a set of scripts which wrap `docker-compose`, and take care of most of the details for you.
+The Overleaf Toolkit uses `docker-compose` to manage the overleaf docker containers. The toolkit provides a set of scripts which wrap `docker-compose`, and take care of most of the details for you.
 
 Let's start the docker services:
 

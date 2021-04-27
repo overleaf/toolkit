@@ -1,6 +1,6 @@
 # Working with Docker-Compose Services
 
-The Overleaf toolkit runs Overleaf inside a docker container, plus the
+The Overleaf Toolkit runs Overleaf inside a docker container, plus the
 supporting databases (MongoDB and Redis), in their own containers. All of this
 is orchestrated with `docker-compose`.
 
