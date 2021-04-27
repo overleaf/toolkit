@@ -49,7 +49,7 @@ function __main__() {
   if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   fi
-  if [[ "$NGINX_ENABLED" == "true" ]]; then
+  if [[ "${NGINX_ENABLED:-false}" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
   fi
 
@@ -73,10 +73,15 @@ function __main__() {
   SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
-  TLS_PRIVATE_KEY_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_PRIVATE_KEY_PATH")
-  TLS_CERTIFICATE_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_CERTIFICATE_PATH")
-  NGINX_CONFIG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$NGINX_CONFIG_PATH")
-
+  if [[ -n "${TLS_PRIVATE_KEY_PATH-}" ]]; then
+    TLS_PRIVATE_KEY_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_PRIVATE_KEY_PATH")
+  fi
+  if [[ -n "${TLS_CERTIFICATE_PATH-}" ]]; then
+    TLS_CERTIFICATE_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_CERTIFICATE_PATH")
+  fi
+  if [[ -n "${NGINX_CONFIG_PATH-}" ]]; then
+    NGINX_CONFIG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$NGINX_CONFIG_PATH")
+  fi
   # Print debug info
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
     echo ">>>>>>VARS>>>>>>"
