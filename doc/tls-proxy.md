@@ -6,6 +6,12 @@ Run `bin/init --tls` to initialise local configuration with NGINX proxy configur
 
 A default config for NGINX is provided in `config/nginx/nginx.conf` which may be customised to your requirements. The path to the config file can be changed with the `NGINX_CONFIG_PATH` variable.
 
+In order for Overleaf to run correctly behind the proxy, the following variables should be uncommented in `config/variables.env`
+```
+SHARELATEX_BEHIND_PROXY=true
+SHARELATEX_SECURE_COOKIE=true
+```
+
 When the [SHARELATEX_PORT](overleaf-rc.md#sharelatex_port) variable is set, the port in the `proxy_pass` statement in `nginx.conf` needs to be changed to match.
 
 By default the https web interface will be available on `https://localhost:443`. The port can be changed via the `TLS_PORT` variable. 
