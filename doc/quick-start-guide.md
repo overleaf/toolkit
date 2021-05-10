@@ -131,15 +131,6 @@ bin/init --tls
 ```
 This creates minimal NGINX config in `config/nginx/nginx.conf` and a sample TLS certificate and private key in `config/nginx/certs/overleaf_certificate.pem` and `config/nginx/certs/overleaf_key.pem` respectively. If you already have a signed TLS certificate for use with Server Pro, replace the sample key and certificate with your key and certificate.
 
-To create your own TLS certificate, you will need to generate a Certificate Signing Request (CSR) e.g.:
-```
- openssl req -new\
- -subj "/C=GB/ST=Wessex/L=Christminster/O=University of Christminster/OU=Bodmin College/CN=overleaf.bodmin.cm.ac.uk"\ 
- -addext "subjectAltName = DNS:latex.bodmin.cm.ac.uk"\ 
- -key config/nginx/certs/overleaf_key.pem -out config/nginx/certs/overleaf-bodmin.csr -nodes
- ```
- Change the `subj` value to suit your organisation. The optional `addext` option can be used to add additional domain names to your certificate. Send the `config/nginx/certs/overleaf-bodmin.csr` CSR file to your Certificate Authority (CA) for signing in the usual way. Replace the sample `config/nginx/certs/overleaf_certificate.pem` certificate with the signed certificate that your CA returns to you.
-
  In order to run the proxy, change the value of the `NGINX_ENABLED` variable in `config/overleaf.rc` from `false` to `true` and re-run `bin/up`.
 
  Further information about the TLS proxy can be found in the [docs](tls-proxy.md).
