@@ -27,6 +27,8 @@ Sets the path to the directory that will be mounted into the main `sharelatex` c
 
 Sets the host port that the container will bind to. For example, if this is set to `8099`, then the web interface will be available on `http://localhost:8099`.
 
+When used in conjunction with the [TLS Proxy](tls-proxy.md), the `proxy_pass` port in [nginx.conf](config/nginx/nginx.conf) also needs to be changed.
+
 - Default: 80
 
 
@@ -106,3 +108,33 @@ Specifies the Redis port to use when `REDIS_ENABLED` is `false`
 Sets the path to the directory that will be mounted into the `redis` container, and used to store the Redis database. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit. This option only affects the local `redis` container that is created when `REDIS_ENABLED` is `true`.
 
 - Default: data/redis
+
+### `NGINX_ENABLED`
+
+When set to `true`, tells the toolkit to create an NGINX container, to act as a [TLS Proxy](tls-proxy.md).
+
+- Default: false
+
+### `NGINX_CONFIG_PATH`
+
+Path to the NGINX config file to use for the [TLS Proxy](tls-proxy.md).
+
+- Default: config/nginx/nginx.conf
+
+### `TLS_PRIVATE_KEY_PATH`
+
+Path to the private key to use for the [TLS Proxy](tls-proxy.md).
+
+- Default: config/nginx/certs/overleaf_key.pem
+
+### `TLS_CERTIFICATE_PATH`
+
+Path to the public certificate to use for the [TLS Proxy](tls-proxy.md).
+
+- Default: config/nginx/certs/overleaf_certificate.pem
+
+### `TLS_PORT`
+
+Sets the host port that the [TLS Proxy](tls-proxy.md) container will bind to. For example, if this is set to `8443`, then the https web interface will be available on `https://localhost:8443`.
+
+- Default: 443

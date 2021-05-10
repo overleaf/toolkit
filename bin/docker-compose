@@ -22,6 +22,7 @@ function __main__() {
   SHARELATEX_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
   local MONGO_IMAGE="mongo:4.0"
   local REDIS_IMAGE="redis:5.0"
+  local NGINX_IMAGE="nginx:1.19-alpine"
 
   local MONGO_URL="mongodb://mongo/sharelatex"
   local REDIS_HOST="redis"
@@ -48,6 +49,10 @@ function __main__() {
   if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   fi
+  if [[ "${NGINX_ENABLED:-false}" == "true" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
+  fi
+
 
   # Include docker-compose.override.yml if it is present
   if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
@@ -68,7 +73,15 @@ function __main__() {
   SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
-
+  if [[ -n "${TLS_PRIVATE_KEY_PATH-}" ]]; then
+    TLS_PRIVATE_KEY_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_PRIVATE_KEY_PATH")
+  fi
+  if [[ -n "${TLS_CERTIFICATE_PATH-}" ]]; then
+    TLS_CERTIFICATE_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_CERTIFICATE_PATH")
+  fi
+  if [[ -n "${NGINX_CONFIG_PATH-}" ]]; then
+    NGINX_CONFIG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$NGINX_CONFIG_PATH")
+  fi
   # Print debug info
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
     echo ">>>>>>VARS>>>>>>"
@@ -83,17 +96,22 @@ function __main__() {
   fi
 
   # Export vars for use in docker-compose files
-  export IMAGE="$full_image_spec"
-  export SHARELATEX_DATA_PATH
-  export SHARELATEX_PORT
   export DOCKER_SOCKET_PATH
-  export MONGO_IMAGE
+  export IMAGE="$full_image_spec"
   export MONGO_DATA_PATH
+  export MONGO_IMAGE
   export MONGO_URL
-  export REDIS_IMAGE
+  export NGINX_CONFIG_PATH
+  export NGINX_IMAGE
   export REDIS_DATA_PATH
   export REDIS_HOST
+  export REDIS_IMAGE
   export REDIS_PORT
+  export SHARELATEX_DATA_PATH
+  export SHARELATEX_PORT
+  export TLS_CERTIFICATE_PATH
+  export TLS_PORT
+  export TLS_PRIVATE_KEY_PATH
 
   # shellcheck disable=SC2068
   exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"

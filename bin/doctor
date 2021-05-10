@@ -76,6 +76,8 @@ function check_dependencies() {
       bash -c 'echo $BASH_VERSION'
     elif [[ "perl" == "$binary_name" ]]; then
       perl -e 'print $];'
+    elif [[ "openssl" == "$binary_name" ]]; then
+      openssl version
     elif [[ "awk" == "$binary_name" ]]; then
       if awk -Wversion > /dev/null 2>&1; then
         awk -Wversion 2>&1 | head -n 1
@@ -115,6 +117,7 @@ function check_dependencies() {
     realpath
     perl
     awk
+    openssl
   )
 
   for binary in "${binaries[@]}"; do
@@ -224,6 +227,17 @@ function check_config_files() {
         fi
         if [[ "${REDIS_DATA_PATH:-null}" != "null" ]]; then
           print_point 2 "REDIS_DATA_PATH: $REDIS_DATA_PATH"
+        fi
+
+        print_point 2 "NGINX_ENABLED: ${NGINX_ENABLED:-null}"
+        if [[ "${NGINX_CONFIG_PATH:-null}" != "null" ]]; then
+          print_point 2 "NGINX_CONFIG_PATH: $NGINX_CONFIG_PATH"
+        fi
+        if [[ "${TLS_PRIVATE_KEY_PATH:-null}" != "null" ]]; then
+          print_point 2 "TLS_PRIVATE_KEY_PATH: $TLS_PRIVATE_KEY_PATH"
+        fi
+        if [[ "${TLS_CERTIFICATE_PATH:-null}" != "null" ]]; then
+          print_point 2 "TLS_CERTIFICATE_PATH: $TLS_CERTIFICATE_PATH"
         fi
       fi
     fi
