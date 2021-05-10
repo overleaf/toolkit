@@ -11,6 +11,18 @@ In order for Overleaf to run correctly behind the proxy, the following variables
 SHARELATEX_BEHIND_PROXY=true
 SHARELATEX_SECURE_COOKIE=true
 ```
+Add the following section to your `config/overleaf.rc` file if it is not there already:
+```
+# TLS proxy configuration (optional)
+# See documentation in doc/tls-proxy.md
+NGINX_ENABLED=false
+NGINX_CONFIG_PATH=config/nginx/nginx.conf
+TLS_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
+TLS_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem
+TLS_PORT=443
+```
+ In order to run the proxy, change the value of the `NGINX_ENABLED` variable in `config/overleaf.rc` from `false` to `true` and re-run `bin/up`.
+
 
 When the [SHARELATEX_PORT](overleaf-rc.md#sharelatex_port) variable is set, the port in the `proxy_pass` statement in `nginx.conf` needs to be changed to match.
 

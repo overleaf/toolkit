@@ -140,6 +140,8 @@ To create your own TLS certificate, you will need to generate a Certificate Sign
  ```
  Change the `subj` value to suit your organisation. The optional `addext` option can be used to add additional domain names to your certificate. Send the `config/nginx/certs/overleaf-bodmin.csr` CSR file to your Certificate Authority (CA) for signing in the usual way. Replace the sample `config/nginx/certs/overleaf_certificate.pem` certificate with the signed certificate that your CA returns to you.
 
+ In order to run the proxy, change the value of the `NGINX_ENABLED` variable in `config/overleaf.rc` from `false` to `true` and re-run `bin/up`.
+
  Further information about the TLS proxy can be found in the [docs](tls-proxy.md).
 
 
