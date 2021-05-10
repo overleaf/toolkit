@@ -19,7 +19,8 @@ MONGO_DATA_PATH=data/mongo
 REDIS_ENABLED=true
 REDIS_DATA_PATH=data/redis
 
-# TLS Proxy
+# TLS proxy configuration (optional)
+# See documentation in doc/tls-proxy.md
 NGINX_ENABLED=false
 NGINX_CONFIG_PATH=config/nginx/nginx.conf
 TLS_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
