@@ -13,8 +13,6 @@ At Overleaf, we test the LDAP integration against a [test openldap server](https
 ```
 # added to variables.env
 
-SHARELATEX_TEMPLATES_USER_ID=578773160210479700917ee5
-SHARELATEX_NEW_PROJECT_TEMPLATE_LINKS=[ {"name":"All Templates","url":"/templates/all"}, {"name":"All Categories","url":"/templates"}, {"name":"reports","url":"/templates/reports"}, {"name":"External","url":"https://somewhere.com/templates/reports"} ]
 SHARELATEX_LDAP_URL=ldap://ldap:389
 SHARELATEX_LDAP_SEARCH_BASE=ou=people,dc=planetexpress,dc=com
 SHARELATEX_LDAP_SEARCH_FILTER=(uid={{username}})
