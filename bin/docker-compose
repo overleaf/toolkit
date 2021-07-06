@@ -29,7 +29,7 @@ function __main__() {
   local REDIS_PORT="6379"
 
   if [[ ! "$SHARELATEX_IMAGE_VERSION" \
-          =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          =~ ^[0-9]+\.[0-9]+\.[0-9]+(-RC)?$ ]]; then
     echo "ERROR: invalid version '${SHARELATEX_IMAGE_VERSION}'"
     exit 1
   fi
