@@ -75,7 +75,7 @@ function __main__() {
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
   
   # users with old config/ content might not have NGINX_ENABLED in their
-  # variables.env, this initialisation prevents an `unbound variable` error
+  # overleaf.rc, this initialisation prevents an `unbound variable` error
   if [ -z ${NGINX_ENABLED+x} ]; 
   then 
     NGINX_ENABLED="false"
