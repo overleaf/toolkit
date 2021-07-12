@@ -73,6 +73,13 @@ function __main__() {
   SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
+  
+  # users with old config/ content might not have NGINX_ENABLED in their
+  # overleaf.rc, this initialisation prevents an `unbound variable` error
+  if [ -z ${NGINX_ENABLED+x} ]; 
+  then 
+    NGINX_ENABLED="false"
+  fi
 
   if [[ "$NGINX_ENABLED" == "true" ]]; then
     if [[ -n "${TLS_PRIVATE_KEY_PATH-}" ]]; then
