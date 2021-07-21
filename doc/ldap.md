@@ -4,6 +4,10 @@ Available in Overleaf Server Pro is the ability to use a LDAP server to manage u
 
 LDAP is configured in the Toolkit via [`variables.env`](./configuration.md).
 
+After bootstrapping Server Pro for the first time with LDAP authentication, an existing LDAP user must be given admin permissions visiting `/launchpad` page (or [via CLI](https://github.com/overleaf/overleaf/wiki/Creating-and-managing-users#creating-the-first-admin-user), but in this case ignoring password confirmation). 
+
+LDAP users will appear in Overleaf Admin Panel once they log in first time with their initial credentials.
+
 The [Developer wiki](https://github.com/overleaf/overleaf/wiki/Server-Pro:-LDAP-Config) contains further documentation on the available Environment Variables and other configuration elements. 
 
 ## Example
