@@ -13,6 +13,7 @@ At Overleaf, we test the SAML integration against a SAML test server. The follow
 ```
 # added to variables.env
 
+SHARELATEX_SAML_ENABLE=true
 SHARELATEX_SAML_ENTRYPOINT=http://localhost:8081/simplesaml/saml2/idp/SSOService.php
 SHARELATEX_SAML_CALLBACK_URL=http://saml/saml/callback
 SHARELATEX_SAML_ISSUER=sharelatex-test-saml

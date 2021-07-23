@@ -4,6 +4,13 @@
 ### Added
 - `bin/upgrade` displays any changes to the changelog and prompts for
    confirmation before applying the remote changes to the local branch.
+   
+### Changed
+- Breaking change!!! LDAP and SAML features are now activated by two new
+  variables: `SHARELATEX_LDAP_ENABLE` and `SHARELATEX_SAML_ENABLE`.
+  These features will be inactive unless the appropriate line is added
+  to `config/variables.env` -- `SHARELATEX_LDAP_ENABLE=true` or
+  `SHARELATEX_SAML_ENABLE=true`
 
 ### Misc
 - Fix code linting errors in bin/ scripts

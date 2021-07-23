@@ -17,6 +17,7 @@ At Overleaf, we test the LDAP integration against a [test openldap server](https
 ```
 # added to variables.env
 
+SHARELATEX_LDAP_ENABLE=true
 SHARELATEX_LDAP_URL=ldap://ldap:389
 SHARELATEX_LDAP_SEARCH_BASE=ou=people,dc=planetexpress,dc=com
 SHARELATEX_LDAP_SEARCH_FILTER=(uid={{username}})
