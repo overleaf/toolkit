@@ -26,7 +26,7 @@ function _migrate_update_ldap_saml_flags() {
   then
     echo "Updating LDAP settings in config/variables.env"
     sed -E -i.bak "/^SHARELATEX_LDAP_URL=['\"]?.*['\"]?/ i\
-      SHARELATEX_LDAP_ENABLE=true  # introduced in 3.0" \
+      SHARELATEX_LDAP_ENABLE=true  # Introduced in 3.0, this line added automatically" \
       "$TOOLKIT_ROOT/config/variables.env"
   fi
   if _line_in_variables "^SHARELATEX_SAML_ENTRYPOINT=['\"]?.*['\"]?" \
@@ -34,8 +34,19 @@ function _migrate_update_ldap_saml_flags() {
   then
     echo "Updating SAML settings in config/variables.env"
     sed -E -i.bak "/^SHARELATEX_SAML_ENTRYPOINT=['\"]?.*['\"]?/ i\
-      SHARELATEX_SAML_ENABLE=true  # introduced in 3.0" \
+      SHARELATEX_SAML_ENABLE=true  # Introduced in 3.0, this line added automatically" \
       "$TOOLKIT_ROOT/config/variables.env"
+  fi
+}
+
+function _maybe_config_migrations() {
+  local old_version="$1"
+  local new_version="$2"
+  ## LDAP and SAML flags
+  if [[ "$("$VENDOR/semver-compare" "$old_version" 3.0.0)" == "-1" ]] && \
+     [[ "$("$VENDOR/semver-compare" "$new_version" 3.0.0)" != "-1" ]]; then
+    echo "Checking if LDAP/SAML config needs to be updated"
+    _migrate_update_ldap_saml_flags
   fi
 }
 
@@ -168,15 +179,13 @@ function handle_image_upgrade() {
   echo "Over-writing config/version with $seed_image_version"
   cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/version"
 
-  ## Check if we need to run upgrade functions
   local old_version
   local new_version
   old_version="$(cat "$TOOLKIT_ROOT/config/__old-version")"
   new_version="$(cat "$TOOLKIT_ROOT/config/version")"
-  if [[ "$("$VENDOR/semver-compare" "$old_version" '3.0.0')" == "-1" ]] && \
-     [[ "$("$VENDOR/semver-compare" "$new_version" '3.0.0')" == "1" ]]; then
-    _migrate_update_ldap_saml_flags
-  fi
+
+  ## Check if we need to run upgrade functions
+  _maybe_config_migrations "$old_version" "$new_version"
 
   ## Maybe offer to start services again
   if [[ "${services_stopped:-null}" == "true" ]]; then
