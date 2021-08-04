@@ -10,7 +10,9 @@
   variables: `SHARELATEX_LDAP_ENABLE` and `SHARELATEX_SAML_ENABLE`.
   These features will be inactive unless the appropriate line is added
   to `config/variables.env` -- `SHARELATEX_LDAP_ENABLE=true` or
-  `SHARELATEX_SAML_ENABLE=true`
+  `SHARELATEX_SAML_ENABLE=true`. The `bin/upgrade` script will try to add the
+  appropriate lines automatically, but we recommend checking the
+  `config/variables.env` file manually before starting the services.
 
 ### Misc
 - Fix code linting errors in bin/ scripts
