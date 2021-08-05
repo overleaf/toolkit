@@ -4,6 +4,16 @@ Available in Overleaf Server Pro is the ability to use a SAML server to manage u
 
 SAML is configured in the Toolkit via [`variables.env`](./configuration.md).
 
+The `EXTERNAL_AUTH` variable must be set to `saml`, to enable the SAML module:
+
+```
+EXTERNAL_AUTH=saml
+```
+
+(To preserve backward compatibility with older configuration files, if
+`EXTERNAL_AUTH` is not set, but `SHARELATEX_SAML_ENTRYPOINT` is set, then the SAML
+module will be activated. We still recommend setting `EXTERNAL_AUTH` explicitely)
+
 The [Developer wiki](https://github.com/overleaf/overleaf/wiki/Server-Pro:-SAML-Config) contains further documentation on the available Environment Variables and other configuration elements. 
 
 ## Example
@@ -13,6 +23,7 @@ At Overleaf, we test the SAML integration against a SAML test server. The follow
 ```
 # added to variables.env
 
+EXTERNAL_AUTH=saml
 SHARELATEX_SAML_ENTRYPOINT=http://localhost:8081/simplesaml/saml2/idp/SSOService.php
 SHARELATEX_SAML_CALLBACK_URL=http://saml/saml/callback
 SHARELATEX_SAML_ISSUER=sharelatex-test-saml
