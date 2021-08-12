@@ -2,6 +2,14 @@
 
 ## TBD
 ### Added
+- Server Pro: New variable to control LDAP and SAML, `EXTERNAL_AUTH`, which can
+  be set to one of `ldap`, `saml`, `none`. This is the preferred way to activate
+  LDAP and SAML.  For backward compatibility, if this is not set, we fall back
+  to the legacy behaviour of inferring which module to activate from the
+  relevant environment variables.
+  - This should not affect current installations. Please contact support if you
+    encounter any problems
+  - See [LDAP](./doc/ldap.md) and [SAML](./doc/saml.md) documentation for more
 - `bin/upgrade` displays any changes to the changelog and prompts for
    confirmation before applying the remote changes to the local branch.
 

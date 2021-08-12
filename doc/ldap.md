@@ -4,6 +4,16 @@ Available in Overleaf Server Pro is the ability to use a LDAP server to manage u
 
 LDAP is configured in the Toolkit via [`variables.env`](./configuration.md).
 
+The `EXTERNAL_AUTH` variable must be set to `ldap`, to enable the LDAP module:
+
+```
+EXTERNAL_AUTH=ldap
+```
+
+(To preserve backward compatibility with older configuration files, if
+`EXTERNAL_AUTH` is not set, but `SHARELATEX_LDAP_URL` is set, then the LDAP
+module will be activated. We still recommend setting `EXTERNAL_AUTH` explicitely)
+
 After bootstrapping Server Pro for the first time with LDAP authentication, an existing LDAP user must be given admin permissions visiting `/launchpad` page (or [via CLI](https://github.com/overleaf/overleaf/wiki/Creating-and-managing-users#creating-the-first-admin-user), but in this case ignoring password confirmation). 
 
 LDAP users will appear in Overleaf Admin Panel once they log in first time with their initial credentials.
@@ -17,6 +27,7 @@ At Overleaf, we test the LDAP integration against a [test openldap server](https
 ```
 # added to variables.env
 
+EXTERNAL_AUTH=ldap
 SHARELATEX_LDAP_URL=ldap://ldap:389
 SHARELATEX_LDAP_SEARCH_BASE=ou=people,dc=planetexpress,dc=com
 SHARELATEX_LDAP_SEARCH_FILTER=(uid={{username}})
