@@ -17,10 +17,4 @@ Because docker runs as `root`, the data directories will end up being owned by t
 
 ## Backups
 
-The recommended backup procedure is as follows:
-
-- Shut down the docker services with `bin/stop`
-- For each of the data directories, make a copy of that directory
-  to another safe location
-  - (We recommend using `rsync` for this)
-- Start the services again with `bin/start`
+Documentation for creating a backup on data can be found in the [Developer Wiki](https://github.com/overleaf/overleaf/wiki/Backup-of-Data).
