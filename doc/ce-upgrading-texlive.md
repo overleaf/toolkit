@@ -16,7 +16,9 @@ $ docker commit sharelatex sharelatex/sharelatex:with-texlive-full
 
 Then add a `docker-compose.override.yml` file to the `config/` folder, and specify
 that the toolkit should use this new image to launch the `sharelatex` container in future:
-version number in `docker-compose.override.yml` MUST match the version number written in `config/version` file
+
+(Note: the version number in `docker-compose.override.yml` MUST match the version number used by the toolkit scripts (such as `lib/docker-compose.base.yml`))
+
 ```yml
 ---
 version: '2.2'
