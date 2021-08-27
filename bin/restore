@@ -28,6 +28,8 @@ Restores a backup created by bin/backup. Passing 'latest' restores the most
 recent backup in the backup directory.
 
 This process will stop the overleaf services.
+Restoring the data files will likely require a sudo priveleges,
+which will be prompted for when the script starts.
 
 Note, when restoring in a fresh environment, you must
 run "bin/init" and "bin/up" first.
@@ -39,6 +41,10 @@ Examples:
     bin/restore latest
 
 EOF
+}
+
+function needs-sudo () {
+  [[ "$(stat -c '%U' "$TOOLKIT_ROOT/data/sharelatex/data")" != "$(whoami)" ]]
 }
 
 function wait-for-mongo () {
@@ -109,8 +115,12 @@ function restore-data-files () {
   local tmp_dir="$1"
   local sharelatex_tmp_dir="$tmp_dir/backup/data/sharelatex"
 
-  # TODO: can we detect if we need this sudo?
-  sudo rsync -a --delete "$sharelatex_tmp_dir/" "$TOOLKIT_ROOT/data/sharelatex"
+  ## Try to detect whether we need to run rsync with sudo
+  local rsync_command="rsync"
+  if needs-sudo; then
+    rsync_command="sudo ${rsync_command}"
+  fi
+  $rsync_command -a --delete "$sharelatex_tmp_dir/" "$TOOLKIT_ROOT/data/sharelatex"
 }
 
 function _main () {
@@ -155,6 +165,11 @@ function _main () {
 
   echo "Restoring ${tar_file}"
   echo "Using temp directory $tmp_dir"
+
+  if needs-sudo; then
+    echo "Require elevated privileges. Invoking sudo..."
+    sudo echo 'elevate privileges'
+  fi
 
   ## Extract file
   echo "Extracting data..."
