@@ -57,7 +57,9 @@ function dump-mongo () {
   mkdir "$mongo_tmp_dir"
 
   "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
-  sleep 5
+
+  # TODO: can we port over the wait-for-mongo script?
+  sleep 10
 
   # shellcheck disable=SC1004
   "$TOOLKIT_ROOT/bin/docker-compose" exec mongo bash -lc '\

@@ -1,0 +1,194 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+#### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+TMP_ROOT_DIR="$TOOLKIT_ROOT/tmp"
+
+function usage() {
+  cat <<EOF
+Usage: bin/restore [latest | path/to/backup-file.tar.gz]
+
+Restores a backup created by bin/backup. Passing 'latest' restores the most
+recent backup in the backup directory.
+
+This process will stop the overleaf services.
+
+Note, when restoring in a fresh environment, you must
+run "bin/init" and "bin/up" first.
+
+Examples:
+
+    bin/restore ./backup/backup-2021-08-17-095517-1af2.tar.gz
+
+    bin/restore latest
+
+EOF
+}
+
+function create-tmp-dir () {
+  local now
+  now="$(date '+%F-%H%M%S')"
+  local random_part
+  random_part="$(head -c 8 /dev/urandom | md5sum | cut -c 1-4)"
+  if ! [[ -d "$TMP_ROOT_DIR" ]]; then
+    mkdir "$TMP_ROOT_DIR"
+  fi
+  local tmp_dir="$TMP_ROOT_DIR/restore-$now-$random_part"
+  if [[ -d "$tmp_dir" ]]; then
+    echo "Error: temp directory '$tmp_dir' already exists" >&2
+    exit 1
+  fi
+  mkdir "$tmp_dir"
+  echo "$tmp_dir"
+}
+
+function get-container-name () {
+  local name="$1"
+  "$TOOLKIT_ROOT/bin/docker-compose" ps | grep "$name" | cut -d ' ' -f 1 | head -n 1
+}
+
+function restore-mongo () {
+  local tmp_dir="$1"
+  local mongo_tmp_dir="$tmp_dir/backup/mongo"
+
+  "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
+  "$TOOLKIT_ROOT/bin/docker-compose" up -d sharelatex
+
+  # TODO: can we port over the wait-for-mongo script?
+  sleep 10
+
+  ## Copy data into container
+  docker cp \
+    "$mongo_tmp_dir/dump" \
+    "$(get-container-name mongo)":/tmp/dump
+
+  ## Run mongo restore
+  # shellcheck disable=SC1004
+  "$TOOLKIT_ROOT/bin/docker-compose" exec mongo bash -lc '\
+    cd /tmp && mongorestore --drop --quiet ./dump \
+    && rm -rf /tmp/dump;'
+
+  # TODO: select either server-ce or server-pro migrations
+  ## Run web migrations
+  # shellcheck disable=SC1004
+
+  "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -lc '\
+    cd /var/www/sharelatex/web && \
+    [[ -d migrations ]] && npm run migrations -- migrate -t server-pro'
+
+  ## Stop services again
+  "$TOOLKIT_ROOT/bin/docker-compose" stop sharelatex
+  "$TOOLKIT_ROOT/bin/docker-compose" stop mongo
+}
+
+function restore-data-files () {
+  local tmp_dir="$1"
+  local sharelatex_tmp_dir="$tmp_dir/backup/data/sharelatex"
+
+  # TODO: can we detect if we need this sudo?
+  sudo rsync -a --delete "$sharelatex_tmp_dir/" "$TOOLKIT_ROOT/data/sharelatex"
+}
+
+function _main () {
+  ## Help, and such
+  if [[ "${1:-null}" == '--help' ]] || [[ "${1:-null}" == "help" ]]; then
+    usage
+    exit 0
+  fi
+
+  if [[ "${1:-null}" == 'null' ]]; then
+    echo "Error: no backup file supplied" >&2
+    usage
+    exit 1
+  fi
+
+  local tar_file
+  local tmp_dir
+
+  ## Handle 'latest'
+  if [[ "${1:-null}" == '--latest' ]] || [[ "${1:-null}" == "latest" ]]; then
+    # Figure out latest
+    tar_file="$(find "$TOOLKIT_ROOT/backup" -name '*.tar.gz'  | sort -r | head -n 1)"
+    if [[ -z "$tar_file" ]]; then
+      echo "Error: Could not find 'latest' archive in backup directory" >&2
+      exit 1
+    else
+      echo "Using 'latest' archive: $tar_file"
+    fi
+  else
+    ## Or, just use the path supplied
+    tar_file="$1"
+  fi
+
+  ## Verify backup file exists
+  if ! [[ -f "$tar_file" ]]; then
+    echo "Error: backup file does not exist - $tar_file" >&2
+    exit 1
+  fi
+
+  ## Get a temp directory
+  tmp_dir="$(create-tmp-dir)"
+
+  echo "Restoring ${tar_file}"
+  echo "Using temp directory $tmp_dir"
+
+  ## Extract file
+  echo "Extracting data..."
+  tar xf "$tar_file" --directory "$tmp_dir"
+
+  ## Verify backup structure
+  if ! [[ -d "$tmp_dir/backup" ]]; then
+    echo "Error: invalid backup format" >&2
+    exit 1
+  fi
+
+  if [[ -f "$tmp_dir/info.txt" ]]; then
+    echo "Printing backup info..."
+    awk '{ print "    " $0 }' "$tmp_dir/info.txt"
+  fi
+
+  ## Shut down services
+  echo "Stopping docker-compose services..."
+  "$TOOLKIT_ROOT/bin/docker-compose" stop 2>/dev/null
+
+  ## Restore mongo
+  echo "Restoring mongo..."
+  restore-mongo "$tmp_dir"
+
+  ## Restore data files
+  echo "Restoring data/..."
+  restore-data-files "$tmp_dir"
+
+  ## Stop docker services
+  echo "Stopping docker-compose services..."
+  "$TOOLKIT_ROOT/bin/docker-compose" stop 2>/dev/null
+
+  ## Clear CLSI local database
+  echo "Removing CLSI cache database..."
+  if [[ -f "$TOOLKIT_ROOT/data/sharelatex/data/db.sqlite" ]]; then
+    rm "$TOOLKIT_ROOT/data/sharelatex/data/"db*
+  fi
+
+  ## Clean up temp
+  echo "Removing temp files..."
+  rm -rf "$tmp_dir"
+
+  ## Done
+  echo "Done"
+  exit 0
+}
+
+_main "$@"
