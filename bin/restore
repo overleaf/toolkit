@@ -84,10 +84,9 @@ function restore-mongo () {
   # TODO: select either server-ce or server-pro migrations
   ## Run web migrations
   # shellcheck disable=SC1004
-
   "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -lc '\
     cd /var/www/sharelatex/web && \
-    [[ -d migrations ]] && npm run migrations -- migrate -t server-pro'
+    if [[ -d migrations ]]; then npm run migrations -- migrate -t server-pro; fi'
 
   ## Stop services again
   "$TOOLKIT_ROOT/bin/docker-compose" stop sharelatex
