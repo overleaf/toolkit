@@ -17,6 +17,9 @@ fi
 
 TMP_ROOT_DIR="$TOOLKIT_ROOT/tmp"
 
+IS_SERVER_PRO="$(grep -q 'SERVER_PRO=true' \
+  "$TOOLKIT_ROOT/config/overleaf.rc" && echo 'true' || echo 'false')"
+
 function usage() {
   cat <<EOF
 Usage: bin/backup
@@ -104,6 +107,7 @@ function write-info-file () {
 Backup info:
 - time: $(date '+%F-%H%M%S')
 - user: $(whoami)
+- server pro: $IS_SERVER_PRO
 EOF
 
 }
