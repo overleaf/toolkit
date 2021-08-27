@@ -129,6 +129,10 @@ function _main() {
   tmp_dir="$(create-tmp-dir)"
   echo "Using temp directory: $tmp_dir"
 
+  ## Stop docker services
+  echo "Stopping docker-compose services..."
+  "$TOOLKIT_ROOT/bin/docker-compose" stop 2>/dev/null
+
   ## Dump mongo
   echo "Dumping mongo..."
   dump-mongo "$tmp_dir"
@@ -158,6 +162,10 @@ function _main() {
   ## Clean up temp dir
   echo "Removing temp files..."
   rm -rf "$tmp_dir"
+
+  ## Stop docker services
+  echo "Stopping docker-compose services..."
+  "$TOOLKIT_ROOT/bin/docker-compose" stop 2>/dev/null
 
   echo "Done"
   exit 0
