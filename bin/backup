@@ -1,0 +1,155 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+#### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+TMP_ROOT_DIR="$TOOLKIT_ROOT/tmp"
+
+function usage() {
+  cat <<EOF
+Usage: bin/backup
+
+Makes a backup of the data in this installation, and writes it to a
+timestamped tar.gz file in the ./backup/ directory.
+
+This file can then be consumed by the bin/restore script.
+
+EOF
+}
+
+function create-tmp-dir () {
+  local now
+  now="$(date '+%F-%H%M%S')"
+  local random_part
+  random_part="$(head -c 8 /dev/urandom | md5sum | cut -c 1-4)"
+  if ! [[ -d "$TMP_ROOT_DIR" ]]; then
+    mkdir "$TMP_ROOT_DIR"
+  fi
+  local tmp_dir="$TMP_ROOT_DIR/backup-$now-$random_part"
+  if [[ -d "$tmp_dir" ]]; then
+    echo "Error: temp directory '$tmp_dir' already exists" >&2
+    exit 1
+  fi
+  mkdir -p "$tmp_dir/backup"
+  echo "$tmp_dir"
+}
+
+function get-container-name () {
+  local name="$1"
+  "$TOOLKIT_ROOT/bin/docker-compose" ps | grep "$name" | cut -d ' ' -f 1 | head -n 1
+}
+
+function dump-mongo () {
+  local tmp_dir="$1"
+  local mongo_tmp_dir="$tmp_dir/backup/mongo"
+  mkdir "$mongo_tmp_dir"
+
+  "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
+  sleep 5
+
+  # shellcheck disable=SC1004
+  "$TOOLKIT_ROOT/bin/docker-compose" exec mongo bash -lc '\
+    [[ -d /tmp/dump ]] && rm -rf /tmp/dump; \
+    cd /tmp && mongodump --quiet;'
+
+  docker cp "$(get-container-name mongo)":/tmp/dump \
+    "$mongo_tmp_dir/dump"
+
+  if [[ ! -d  "$mongo_tmp_dir/dump" ]]; then
+    echo "Error: did not get mongo backup" >&2
+    exit 1
+  fi
+
+  # shellcheck disable=SC1004
+  "$TOOLKIT_ROOT/bin/docker-compose" exec mongo bash -lc '\
+    rm -rf /tmp/dump;'
+}
+
+function copy-data-files () {
+  local tmp_dir="$1"
+  local sharelatex_tmp_dir="$tmp_dir/backup/data/sharelatex"
+  mkdir -p "$sharelatex_tmp_dir"
+
+  rsync -a "$TOOLKIT_ROOT/data/sharelatex/" "$sharelatex_tmp_dir"
+}
+
+function backup-tar () {
+  local tmp_dir="$1"
+  local backup_name
+  backup_name="$(basename "$tmp_dir")"
+  local tar_file="$TOOLKIT_ROOT/backup/${backup_name}.tar.gz"
+  echo "Writing backup to backup/$(basename "$tar_file")"
+  pushd "$tmp_dir" 1>/dev/null
+  tar zcvf "$tar_file" backup info.txt > /dev/null
+  popd 1>/dev/null
+}
+
+function write-info-file () {
+  local tmp_dir="$1"
+  cat <<EOF > "$tmp_dir/info.txt"
+Backup info:
+- time: $(date '+%F-%H%M%S')
+- user: $(whoami)
+EOF
+
+}
+
+function _main() {
+  ## Help, and such
+  if [[ "${1:-null}" == '--help' ]] || [[ "${1:-null}" == "help" ]]; then
+    usage
+    exit 0
+  fi
+
+  ## Get a temp directory
+  local tmp_dir
+  tmp_dir="$(create-tmp-dir)"
+  echo "Using temp directory: $tmp_dir"
+
+  ## Dump mongo
+  echo "Dumping mongo..."
+  dump-mongo "$tmp_dir"
+
+  ## Copy data files
+  echo "Copying data/ files..."
+  copy-data-files "$tmp_dir"
+
+  ## Add info file
+  echo "Writing info file..."
+  write-info-file "$tmp_dir"
+
+  ## Prepare backup directory
+  [[ ! -d "$TOOLKIT_ROOT/backup" ]] && mkdir "$TOOLKIT_ROOT/backup"
+
+  ## Archive structure:
+  ## - backup/
+  ##   - mongo/
+  ##   - data/
+  ##     - ...
+  ##  - info.txt
+
+  ## Create backup archive
+  echo "Creating tar.gz archive..."
+  backup-tar "$tmp_dir"
+
+  ## Clean up temp dir
+  echo "Removing temp files..."
+  rm -rf "$tmp_dir"
+
+  echo "Done"
+  exit 0
+}
+
+_main "$@"
