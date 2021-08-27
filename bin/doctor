@@ -118,6 +118,7 @@ function check_dependencies() {
     perl
     awk
     openssl
+    rsync
   )
 
   for binary in "${binaries[@]}"; do
