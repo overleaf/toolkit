@@ -17,6 +17,9 @@ fi
 
 TMP_ROOT_DIR="$TOOLKIT_ROOT/tmp"
 
+IS_SERVER_PRO="$(grep -q 'SERVER_PRO=true' \
+  "$TOOLKIT_ROOT/config/overleaf.rc" && echo 'true' || echo 'false')"
+
 function usage() {
   cat <<EOF
 Usage: bin/restore [latest | path/to/backup-file.tar.gz]
@@ -81,12 +84,16 @@ function restore-mongo () {
     cd /tmp && mongorestore --drop --quiet ./dump \
     && rm -rf /tmp/dump;'
 
-  # TODO: select either server-ce or server-pro migrations
   ## Run web migrations
-  # shellcheck disable=SC1004
-  "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -lc '\
+  local migration_tag='server-ce'
+  if [[ "${IS_SERVER_PRO}" == "true" ]]; then
+    migration_tag="server-pro"
+  fi
+  local migration_command="\
     cd /var/www/sharelatex/web && \
-    if [[ -d migrations ]]; then npm run migrations -- migrate -t server-pro; fi'
+    if [[ -d migrations ]]; then npm run migrations -- migrate -t ${migration_tag}; fi"
+
+  "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -lc "$migration_command"
 
   ## Stop services again
   "$TOOLKIT_ROOT/bin/docker-compose" stop sharelatex
