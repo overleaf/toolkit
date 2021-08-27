@@ -41,6 +41,13 @@ Examples:
 EOF
 }
 
+function wait-for-mongo () {
+  while ! "$TOOLKIT_ROOT/bin/docker-compose" exec -T mongo \
+    mongo --eval "db.version()" \
+  > /dev/null; do echo '[mongo is not ready]' && sleep 1; done
+  echo '[mongo is ready]'
+}
+
 function create-tmp-dir () {
   local now
   now="$(date '+%F-%H%M%S')"
@@ -68,10 +75,8 @@ function restore-mongo () {
   local mongo_tmp_dir="$tmp_dir/backup/mongo"
 
   "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
+  wait-for-mongo
   "$TOOLKIT_ROOT/bin/docker-compose" up -d sharelatex
-
-  # TODO: can we port over the wait-for-mongo script?
-  sleep 10
 
   ## Copy data into container
   docker cp \
