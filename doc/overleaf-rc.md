@@ -28,7 +28,7 @@ Sets the host IP address(es) that the container will bind to. For example, if th
 
 Setting `SHARELATEX_LISTEN_IP` to either `0.0.0.0` or the external IP of your host will typically cause errors when used in conjunction with the [TLS Proxy](tls-proxy.md).
 
-- Default: 127.0.0.1
+- Default: `127.0.0.1`
 
 ### `SHARELATEX_PORT`
 
