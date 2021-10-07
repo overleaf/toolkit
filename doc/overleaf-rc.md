@@ -146,7 +146,7 @@ Sets the host IP address(es) that the [TLS Proxy](tls-proxy.md) container will b
 
 Typically this should be set to the external IP of your host.
 
-- Default: 127.0.1.1
+- Default: `127.0.1.1`
 
 ### `TLS_PORT`
 
