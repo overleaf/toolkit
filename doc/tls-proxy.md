@@ -17,6 +17,10 @@ Add the following section to your `config/overleaf.rc` file if it is not there a
 # See documentation in doc/tls-proxy.md
 NGINX_ENABLED=false
 NGINX_CONFIG_PATH=config/nginx/nginx.conf
+NGINX_HTTP_PORT=80
+# Replace these IP addresses with the external IP address of your host
+NGINX_HTTP_LISTEN_IP=127.0.1.1 
+NGINX_TLS_LISTEN_IP=127.0.1.1
 TLS_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
 TLS_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem
 TLS_PORT=443
@@ -26,4 +30,6 @@ TLS_PORT=443
 
 When the [SHARELATEX_PORT](overleaf-rc.md#sharelatex_port) variable is set, the port in the `proxy_pass` statement in `nginx.conf` needs to be changed to match.
 
-By default the https web interface will be available on `https://localhost:443`. The port can be changed via the `TLS_PORT` variable. 
+By default the https web interface will be available on `https://127.0.1.1:443`. Connections to `http://127.0.1.1:80` will be redirected to `https://127.0.1.1:443`. To change the IP address that NGINX listens on, set the `NGINX_HTTP_LISTEN_IP` and `NGINX_TLS_LISTEN_IP` variables. The ports can be changed via the `NGINX_HTTP_PORT` and `TLS_PORT` variables.
+
+If NGINX fails to start with the error message `Error starting userland proxy: listen tcp4 ... bind: address already in use` ensure that `SHARELATEX_LISTEN_IP:SHARELATEX_PORT` does not overlap with `NGINX_HTTP_LISTEN_IP:NGINX_HTTP_PORT`.
