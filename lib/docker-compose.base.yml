@@ -9,7 +9,7 @@ services:
         volumes:
             - "${SHARELATEX_DATA_PATH}:/var/lib/sharelatex"
         ports:
-            - "${SHARELATEX_PORT:-80}:80"
+            - "${SHARELATEX_LISTEN_IP:-127.0.0.1}:${SHARELATEX_PORT:-80}:80"
         environment:
           SHARELATEX_MONGO_URL: "${MONGO_URL}"
           SHARELATEX_REDIS_HOST: "${REDIS_HOST}"

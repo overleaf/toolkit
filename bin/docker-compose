@@ -113,12 +113,16 @@ function __main__() {
   export MONGO_URL
   export NGINX_CONFIG_PATH
   export NGINX_IMAGE
+  export NGINX_HTTP_PORT
+  export NGINX_HTTP_LISTEN_IP
+  export NGINX_TLS_LISTEN_IP
   export REDIS_DATA_PATH
   export REDIS_HOST
   export REDIS_IMAGE
   export REDIS_PORT
   export SHARELATEX_DATA_PATH
   export SHARELATEX_PORT
+  export SHARELATEX_LISTEN_IP
   export TLS_CERTIFICATE_PATH
   export TLS_PORT
   export TLS_PRIVATE_KEY_PATH
