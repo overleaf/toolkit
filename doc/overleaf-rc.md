@@ -160,4 +160,4 @@ Sets the host IP address(es) that the [TLS Proxy](tls-proxy.md) container will b
 
 Typically this should be set to the external IP of your host. Do not set it to `0.0.0.0` as this will typically cause a conflict with `SHARELATEX_LISTEN_IP`.
 
-- Default: 127.0.1.1
+- Default: `127.0.1.1`
