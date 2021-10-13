@@ -5,6 +5,7 @@ PROJECT_NAME=overleaf
 # Sharelatex container
 SHARELATEX_DATA_PATH=data/sharelatex
 SERVER_PRO=false
+SHARELATEX_LISTEN_IP=127.0.0.1
 SHARELATEX_PORT=80
 
 # Sibling Containers
@@ -23,6 +24,10 @@ REDIS_DATA_PATH=data/redis
 # See documentation in doc/tls-proxy.md
 NGINX_ENABLED=false
 NGINX_CONFIG_PATH=config/nginx/nginx.conf
+NGINX_HTTP_PORT=80
+# Replace these IP addresses with the external IP address of your host
+NGINX_HTTP_LISTEN_IP=127.0.1.1 
+NGINX_TLS_LISTEN_IP=127.0.1.1
 TLS_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
 TLS_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem
 TLS_PORT=443

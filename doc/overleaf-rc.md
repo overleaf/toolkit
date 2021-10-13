@@ -22,10 +22,17 @@ Sets the path to the directory that will be mounted into the main `sharelatex` c
 
 - Default: data/sharelatex
 
+### `SHARELATEX_LISTEN_IP`
+
+Sets the host IP address(es) that the container will bind to. For example, if this is set to `0.0.0.0`, then the web interface will be available on any host IP address.
+
+Setting `SHARELATEX_LISTEN_IP` to either `0.0.0.0` or the external IP of your host will typically cause errors when used in conjunction with the [TLS Proxy](tls-proxy.md).
+
+- Default: `127.0.0.1`
 
 ### `SHARELATEX_PORT`
 
-Sets the host port that the container will bind to. For example, if this is set to `8099`, then the web interface will be available on `http://localhost:8099`.
+Sets the host port that the container will bind to. For example, if this is set to `8099` and `SHARELATEX_LISTEN_IP` is set to `127.0.0.1`, then the web interface will be available on `http://localhost:8099`.
 
 When used in conjunction with the [TLS Proxy](tls-proxy.md), the `proxy_pass` port in [nginx.conf](config/nginx/nginx.conf) also needs to be changed.
 
@@ -133,8 +140,24 @@ Path to the public certificate to use for the [TLS Proxy](tls-proxy.md).
 
 - Default: config/nginx/certs/overleaf_certificate.pem
 
+### `NGINX_TLS_LISTEN_IP`
+
+Sets the host IP address(es) that the [TLS Proxy](tls-proxy.md) container will bind to for https. For example, if this is set to `0.0.0.0` then the https web interface will be available on any host IP address.
+
+Typically this should be set to the external IP of your host.
+
+- Default: `127.0.1.1`
+
 ### `TLS_PORT`
 
-Sets the host port that the [TLS Proxy](tls-proxy.md) container will bind to. For example, if this is set to `8443`, then the https web interface will be available on `https://localhost:8443`.
+Sets the host port that the [TLS Proxy](tls-proxy.md) container will bind to for https. For example, if this is set to `8443`, then the https web interface will be available on `https://localhost:8443`.
 
 - Default: 443
+
+### `NGINX_HTTP_LISTEN_IP`
+
+Sets the host IP address(es) that the [TLS Proxy](tls-proxy.md) container will bind to for http redirect. For example, if this is set to `127.0.1.1` then http connections to `127.0.1.1` will be redirected to the https web interface.
+
+Typically this should be set to the external IP of your host. Do not set it to `0.0.0.0` as this will typically cause a conflict with `SHARELATEX_LISTEN_IP`.
+
+- Default: `127.0.1.1`
