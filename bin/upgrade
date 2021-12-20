@@ -101,6 +101,13 @@ function handle_image_upgrade() {
   echo "New docker image version available ($seed_image_version)"
   echo "Current image version is '$user_image_version' (from config/version)"
 
+  local user_image_major_version="$(echo "$user_image_version" | awk -F. '{print $1}')"
+  local seed_image_major_version="$(echo "$seed_image_version" | awk -F. '{print $1}')"
+  if [[ "$seed_image_major_version" > "$user_image_major_version" ]]; then
+    echo "WARNING: this is a major version update, please check the Release Notes for breaking changes before proceeding:"
+    echo "* https://github.com/overleaf/overleaf/wiki#release-notes"
+  fi
+
   local should_upgrade="n"
   read -r -p "Upgrade image? [y/n] " should_upgrade
 
