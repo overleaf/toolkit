@@ -31,7 +31,7 @@ For the rest of this guide, we will assume that you will run all subsequent comm
 
 ## Take a Look Around
 
-Let's take a look at the structure of the repostory:
+Let's take a look at the structure of the repository:
 
 ```sh
 $ ls -l
