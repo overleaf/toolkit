@@ -24,7 +24,7 @@ See [Documentation Index](./doc/README.md)
 
 ## Contributing
 
-See the [CONTRIBUTING](./CONTRIBUTING) file.
+See the [CONTRIBUTING](https://github.com/overleaf/overleaf/blob/main/CONTRIBUTING.md) file.
 
 
 ## Getting Help
