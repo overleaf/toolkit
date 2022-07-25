@@ -90,10 +90,10 @@ If you press `CTRL-C` at the terminal, the services will shut down. You can star
 
 ## Create the first admin account
 
-In a browser, open `http://localhost/launchpad`. You should see a form with email and password fields.
+In a browser, open <http://localhost/launchpad>. You should see a form with email and password fields.
 Fill these in with the credentials you want to use as the admin account, then click "Register".
 
-Then click the link to go to the login page (`http://localhost/login`). Enter the credentials.
+Then click the link to go to the login page (<http://localhost/login>). Enter the credentials.
 Once you are logged in, you will be taken to a welcome page.
 
 Click the green button at the bottom of the page to start using Overleaf. 
@@ -101,7 +101,7 @@ Click the green button at the bottom of the page to start using Overleaf.
 
 ## Create your first project
 
-On the `http://localhost/project` page, you will see a button prompting you to create your first
+On the <http://localhost/project> page, you will see a button prompting you to create your first
 project. Click the button and follow the instructions.
 
 You should then be taken to the new project, where you will see a text editor and a PDF preview.

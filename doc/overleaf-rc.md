@@ -50,7 +50,7 @@ When set to `true`, tells the toolkit to use the Server Pro image (`quay.io/shar
 
 When set to `true`, tells the toolkit to use the "Sibling Containers" technique
 for compiling projects in separate sandboxes, using a separate docker container for
-each project. See (the legacy documentation on Sandboxed Compiles)[https://github.com/sharelatex/sharelatex/wiki/Server-Pro:-sandboxed-compiles] for more information.
+each project. See [the legacy documentation on Sandboxed Compiles](https://github.com/sharelatex/sharelatex/wiki/Server-Pro:-sandboxed-compiles) for more information.
 
 Requires `SERVER_PRO=true`
 
