@@ -18,3 +18,31 @@ Because docker runs as `root`, the data directories will end up being owned by t
 ## Backups
 
 Documentation for creating a backup on data can be found in the [Developer Wiki](https://github.com/overleaf/overleaf/wiki/Backup-of-Data).
+
+
+## Volumes
+
+If you're running Overleaf on Windows or macOS, the `mongo` service may fail to restart, with an error:
+
+```
+Failed to start up WiredTiger under any compatibility version.
+Reason: 1: Operation not permitted
+```
+
+To avoid this error, the data needs to be stored in a volume rather than a bind mounted directory (see [the `mongo` image documentation for more details](https://github.com/docker-library/docs/blob/master/mongo/content.md#where-to-store-data)).
+To store data inside Docker volumes mounted inside the MongoDB and Redis containers, add the following to `config/docker-compose.override.yml` (create this file if it doesn't exist yet):
+
+```yaml
+volumes:
+  mongo-data:
+  redis-data:
+
+services:
+  mongo:
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    volumes:
+      - redis-data:/data
+```
