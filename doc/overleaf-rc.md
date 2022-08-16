@@ -26,6 +26,8 @@ Sets the path to the directory that will be mounted into the main `sharelatex` c
 
 Sets the host IP address(es) that the container will bind to. For example, if this is set to `0.0.0.0`, then the web interface will be available on any host IP address.
 
+Since https://github.com/overleaf/toolkit/pull/77 the listen mode of the application container was changed to `localhost` only, so the value of `SHARELATEX_LISTEN_IP` must be set to the public IP address for direct container access.
+
 Setting `SHARELATEX_LISTEN_IP` to either `0.0.0.0` or the external IP of your host will typically cause errors when used in conjunction with the [TLS Proxy](tls-proxy.md).
 
 - Default: `127.0.0.1`

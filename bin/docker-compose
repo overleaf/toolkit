@@ -81,6 +81,12 @@ function __main__() {
     NGINX_ENABLED="false"
   fi
 
+  if [ -z ${SHARELATEX_LISTEN_IP} ]; 
+  then 
+    echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0"
+    SHARELATEX_LISTEN_IP="0.0.0.0"
+  fi
+
   if [[ "$NGINX_ENABLED" == "true" ]]; then
     if [[ -n "${TLS_PRIVATE_KEY_PATH-}" ]]; then
       TLS_PRIVATE_KEY_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_PRIVATE_KEY_PATH")

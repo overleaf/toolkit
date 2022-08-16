@@ -1,6 +1,17 @@
 # Changelog
 
-## TBD
+## 2022-08-16
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.2.0`.
+- Updated Mongo version from 4.2 to 4.4. Documentation on Mongo updates can be found [here](https://github.com/overleaf/overleaf/wiki/Updating-Mongo-version).
+- Print warning when `SHARELATEX_LISTEN_IP` is not defined.
+
+## 2021-10-13
+### Added
+- HTTP to HTTPS redirection.
+  - Listen mode of the `sharelatex` container now `localhost` only, so the value of `SHARELATEX_LISTEN_IP` must be set to the public IP address for direct container access. 
+
+## 2021-08-12
 ### Added
 - Server Pro: New variable to control LDAP and SAML, `EXTERNAL_AUTH`, which can
   be set to one of `ldap`, `saml`, `none`. This is the preferred way to activate
@@ -10,9 +21,11 @@
   - This should not affect current installations. Please contact support if you
     encounter any problems
   - See [LDAP](./doc/ldap.md) and [SAML](./doc/saml.md) documentation for more
+
+## 2020-11-25
+### Added
 - `bin/upgrade` displays any changes to the changelog and prompts for
    confirmation before applying the remote changes to the local branch.
-
 ### Misc
 - Fix code linting errors in bin/ scripts
 
