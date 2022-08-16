@@ -15,7 +15,7 @@ DOCKER_SOCKET_PATH=/var/run/docker.sock
 # Mongo configuration
 MONGO_ENABLED=true
 MONGO_DATA_PATH=data/mongo
-MONGO_IMAGE=mongo:4.2
+MONGO_IMAGE=mongo:4.4
 
 # Redis configuration
 REDIS_ENABLED=true
