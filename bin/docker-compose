@@ -81,14 +81,11 @@ function __main__() {
     NGINX_ENABLED="false"
   fi
 
-  # SHARELATEX_LISTEN_IP might be not defined in older configs
-  set +u
-  if [ -z ${SHARELATEX_LISTEN_IP} ]; 
+  if [ "${SHARELATEX_LISTEN_IP:-null}" == "null" ]; 
   then 
     echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0"
     SHARELATEX_LISTEN_IP="0.0.0.0"
   fi
-  set -u
 
   if [[ "$NGINX_ENABLED" == "true" ]]; then
     if [[ -n "${TLS_PRIVATE_KEY_PATH-}" ]]; then
