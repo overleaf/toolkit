@@ -139,7 +139,7 @@ function handle_image_upgrade() {
   echo "At this point, we recommend backing up your data before proceeding"
   echo "!! WARNING: Only do this while the docker services are stopped!!"
   local should_proceed="n"
-  read -r -p "Proceed? [y/n] " should_proceed
+  read -r -p "Proceed with the upgrade? [y/n] " should_proceed
   if [[ ! "$should_proceed" =~ [Yy] ]]; then
     echo "Not proceeding with upgrade"
     return 1
