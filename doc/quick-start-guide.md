@@ -41,10 +41,12 @@ Which will print something like this:
 
 ```
     bin
+    CHANGELOG.md
     config
     data
     doc
     lib
+    LICENSE
     README.md
 ```
 
