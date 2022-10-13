@@ -36,8 +36,6 @@ Setting `SHARELATEX_LISTEN_IP` to either `0.0.0.0` or the external IP of your ho
 
 Sets the host port that the container will bind to. For example, if this is set to `8099` and `SHARELATEX_LISTEN_IP` is set to `127.0.0.1`, then the web interface will be available on `http://localhost:8099`.
 
-When used in conjunction with the [TLS Proxy](tls-proxy.md), the `proxy_pass` port in [nginx.conf](config/nginx/nginx.conf) also needs to be changed.
-
 - Default: 80
 
 
