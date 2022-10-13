@@ -150,7 +150,7 @@ Typically this should be set to the external IP of your host.
 
 ### `TLS_PORT`
 
-Sets the host port that the [TLS Proxy](tls-proxy.md) container will bind to for https. For example, if this is set to `8443`, then the https web interface will be available on `https://localhost:8443`.
+Sets the host port that the [TLS Proxy](tls-proxy.md) container will bind to for https.
 
 - Default: 443
 
