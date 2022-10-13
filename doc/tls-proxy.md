@@ -33,3 +33,30 @@ When the [SHARELATEX_PORT](overleaf-rc.md#sharelatex_port) variable is set, the 
 By default the https web interface will be available on `https://127.0.1.1:443`. Connections to `http://127.0.1.1:80` will be redirected to `https://127.0.1.1:443`. To change the IP address that NGINX listens on, set the `NGINX_HTTP_LISTEN_IP` and `NGINX_TLS_LISTEN_IP` variables. The ports can be changed via the `NGINX_HTTP_PORT` and `TLS_PORT` variables.
 
 If NGINX fails to start with the error message `Error starting userland proxy: listen tcp4 ... bind: address already in use` ensure that `SHARELATEX_LISTEN_IP:SHARELATEX_PORT` does not overlap with `NGINX_HTTP_LISTEN_IP:NGINX_HTTP_PORT`.
+
+```mermaid
+sequenceDiagram
+    participant user as User
+    participant external as Host External
+    participant internal as Host Internal
+    participant nginx as nginx
+    participant sharelatex as sharelatex
+    %% User connects to external host HTTP
+    user->>+ external: HTTP
+    note over external: NGINX_HTTP_LISTEN_IP:NGINX_HTTP_PORT
+    external->>+ nginx: HTTP
+    note over nginx: nginx:80
+    nginx-->>-external: 301
+    %% User connects to external host HTTPS
+    user->>+ external: HTTPS 
+    note over external: NGINX_TLS_LISTEN_IP:TLS_PORT
+    external->>+ nginx: HTTPS
+    note over nginx: nginx:443
+    nginx->>+ sharelatex: HTTP
+    note over sharelatex: sharlatex:80
+    %% User connects to localhost HTTP
+    user->>+ internal: HTTP
+    note over internal: SHARELATEX_LISTEN_IP:SHARELATEX_PORT
+    internal->>+sharelatex: HTTP
+    note over sharelatex: sharlatex:80
+```
