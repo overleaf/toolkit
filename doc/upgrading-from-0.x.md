@@ -6,7 +6,7 @@ Thank you for your continued trust in Overleaf as a long term customer of Server
 > For reference Server CE/Pro version 1.x was released in 2017.
 >
 > If you are still using 0.x and plan to upgrade, please do so one major version at a time
-(e.g. from 0.6.3 to 1.24, then 2.7.1, then 3.y).
+(e.g. from 0.6.3 to 1.24, then 2.7.1, then the [latest release of `3.x.x`](https://github.com/overleaf/overleaf/wiki/Release-Notes-3.x.x)).
 
 ## Potential issues when upgrading to version 3.x
 
