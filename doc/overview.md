@@ -18,9 +18,9 @@ Community Edition is the free version of Overleaf, while Server Pro is our enter
 When you set up Overleaf using the toolkit, you will start with Community Edition, and can easily switch to Server Pro by changing just one setting.
 
 
-## Docker, Docker-Compose, and Overleaf
+## Docker, Compose, and Overleaf
 
-The toolkit uses [Docker](https://www.docker.com) and [Docker-Compose](https://docs.docker.com/compose/) to run the Overleaf software in an isolated sandbox. While we do recommend becoming familiar with both Docker and Docker-Compose, we also aim to make it as easy as possible to run Overleaf on your own computer.
+The toolkit uses [Docker](https://www.docker.com) and [Compose](https://docs.docker.com/compose/) to run the Overleaf software in an isolated sandbox. While we do recommend becoming familiar with both Docker and Compose, we also aim to make it as easy as possible to run Overleaf on your own computer.
 
 
 ## How do I get the Toolkit?

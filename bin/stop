@@ -16,7 +16,7 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
 fi
 
 function __main__() {
-  exec "$TOOLKIT_ROOT/bin/docker-compose" stop "$@"
+  exec "$TOOLKIT_ROOT/bin/compose" stop "$@"
 }
 
 __main__ "$@"

@@ -38,7 +38,7 @@ function __main__() {
   # shellcheck disable=SC1090
   source "$RC_FILE"
 
-  # Select which docker-compose files to load
+  # Select which compose files to load
   local compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
   if [[ "$REDIS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.redis.yml")
@@ -54,12 +54,12 @@ function __main__() {
   fi
 
 
-  # Include docker-compose.override.yml if it is present
+  # Include compose.override.yml if it is present
   if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/config/docker-compose.override.yml")
   fi
 
-  # Build up the flags to pass to docker-compose
+  # Build up the flags to pass to compose
   local project_name="${PROJECT_NAME:-overleaf}"
 
   local image_name="sharelatex/sharelatex"
@@ -111,7 +111,7 @@ function __main__() {
     echo "<<<<<<<<<<<<<<<<<<<<"
   fi
 
-  # Export vars for use in docker-compose files
+  # Export vars for use in docker compose files
   export DOCKER_SOCKET_PATH
   export IMAGE="$full_image_spec"
   export MONGO_DATA_PATH
@@ -134,7 +134,7 @@ function __main__() {
   export TLS_PRIVATE_KEY_PATH
 
   # shellcheck disable=SC2068
-  exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
+  exec docker compose -p "$project_name" ${compose_file_flags[@]} "$@"
 }
 
 __main__ "$@"

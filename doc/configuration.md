@@ -11,7 +11,7 @@ This directory is excluded from the git revision control system, so it will not 
 Note that changes to the configuration files will not be automatically applied
 to existing containers, even if the container is stopped and restarted (with
 `bin/stop` and `bin/start`). To apply the changes, run `bin/up`, and
-`docker-compose` will automatically apply the configuration changes to a new
+`compose` will automatically apply the configuration changes to a new
 container. (Or, run `bin/up -d`, if you prefer to not attach to the docker logs)
 
 
@@ -38,7 +38,7 @@ The `config/overleaf.rc` file is the most important contains the most important 
 
 See [The full specification](./overleaf-rc.md) for more details on the supported options. 
 
-Note: we recommend that you re-create the docker containers after changing anything in `overleaf.rc` or `variables.env`, by running `bin/docker-compose down`, followed by `bin/up`
+Note: we recommend that you re-create the docker containers after changing anything in `overleaf.rc` or `variables.env`, by running `bin/compose down`, followed by `bin/up`
 
 
 ## The `variables.env` File
@@ -55,4 +55,4 @@ The `config/version` file contains the version number of the docker images that 
 
 If present, the `config/docker-compose.override.yml` file will be included in the invocation to `docker-compose`. This is useful for overriding configuration specific to docker-compose.
 
-See the [docker-compose documentation](https://docs.docker.com/compose/extends/#adding-and-overriding-configuration) for more details.
+See the [compose documentation](https://docs.docker.com/compose/extends/#adding-and-overriding-configuration) for more details.

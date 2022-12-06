@@ -18,9 +18,9 @@ fi
 function usage() {
   echo "Usage: bin/up [FLAGS...]"
   echo ""
-  echo "A wrapper around 'docker-compose up'."
+  echo "A wrapper around 'docker compose up'."
   echo ""
-  echo "This program will pass any extra flags to docker-compose,"
+  echo "This program will pass any extra flags to docker compose,"
   echo "for example: 'bin/up -d' will run in detached mode"
 }
 
@@ -38,7 +38,7 @@ function __main__() {
     exit
   fi
   check_config
-  exec "$TOOLKIT_ROOT/bin/docker-compose" up "$@"
+  exec "$TOOLKIT_ROOT/bin/compose" up "$@"
 }
 
 __main__ "$@"

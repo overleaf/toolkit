@@ -78,7 +78,7 @@ function __main__() {
 
     local bash_exec_command_string="tail $FOLLOW_FLAG -n $LINES $path_spec"
 
-    exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$bash_exec_command_string"
+    exec "$TOOLKIT_ROOT/bin/compose" exec sharelatex bash -c "$bash_exec_command_string"
 }
 
 __main__ "$@"

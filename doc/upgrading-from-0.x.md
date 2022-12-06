@@ -30,10 +30,10 @@ It is safe to delete it when the application (Server CE/Pro) is not running.
 # cd ~/toolkit
 
 # Stop the application
-bin/docker-compose stop sharelatex
+bin/compose stop sharelatex
 
 # Check the existing indexes
-echo 'db.projectInvites.getIndexes()' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.projectInvites.getIndexes()' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output variant 1 (use of Server CE from August 2016, changed `expireAfterSeconds` attribute):
 #    [
 #            ...
@@ -67,7 +67,7 @@ echo 'db.projectInvites.getIndexes()' | bin/docker-compose exec -T mongo mongo -
 
 
 # Also check for completed migrations
-echo 'db.migrations.count({"name":"20190912145023_create_projectInvites_indexes"})' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.migrations.count({"name":"20190912145023_create_projectInvites_indexes"})' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output:
 #    0
 
@@ -77,12 +77,12 @@ echo 'db.migrations.count({"name":"20190912145023_create_projectInvites_indexes"
 
 # If the output matches, continue below.
 # Drop the expires_1 index
-echo 'db.projectInvites.dropIndex("expires_1")' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.projectInvites.dropIndex("expires_1")' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output (NOTE: the "nIndexesWas" number may differ)
 #    { "nIndexesWas" : 3, "ok" : 1 }
 
 # Start the application again
-bin/docker-compose start sharelatex
+bin/compose start sharelatex
 ```
 
 #### templates
@@ -100,10 +100,10 @@ Please make sure that the application (Server CE/Pro) is not running.
 # cd ~/toolkit
 
 # Stop the application
-bin/docker-compose stop sharelatex
+bin/compose stop sharelatex
 
 # Check the existing indexes
-echo 'db.templates.getIndexes()' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.templates.getIndexes()' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output (use of an old mongodb version, offending `"safe":null` attribute):
 #    [
 #        ...
@@ -141,7 +141,7 @@ echo 'db.templates.getIndexes()' | bin/docker-compose exec -T mongo mongo --quie
 #    ]
 
 # Also check for completed migrations
-echo 'db.migrations.count({"name":"20190912145030_create_templates_indexes"})' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.migrations.count({"name":"20190912145030_create_templates_indexes"})' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output:
 #    0
 
@@ -151,18 +151,18 @@ echo 'db.migrations.count({"name":"20190912145030_create_templates_indexes"})' |
 
 # If the output matches, continue below.
 # Drop the project_id_1, user_id_1 and name_1 index
-echo 'db.templates.dropIndex("project_id_1")' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.templates.dropIndex("project_id_1")' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output (NOTE: the "nIndexesWas" number may differ)
 #    { "nIndexesWas" : 4, "ok" : 1 }
-echo 'db.templates.dropIndex("user_id_1")' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.templates.dropIndex("user_id_1")' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output (NOTE: the "nIndexesWas" number may differ)
 #    { "nIndexesWas" : 3, "ok" : 1 }
-echo 'db.templates.dropIndex("name_1")' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.templates.dropIndex("name_1")' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output (NOTE: the "nIndexesWas" number may differ)
 #    { "nIndexesWas" : 2, "ok" : 1 }
 
 # Start the application again
-bin/docker-compose start sharelatex
+bin/compose start sharelatex
 ```
 
 ### Users with non-unique emails
@@ -180,7 +180,7 @@ The first step is identifying the scope of this issue:
 # cd ~/toolkit
 
 # list emails that have more than one related user when normalized to lower case.
-echo 'db.users.aggregate([{"$group":{"_id":{"$toLower":"$email"},"count":{"$sum":1}}},{"$match":{"count":{"$gt":1}}}])' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.users.aggregate([{"$group":{"_id":{"$toLower":"$email"},"count":{"$sum":1}}},{"$match":{"count":{"$gt":1}}}])' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output
 #    { "_id" : "foo@bar.com", "count" : 2 }
 #    ...
@@ -207,7 +207,7 @@ There are two options to deal with a duplicate.
 # Change the email of one of the accounts and deal with the project access later.
 # Replace the three placeholders "foo@bar.com" with an actual email address that has two related users.
 # The "^" and "$" characters around the email ensure that we do not match similar emails, e.g. "this-is-not-foo@bar.com" also contains "foo@bar.com".
-echo 'db.users.updateOne({"email":/^foo@bar.com$/i},{"$set":{"email":"duplicate-foo@bar.com","emails.0.email":"duplicate-foo@bar.com"}})' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.users.updateOne({"email":/^foo@bar.com$/i},{"$set":{"email":"duplicate-foo@bar.com","emails.0.email":"duplicate-foo@bar.com"}})' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output
 #    { "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
 ``` 
@@ -218,7 +218,7 @@ echo 'db.users.updateOne({"email":/^foo@bar.com$/i},{"$set":{"email":"duplicate-
 # Find exact casing of the email addresses
 # Replace the placeholder "foo@bar.com" with an actual email address that has two related users.
 # The "^" and "$" characters around the email ensure that we do not match similar emails, e.g. "this-is-not-foo@bar.com" also contains "foo@bar.com".
-echo 'db.users.find({"email":/^foo@bar.com$/i},{"email":1})' | bin/docker-compose exec -T mongo mongo --quiet sharelatex
+echo 'db.users.find({"email":/^foo@bar.com$/i},{"email":1})' | bin/compose exec -T mongo mongo --quiet sharelatex
 # Expected output
 #    { "_id" : ObjectId("637276cd42fab6008ec8c88c"), "email" : "foo@bar.com" }
 #    { "_id" : ObjectId("637276cd42fab6008ec8c88d"), "email" : "FOO@bar.com" }

@@ -78,6 +78,6 @@ services:
         image: sharelatex/sharelatex:with-texlive-full
 ```
 
-Then run `bin/stop && bin/docker-compose rm -f sharelatex && bin/up`, to recreate the container.
+Then run `bin/stop && bin/compose rm -f sharelatex && bin/up`, to recreate the container.
 
 Note that you will need to remove this committed container and repeat these steps when you [upgrade](./upgrading.md).

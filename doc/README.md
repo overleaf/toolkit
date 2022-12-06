@@ -16,7 +16,7 @@ documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 ## Using the Toolkit
 
 - [The Doctor](./the-doctor.md)
-- [Working with Docker-Compose Services](./docker-compose.md)
+- [Working with Compose Services](./compose.md)
 
 
 ## Configuration

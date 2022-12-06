@@ -16,7 +16,7 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
 fi
 
 function __main__() {
-  exec "$TOOLKIT_ROOT/bin/docker-compose" exec mongo mongo sharelatex
+  exec "$TOOLKIT_ROOT/bin/compose" exec mongo mongo sharelatex
 }
 
 __main__ "$@"

@@ -3,14 +3,14 @@
 This document describes the variables that are supported in the `config/overleaf.rc` file.
 This file consists of variable definitions in the form `NAME=value`. Lines beginning with `#` are treated as comments.
 
-Note: we recommend that you re-create the docker containers after changing anything in `overleaf.rc` or `variables.env`, by running `bin/docker-compose down`, followed by `bin/up`
+Note: we recommend that you re-create the docker containers after changing anything in `overleaf.rc` or `variables.env`, by running `bin/compose down`, followed by `bin/up`
 
 ## Variables
 
 
 ### `PROJECT_NAME`
 
-Sets the value of the `--project-name` flag supplied to `docker-compose`.
+Sets the value of the `--project-name` flag supplied to `docker compose`.
 This is useful when running multiple instances of Overleaf on one host, as each instance can have a different project name.
 
 - Default: overleaf

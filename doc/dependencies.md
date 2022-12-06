@@ -1,7 +1,7 @@
 # Dependencies
 
 This project requires a modern unix system as a base (such as Ubuntu Linux).
-It also requires `bash`, `docker`, and `docker-compose`. 
+It also requires `bash`, `docker`, and `compose`. 
 
 The `bin/doctor` script can be used to check for missing dependencies.
 

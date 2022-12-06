@@ -5,10 +5,10 @@
 The Overleaf Toolkit depends on the following programs:
 
 - bash
-- docker
-- docker-compose
+- [docker](https://www.docker.com/)
+- [compose](https://docs.docker.com/compose/)
 
-We recommend that you install the most recent version of docker and docker-compose that 
+We recommend that you install the most recent version of docker and compose that 
 are available on your system.
 
 
@@ -78,7 +78,7 @@ These are the three configuration files you will interact with:
 
 ## Starting Up
 
-The Overleaf Toolkit uses `docker-compose` to manage the overleaf docker containers. The toolkit provides a set of scripts which wrap `docker-compose`, and take care of most of the details for you.
+The Overleaf Toolkit uses `compose` to manage the overleaf docker containers. The toolkit provides a set of scripts which wrap the `docker compose` command and take care of most of the details for you.
 
 Let's start the docker services:
 
@@ -87,7 +87,7 @@ $ bin/up
 ```
 
 You should see some log output from the docker containers, indicating that the containers are running. 
-If you press `CTRL-C` at the terminal, the services will shut down. You can start them up again (without attaching to the log output) by running `bin/start`. More generally, you can run `bin/docker-compose` to control the `docker-compose` system directly, if you find that the convenience scripts don't cover your use-case.
+If you press `^C` (ctrl+c) at the terminal, the services will shut down. You can start them up again (without attaching to the log output) by running `bin/start`. More generally, you can run `bin/compose` to control the `compose` system directly, if you find that the convenience scripts don't cover your use-case.
 
 
 ## Create the first admin account
@@ -162,9 +162,9 @@ We should see some output similar to this:
     - docker
         - status: present
         - version info: Docker version 19.03.6, build 369ce74a3c
-    - docker-compose
+    - compose
         - status: present
-        - version info: docker-compose version 1.24.0, build 0aa59064
+        - version info: compose version 2.13.0, build 7171ad9b
     ...
 ====== Configuration ======
     ...
@@ -180,7 +180,7 @@ When you run into problems with your toolkit, you should first run the doctor sc
 
 ## Getting Help
 
-Users of the free Community Edition should [open an issue on github](https://github.com/overleaf/toolkit/issues). 
+Users of the free Community Edition should [open an issue on GitHub](https://github.com/overleaf/toolkit/issues). 
 
 Users of Server Pro should contact `support@overleaf.com` for assistance.
 

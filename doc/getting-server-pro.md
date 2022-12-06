@@ -19,7 +19,7 @@ Username: <sharelatex+your_key_name>
 Password: <your key>
 ```
 
-Then run `bin/docker-compose pull` to pull the image from the `quay.io` registry.
+Then run `bin/compose pull` to pull the image from the `quay.io` registry.
 
 
 ## Switching your installation to Server Pro 
