@@ -3,6 +3,7 @@
 ## 2023-02-28
 ### Added
 - Add variables for S3
+- Extend doctor script to flag incomplete S3 config
 
 ## 2022-08-16
 ### Added
