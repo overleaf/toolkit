@@ -15,3 +15,4 @@ services:
           SHARELATEX_REDIS_HOST: "${REDIS_HOST}"
           REDIS_HOST: "${REDIS_HOST}"
         env_file: ../config/variables.env
+        stop_grace_period: 60s
