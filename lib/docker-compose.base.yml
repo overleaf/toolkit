@@ -14,4 +14,9 @@ services:
           SHARELATEX_MONGO_URL: "${MONGO_URL}"
           SHARELATEX_REDIS_HOST: "${REDIS_HOST}"
           REDIS_HOST: "${REDIS_HOST}"
+          # Give children processes delay to timeout
+          KILL_PROCESS_TIMEOUT: 60
+          # Give all other processes (such as those which have been forked) delay to timeout
+          KILL_ALL_PROCESSES_TIMEOUT: 60
         env_file: ../config/variables.env
+        stop_grace_period: 60s
