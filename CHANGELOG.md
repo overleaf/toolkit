@@ -5,6 +5,26 @@
 - Add variables for S3
 - Extend doctor script to flag incomplete S3 config
 
+## 2023-02-10
+### Added
+- Increase SIGKILL timeout for docker container to enable graceful shutdown in version 3.5 onwards
+
+## 2023-01-11
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.4.0`.
+
+## 2022-11-15
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.3.2`.
+
+## 2022-10-13
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.3.0`.
+
+## 2022-09-22
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.2.2`.
+
 ## 2022-08-16
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.2.0`.
