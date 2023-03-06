@@ -254,6 +254,94 @@ function check_config_files() {
         if [[ "${TLS_PORT:-null}" != "null" ]]; then
           print_point 2 "TLS_PORT: $TLS_PORT"
         fi
+
+      elif [[ "$config_file" == "config/variables.env" ]]; then
+        print_point 1 "values"
+
+        # Load vars from the rc file
+        # shellcheck disable=SC1090
+        source "$TOOLKIT_ROOT/$config_file"
+
+        if [[ "${SHARELATEX_FILESTORE_BACKEND:-fs}" == "s3" ]]; then
+          print_point 2 "SHARELATEX_FILESTORE_BACKEND: s3"
+          if [[ "${SHARELATEX_FILESTORE_USER_FILES_BUCKET_NAME:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_FILESTORE_USER_FILES_BUCKET_NAME: $SHARELATEX_FILESTORE_USER_FILES_BUCKET_NAME"
+          else
+            add_warning "SHARELATEX_FILESTORE_USER_FILES_BUCKET_NAME is unset"
+          fi
+          if [[ "${SHARELATEX_FILESTORE_TEMPLATE_FILES_BUCKET_NAME:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_FILESTORE_TEMPLATE_FILES_BUCKET_NAME: $SHARELATEX_FILESTORE_TEMPLATE_FILES_BUCKET_NAME"
+          else
+            add_warning "SHARELATEX_FILESTORE_TEMPLATE_FILES_BUCKET_NAME is unset"
+          fi
+          if [[ "${SHARELATEX_FILESTORE_S3_ENDPOINT:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_FILESTORE_S3_ENDPOINT: [set here]"
+          else
+            print_point 2 "SHARELATEX_FILESTORE_S3_ENDPOINT: Using AWS S3"
+          fi
+          if [[ "${SHARELATEX_FILESTORE_S3_PATH_STYLE:-null}" == "true" ]]; then
+            print_point 2 "SHARELATEX_FILESTORE_S3_PATH_STYLE: true"
+          else
+            print_point 2 "SHARELATEX_FILESTORE_S3_PATH_STYLE: false"
+          fi
+          if [[ "${SHARELATEX_FILESTORE_S3_REGION:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_FILESTORE_S3_REGION: $SHARELATEX_FILESTORE_S3_REGION"
+          else
+            print_point 2 "SHARELATEX_FILESTORE_S3_REGION: <unset>"
+          fi
+          if [[ "${SHARELATEX_FILESTORE_S3_ACCESS_KEY_ID:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_FILESTORE_S3_ACCESS_KEY_ID: [set here]"
+          else
+            add_warning "SHARELATEX_FILESTORE_S3_ACCESS_KEY_ID is missing"
+          fi
+          if [[ "${SHARELATEX_FILESTORE_S3_SECRET_ACCESS_KEY:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_FILESTORE_S3_SECRET_ACCESS_KEY: [set here]"
+          else
+            add_warning "SHARELATEX_FILESTORE_S3_SECRET_ACCESS_KEY is missing"
+          fi
+        else
+          print_point 2 "SHARELATEX_FILESTORE_BACKEND: fs"
+        fi
+        if [[ "${SHARELATEX_HISTORY_BACKEND:-fs}" == "s3" ]]; then
+          print_point 2 "SHARELATEX_HISTORY_BACKEND: s3"
+          if [[ "${SHARELATEX_HISTORY_PROJECT_BLOBS_BUCKET:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_HISTORY_PROJECT_BLOBS_BUCKET: $SHARELATEX_HISTORY_PROJECT_BLOBS_BUCKET"
+          else
+            add_warning "SHARELATEX_HISTORY_PROJECT_BLOBS_BUCKET is unset"
+          fi
+          if [[ "${SHARELATEX_HISTORY_CHUNKS_BUCKET:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_HISTORY_CHUNKS_BUCKET: $SHARELATEX_HISTORY_CHUNKS_BUCKET"
+          else
+            add_warning "SHARELATEX_HISTORY_CHUNKS_BUCKET is unset"
+          fi
+          if [[ "${SHARELATEX_HISTORY_S3_ENDPOINT:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_HISTORY_S3_ENDPOINT: [set here]"
+          else
+            print_point 2 "SHARELATEX_HISTORY_S3_ENDPOINT: Using AWS S3"
+          fi
+          if [[ "${SHARELATEX_HISTORY_S3_PATH_STYLE:-null}" == "true" ]]; then
+            print_point 2 "SHARELATEX_HISTORY_S3_PATH_STYLE: true"
+          else
+            print_point 2 "SHARELATEX_HISTORY_S3_PATH_STYLE: false"
+          fi
+          if [[ "${SHARELATEX_HISTORY_S3_REGION:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_HISTORY_S3_REGION: $SHARELATEX_HISTORY_S3_REGION"
+          else
+            print_point 2 "SHARELATEX_HISTORY_S3_REGION: <unset>"
+          fi
+          if [[ "${SHARELATEX_HISTORY_S3_ACCESS_KEY_ID:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_HISTORY_S3_ACCESS_KEY_ID: [set here]"
+          else
+            add_warning "SHARELATEX_HISTORY_S3_ACCESS_KEY_ID is missing"
+          fi
+          if [[ "${SHARELATEX_HISTORY_S3_SECRET_ACCESS_KEY:-null}" != "null" ]]; then
+            print_point 2 "SHARELATEX_HISTORY_S3_SECRET_ACCESS_KEY: [set here]"
+          else
+            add_warning "SHARELATEX_HISTORY_S3_SECRET_ACCESS_KEY is missing"
+          fi
+        else
+          print_point 2 "SHARELATEX_HISTORY_BACKEND: fs"
+        fi
       fi
     fi
   done

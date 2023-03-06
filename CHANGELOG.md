@@ -1,5 +1,10 @@
 # Changelog
 
+## 2023-02-28
+### Added
+- Add variables for S3
+- Extend doctor script to flag incomplete S3 config
+
 ## 2022-08-16
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.2.0`.
