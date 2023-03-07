@@ -4,6 +4,7 @@ PROJECT_NAME=overleaf
 
 # Sharelatex container
 SHARELATEX_DATA_PATH=data/sharelatex
+IMAGE_NAME=sharelatex/sharelatex
 SERVER_PRO=false
 SHARELATEX_LISTEN_IP=127.0.0.1
 SHARELATEX_PORT=80
