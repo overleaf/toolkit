@@ -62,10 +62,11 @@ function __main__() {
   # Build up the flags to pass to docker-compose
   local project_name="${PROJECT_NAME:-overleaf}"
 
-  local image_name="${IMAGE_NAME:-sharelatex/sharelatex}"
+  local image_name="sharelatex/sharelatex"
   if [[ "${SERVER_PRO:-null}" == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   fi
+  image_name="${SHARELATEX_IMAGE_REPO:-${image_name}}"
 
   local full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
 
