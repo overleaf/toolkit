@@ -66,6 +66,7 @@ function __main__() {
   if [[ "${SERVER_PRO:-null}" == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   fi
+  image_name="${SHARELATEX_IMAGE_NAME:-${image_name}}"
 
   local full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
 
