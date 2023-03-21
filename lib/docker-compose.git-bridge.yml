@@ -1,0 +1,25 @@
+---
+version: '2.2'
+services:
+
+    git-bridge:
+        restart: always
+        image: "${GIT_BRIDGE_IMAGE}"
+        volumes:
+            - "${GIT_BRIDGE_DATA_PATH}:/tmp/wlgb"
+        container_name: git-bridge
+        ports:
+            - "8000:8000"
+        environment:
+          GIT_BRIDGE_API_BASE_URL: "http://sharelatex/api/v0"
+          GIT_BRIDGE_OAUTH2_SERVER: "http://sharelatex"
+          GIT_BRIDGE_POSTBACK_BASE_URL: "http://git-bridge:8000"
+        env_file:
+            - common.env
+            - ../config/variables.env
+        user: root
+        command: ["/server-pro-start.sh"]
+
+    sharelatex:
+      links:
+        - git-bridge

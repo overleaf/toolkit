@@ -15,28 +15,17 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
   exit 1
 fi
 
-RC_FILE="$TOOLKIT_ROOT/config/overleaf.rc"
-
 function __main__() {
-  local SHARELATEX_IMAGE_VERSION
-  SHARELATEX_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  local MONGO_IMAGE="mongo:4.0"
-  local REDIS_IMAGE="redis:5.0"
-  local NGINX_IMAGE="nginx:1.19-alpine"
-
-  local MONGO_URL="mongodb://mongo/sharelatex"
-  local REDIS_HOST="redis"
-  local REDIS_PORT="6379"
-
-  if [[ ! "$SHARELATEX_IMAGE_VERSION" \
+  local IMAGE_VERSION
+  IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
+  if [[ ! "$IMAGE_VERSION" \
           =~ ^[0-9]+\.[0-9]+\.[0-9]+(-RC)?$ ]]; then
-    echo "ERROR: invalid version '${SHARELATEX_IMAGE_VERSION}'"
+    echo "ERROR: invalid version '${IMAGE_VERSION}'"
     exit 1
   fi
 
   # Load vars from the rc file
-  # shellcheck disable=SC1090
-  source "$RC_FILE"
+  read_config
 
   # Select which docker-compose files to load
   local compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
@@ -49,41 +38,35 @@ function __main__() {
   if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   fi
-  if [[ "${NGINX_ENABLED:-false}" == "true" ]]; then
+  if [[ "${NGINX_ENABLED}" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
   fi
-
+  if [[ "${GIT_BRIDGE_ENABLED}" == "true" ]]; then
+    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
+    GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
+  fi
 
   # Include docker-compose.override.yml if it is present
   if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/config/docker-compose.override.yml")
   fi
 
-  # Build up the flags to pass to docker-compose
-  local project_name="${PROJECT_NAME:-overleaf}"
-
   local image_name="sharelatex/sharelatex"
-  if [[ "${SERVER_PRO:-null}" == "true" ]]; then
+  if [[ "${SERVER_PRO}" == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   fi
   image_name="${SHARELATEX_IMAGE_NAME:-${image_name}}"
 
-  local full_image_spec="$image_name:$SHARELATEX_IMAGE_VERSION"
+  local full_image_spec="$image_name:$IMAGE_VERSION"
 
   # Canonicalize data paths
   SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
-  
-  # users with old config/ content might not have NGINX_ENABLED in their
-  # overleaf.rc, this initialisation prevents an `unbound variable` error
-  if [ -z ${NGINX_ENABLED+x} ]; 
-  then 
-    NGINX_ENABLED="false"
-  fi
+  GIT_BRIDGE_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$GIT_BRIDGE_DATA_PATH")
 
-  if [ "${SHARELATEX_LISTEN_IP:-null}" == "null" ]; 
-  then 
+  if [ "${SHARELATEX_LISTEN_IP:-null}" == "null" ];
+  then
     echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0"
     SHARELATEX_LISTEN_IP="0.0.0.0"
   fi
@@ -103,10 +86,10 @@ function __main__() {
   if [[ "${RC_DEBUG:-null}" != "null" ]]; then
     echo ">>>>>>VARS>>>>>>"
     echo "$(set -o posix; set)" # print all vars
-    echo "IMAGE_VERSION=$SHARELATEX_IMAGE_VERSION"
+    echo "IMAGE_VERSION=$IMAGE_VERSION"
     echo "<<<<<<<<<<<<<<<<"
     echo ">>>>COMPOSE-ARGS>>>>"
-    echo "-p $project_name"
+    echo "-p $PROJECT_NAME"
     echo "${compose_file_flags[@]}"
     echo "$@"
     echo "<<<<<<<<<<<<<<<<<<<<"
@@ -114,6 +97,9 @@ function __main__() {
 
   # Export vars for use in docker-compose files
   export DOCKER_SOCKET_PATH
+  export GIT_BRIDGE_DATA_PATH
+  export GIT_BRIDGE_ENABLED
+  export GIT_BRIDGE_IMAGE
   export IMAGE="$full_image_spec"
   export MONGO_DATA_PATH
   export MONGO_IMAGE
@@ -135,7 +121,14 @@ function __main__() {
   export TLS_PRIVATE_KEY_PATH
 
   # shellcheck disable=SC2068
-  exec docker-compose -p "$project_name" ${compose_file_flags[@]} "$@"
+  exec docker-compose -p "$PROJECT_NAME" ${compose_file_flags[@]} "$@"
+}
+
+function read_config () {
+  # shellcheck source=../lib/default.rc
+  source "$TOOLKIT_ROOT/lib/default.rc"
+  # shellcheck source=/dev/null
+  source "$TOOLKIT_ROOT/config/overleaf.rc"
 }
 
 __main__ "$@"

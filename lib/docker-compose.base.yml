@@ -11,8 +11,12 @@ services:
         ports:
             - "${SHARELATEX_LISTEN_IP:-127.0.0.1}:${SHARELATEX_PORT:-80}:80"
         environment:
+          GIT_BRIDGE_ENABLED: "${GIT_BRIDGE_ENABLED}"
+          REDIS_HOST: "${REDIS_HOST}"
           SHARELATEX_MONGO_URL: "${MONGO_URL}"
           SHARELATEX_REDIS_HOST: "${REDIS_HOST}"
-          REDIS_HOST: "${REDIS_HOST}"
-        env_file: ../config/variables.env
+          V1_HISTORY_URL: "http://sharelatex:3100/api"
+        env_file:
+            - common.env
+            - ../config/variables.env
         stop_grace_period: 60s
