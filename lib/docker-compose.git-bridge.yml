@@ -8,8 +8,8 @@ services:
         volumes:
             - "${GIT_BRIDGE_DATA_PATH}:/tmp/wlgb"
         container_name: git-bridge
-        ports:
-            - "8000:8000"
+        expose:
+            - "8000"
         environment:
           GIT_BRIDGE_API_BASE_URL: "http://sharelatex/api/v0"
           GIT_BRIDGE_OAUTH2_SERVER: "http://sharelatex"
