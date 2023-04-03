@@ -18,11 +18,11 @@ fi
 function __main__() {
   local IMAGE_VERSION
   IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  if [[ ! "$IMAGE_VERSION" \
-          =~ ^[0-9]+\.[0-9]+\.[0-9]+(-RC)?$ ]]; then
+  if [[ ! "$IMAGE_VERSION" =~ ^([0-9]+)\.[0-9]+\.[0-9]+(-RC)?$ ]]; then
     echo "ERROR: invalid version '${IMAGE_VERSION}'"
     exit 1
   fi
+  local IMAGE_VERSION_MAJOR=${BASH_REMATCH[1]}
 
   # Load vars from the rc file
   read_config
@@ -41,9 +41,14 @@ function __main__() {
   if [[ "${NGINX_ENABLED}" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
   fi
-  if [[ "${GIT_BRIDGE_ENABLED}" == "true" ]]; then
-    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
-    GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
+  if [[ $GIT_BRIDGE_ENABLED = "true" ]]; then
+    if [[ $SERVER_PRO = "true" && $IMAGE_VERSION_MAJOR -ge 4 ]]; then
+      compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
+      GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
+    else
+      # Git bridge is only supported in Server Pro 4+
+      GIT_BRIDGE_ENABLED=false
+    fi
   fi
 
   # Include docker-compose.override.yml if it is present
