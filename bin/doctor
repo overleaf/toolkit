@@ -255,6 +255,8 @@ function check_config_files() {
           print_point 2 "TLS_PORT: $TLS_PORT"
         fi
 
+        print_point 2 "GIT_BRIDGE_ENABLED: ${GIT_BRIDGE_ENABLED:-null}"
+
       elif [[ "$config_file" == "config/variables.env" ]]; then
         print_point 1 "values"
 
@@ -341,6 +343,14 @@ function check_config_files() {
           fi
         else
           print_point 2 "SHARELATEX_HISTORY_BACKEND: fs"
+        fi
+
+        if [[ -n ${GIT_BRIDGE_ENABLED:-} ]]; then
+          if [[ -n ${GIT_BRIDGE_OAUTH2_CLIENT_SECRET:-} ]]; then
+            print_point 2 "GIT_BRIDGE_OAUTH2_CLIENT_SECRET: [set here]"
+          else
+            add_warning "GIT_BRIDGE_OAUTH2_CLIENT_SECRET is missing in variables.env"
+          fi
         fi
       fi
     fi
