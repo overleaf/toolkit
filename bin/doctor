@@ -345,7 +345,7 @@ function check_config_files() {
           print_point 2 "SHARELATEX_HISTORY_BACKEND: fs"
         fi
 
-        if [[ -n ${GIT_BRIDGE_ENABLED:-} ]]; then
+        if [[ ${GIT_BRIDGE_ENABLED:-false} = true ]]; then
           if [[ -n ${GIT_BRIDGE_OAUTH2_CLIENT_SECRET:-} ]]; then
             print_point 2 "GIT_BRIDGE_OAUTH2_CLIENT_SECRET: [set here]"
           else

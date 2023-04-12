@@ -27,7 +27,7 @@ REDIS_DATA_PATH=data/redis
 #
 # If you enable git bridge, you must also set GIT_BRIDGE_OAUTH2_CLIENT_SECRET
 # in variables.env
-GIT_BRIDGE_ENABLED=true
+GIT_BRIDGE_ENABLED=false
 GIT_BRIDGE_DATA_PATH=data/git-bridge
 
 # TLS proxy configuration (optional)
