@@ -51,7 +51,7 @@ function set_up_tls_proxy() {
   echo "Generate example self-signed TLS cert"
   mkdir -p config/nginx/certs
   cp "$TOOLKIT_ROOT/lib/config-seed/nginx.conf" "$TOOLKIT_ROOT/config/nginx/"
-  openssl req -new -nodes -keyout "$PRIVATE_KEY" -out "$CERT_SIGN_REQ" -batch
+  openssl req -new -nodes -keyout "$PRIVATE_KEY" -out "$CERT_SIGN_REQ" -subj "/CN=example.com" -batch
   chmod 600 "$PRIVATE_KEY"
   openssl x509 -req -days 365 -in "$CERT_SIGN_REQ"  -signkey "$PRIVATE_KEY" -out "$CERT"
 }
