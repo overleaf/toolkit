@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck source-path=..
 
 set -euo pipefail
 
@@ -15,14 +16,11 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
   exit 1
 fi
 
+source "$TOOLKIT_ROOT/lib/shared-functions.sh"
+
 function __main__() {
-  local IMAGE_VERSION
-  IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  if [[ ! "$IMAGE_VERSION" =~ ^([0-9]+)\.[0-9]+\.[0-9]+(-RC)?$ ]]; then
-    echo "ERROR: invalid version '${IMAGE_VERSION}'"
-    exit 1
-  fi
-  local IMAGE_VERSION_MAJOR=${BASH_REMATCH[1]}
+  # Load the Overleaf version
+  read_image_version
 
   # Load vars from the rc file
   read_config
@@ -34,6 +32,11 @@ function __main__() {
   fi
   if [[ "$MONGO_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
+    if [[ "${IMAGE_VERSION_MAJOR}" -ge 4 ]]; then
+      MONGO_ARGS="--replSet overleaf"
+    else
+      MONGO_ARGS=""
+    fi
   fi
   if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
@@ -106,6 +109,7 @@ function __main__() {
   export GIT_BRIDGE_ENABLED
   export GIT_BRIDGE_IMAGE
   export IMAGE="$full_image_spec"
+  export MONGO_ARGS
   export MONGO_DATA_PATH
   export MONGO_IMAGE
   export MONGO_URL
@@ -127,13 +131,6 @@ function __main__() {
 
   # shellcheck disable=SC2068
   exec docker-compose -p "$PROJECT_NAME" ${compose_file_flags[@]} "$@"
-}
-
-function read_config () {
-  # shellcheck source=../lib/default.rc
-  source "$TOOLKIT_ROOT/lib/default.rc"
-  # shellcheck source=/dev/null
-  source "$TOOLKIT_ROOT/config/overleaf.rc"
 }
 
 __main__ "$@"

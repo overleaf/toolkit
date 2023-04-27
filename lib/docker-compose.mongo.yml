@@ -5,6 +5,7 @@ services:
     mongo:
         restart: always
         image: "${MONGO_IMAGE}"
+        command: "${MONGO_ARGS}"
         container_name: mongo
         volumes:
             - "${MONGO_DATA_PATH}:/data/db"
