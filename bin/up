@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck source-path=..
 
 set -euo pipefail
 
@@ -14,6 +15,8 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
   echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
   exit 1
 fi
+
+source "$TOOLKIT_ROOT/lib/shared-functions.sh"
 
 function usage() {
   echo "Usage: bin/up [FLAGS...]"
@@ -32,12 +35,31 @@ function check_config() {
   fi
 }
 
+function initiate_mongo_replica_set() {
+  echo "Initiating Mongo replica set..."
+  "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
+  "$TOOLKIT_ROOT/bin/docker-compose" exec -T mongo sh -c '
+    while ! mongo --eval "db.version()" > /dev/null; do
+      echo "Waiting for Mongo..."
+      sleep 1
+    done
+    mongo --eval "rs.initiate({ _id: \"overleaf\", members: [ { _id: 0, host: \"mongo:27017\" } ] })" > /dev/null'
+}
+
 function __main__() {
   if [[ "${1:-null}" == "help" ]] || [[ "${1:-null}" == "--help" ]]; then
     usage
     exit
   fi
+
   check_config
+  read_config
+  read_image_version
+
+  if [[ "$MONGO_ENABLED" == "true" && "$IMAGE_VERSION_MAJOR" -ge 4 ]]; then
+    initiate_mongo_replica_set
+  fi
+
   exec "$TOOLKIT_ROOT/bin/docker-compose" up "$@"
 }
 
