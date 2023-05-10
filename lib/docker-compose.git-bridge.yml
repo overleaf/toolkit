@@ -6,14 +6,15 @@ services:
         restart: always
         image: "${GIT_BRIDGE_IMAGE}"
         volumes:
-            - "${GIT_BRIDGE_DATA_PATH}:/tmp/wlgb"
+            - "${GIT_BRIDGE_DATA_PATH}:/data/git-bridge"
         container_name: git-bridge
         expose:
             - "8000"
         environment:
-          GIT_BRIDGE_API_BASE_URL: "http://sharelatex/api/v0"
-          GIT_BRIDGE_OAUTH2_SERVER: "http://sharelatex"
-          GIT_BRIDGE_POSTBACK_BASE_URL: "http://git-bridge:8000"
+            GIT_BRIDGE_API_BASE_URL: "http://sharelatex/api/v0"
+            GIT_BRIDGE_OAUTH2_SERVER: "http://sharelatex"
+            GIT_BRIDGE_POSTBACK_BASE_URL: "http://git-bridge:8000"
+            GIT_BRIDGE_ROOT_DIR: "/data/git-bridge"
         env_file:
             - common.env
             - ../config/variables.env
