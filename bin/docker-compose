@@ -75,7 +75,7 @@ function __main__() {
 
   if [ "${SHARELATEX_LISTEN_IP:-null}" == "null" ];
   then
-    echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0"
+    echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0" >&2
     SHARELATEX_LISTEN_IP="0.0.0.0"
   fi
 

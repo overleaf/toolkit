@@ -15,70 +15,124 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
   exit 1
 fi
 
-DEFAULT_LINES=20
+DEFAULT_TAIL_LINES=20
+ALL_SERVICES=(chat clsi contacts docstore document-updater filestore git-bridge \
+    mongo notifications real-time redis spelling tags track-changes web)
 
 function usage() {
-    echo "Usage: bin/logs [OPTIONS] [SERVICES...]"
-    echo ""
-    echo "Services:  chat, clsi, contacts, docstore, document-updater,"
-    echo "           filestore, notifications, real-time, spelling,"
-    echo "           tags, track-changes, web"
-    echo ""
-    echo "Options:"
-    echo "  -f              follow log output"
-    echo "  -n {number}     number of lines to print (default $DEFAULT_LINES)"
-    echo ""
-    echo "Examples:"
-    echo ""
-    echo "    bin/logs -n 50 web clsi"
-    echo ""
-    echo "    bin/logs -f web"
-    echo ""
-    echo "    bin/logs -f web chat docstore"
-    echo ""
-    echo "    bin/logs -n 100 -f filestore "
-    echo ""
-    echo "    bin/logs -f"
+    echo "Usage: bin/logs [OPTIONS] [SERVICES...]
+
+Services:  chat, clsi, contacts, docstore, document-updater, filestore,
+           git-bridge, mongo, notifications, real-time, redis, spelling,
+           tags, track-changes, web
+
+Options:
+  -f              follow log output
+  -n {number}     number of lines to print (default $DEFAULT_TAIL_LINES)
+                  use '-n all' to show all log lines
+
+Examples:
+
+    bin/logs -n 50 web clsi
+
+    bin/logs -n all web > web.log
+
+    bin/logs -f web
+
+    bin/logs -f web chat docstore
+
+    bin/logs -n 100 -f filestore
+
+    bin/logs -f"
 }
 
-function __main__() {
-    local LINES="$DEFAULT_LINES"
-    local FOLLOW_FLAG=""
+function parse_args() {
+    TAIL_LINES=$DEFAULT_TAIL_LINES
+    FOLLOW=false
+
+    if [[ $# -gt 0 && $1 =~ ^help|-h|--help$ ]]; then
+        usage && exit
+    fi
 
     while getopts "fn:" opt
     do
         case $opt in
-            f ) FOLLOW_FLAG="-f" ;;
-            n ) LINES="${OPTARG}" ;;
-            \?) usage && exit ;;
+            f) FOLLOW=true ;;
+            n) TAIL_LINES="$OPTARG" ;;
+            \?) usage && exit 1;;
         esac
     done
-    shift $(( OPTIND -1 ))
+    shift $(( OPTIND - 1 ))
 
-    if [[ "${1:-null}" == "null" ]] \
-        || [[ "${1:-null}" == "help" ]] \
-        || [[ "${1:-null}" == "--help" ]] ; then
-        usage && exit
+    if [[ $# -eq 0 ]]; then
+        SERVICES=("${ALL_SERVICES[@]}")
+    else
+        SERVICES=("$@")
     fi
-
-    local log_base_path="/var/log/sharelatex"
-
-    declare -a services
-    IFS=" " read -r -a services <<< "$*"
-
-    local path_spec="$log_base_path/*.log"
-
-    if [[ ! "0" == "${#services[@]}" ]]; then
-        local log_paths=()
-        for service in "${services[@]}"; do
-            log_paths+=("$log_base_path/${service}.log")
-        done
-        path_spec="${log_paths[*]}"
-    fi
-
-    local bash_exec_command_string="tail $FOLLOW_FLAG -n $LINES $path_spec"
-
-    exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$bash_exec_command_string"
 }
 
-__main__ "$@"
+function docker_compose() {
+    # Ignore stderr and errors when calling docker compose
+    "$TOOLKIT_ROOT/bin/docker-compose" "$@" 2>/dev/null || true
+}
+
+function show_logs() {
+    trap 'kill -INT $(jobs -p)' INT
+
+    for service in "${SERVICES[@]}"; do
+        if [[ $service =~ ^(git-bridge|mongo|redis)$ ]]; then
+            show_compose_logs "$service" &
+        else
+            show_sharelatex_logs "$service" &
+        fi
+    done
+
+    wait
+}
+
+function show_compose_logs() {
+    local service="$1"
+    local flags=(--no-color)
+
+    if [[ $FOLLOW == "true" ]]; then
+        flags+=(-f)
+    fi
+    if [[ $TAIL_LINES != "all" ]]; then
+        flags+=(--tail="$TAIL_LINES")
+    fi
+    if [[ ${#SERVICES[@]} -eq 1 ]]; then
+        # Do not add a service prefix when outputting logs from a single
+        # service
+        flags+=(--no-log-prefix)
+    fi
+
+    docker_compose logs "${flags[@]}" "$service"
+}
+
+function show_sharelatex_logs() {
+    local service="$1"
+    local log_path="/var/log/sharelatex/$service.log"
+    local flags=()
+
+    if [[ $FOLLOW == "true" ]]; then
+        flags+=(-f)
+    fi
+    if [[ $TAIL_LINES = "all" ]]; then
+        flags+=(-n "+1")
+    else
+        flags+=(-n "$TAIL_LINES")
+    fi
+
+    local logs_cmd="[[ -f $log_path ]] && tail ${flags[*]} $log_path"
+    if [[ ${#SERVICES[@]} -gt 1 ]]; then
+        # Roughly reproduce the service prefix format from docker compose
+        local padded_service
+        padded_service=$(printf "%-13s" "$service")
+        logs_cmd="$logs_cmd | sed -u -e 's/^/$padded_service | /'"
+    fi
+
+    docker_compose exec -T sharelatex bash -c "$logs_cmd"
+}
+
+parse_args "$@"
+show_logs
