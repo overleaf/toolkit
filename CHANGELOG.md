@@ -1,5 +1,38 @@
 # Changelog
 
+## 2023-05-16
+### Added
+- Use Docker Compose v2 by default. Fall back to Docker Compose v1 if v2 is
+  unavailable.
+### Fixed
+- Propagate the `REDIS_PORT` variable to the sharelatex container
+
+## 2023-05-15
+### Added
+- Support listing container logs with /bin/logs command
+- "bin/logs -n all" shows all logs for a given service
+
+## 2023-05-11
+### Added
+- Change the location of the git-bridge data directory to /data/git-bridge
+  inside the container
+
+## 2023-05-01
+### Added
+- Start Mongo in a replica set by default
+
+## 2023-04-14
+### Fixed
+- Fix openssl invocation on OS X
+
+## 2023-04-13
+### Fixed
+- Ensure git bridge is disabled by default
+
+## 2023-04-10
+### Added
+- Git bridge support in Server Pro 4.x
+
 ## 2023-03-21
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `3.5.5`.
