@@ -159,12 +159,22 @@ function print_debug_info() {
   fi
 }
 
-function run_docker_compose() {
-  exec docker-compose -p "$PROJECT_NAME" "${DOCKER_COMPOSE_FLAGS[@]}" "$@"
+function docker_compose() {
+  local flags=(-p "$PROJECT_NAME" "${DOCKER_COMPOSE_FLAGS[@]}" "$@")
+  if docker compose version >/dev/null 2>&1; then
+    # Docker compose v2 is available
+    exec docker compose "${flags[@]}"
+  elif command -v docker-compose >/dev/null; then
+    # Fall back to docker-compose v1
+    exec docker-compose "${flags[@]}"
+  else
+    echo "ERROR: Could not find Docker Compose." >&2
+    exit 1
+  fi
 }
 
 read_image_version
 read_config
 build_environment
 print_debug_info "$@"
-run_docker_compose "$@"
+docker_compose "$@"
