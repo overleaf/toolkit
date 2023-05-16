@@ -26,12 +26,12 @@ function __main__() {
   read_config
 
   # Select which docker-compose files to load
-  local compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
+  local compose_file_flags=(-f "$TOOLKIT_ROOT/lib/docker-compose.base.yml")
   if [[ $REDIS_ENABLED == "true" ]]; then
-    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.redis.yml")
+    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.redis.yml")
   fi
   if [[ $MONGO_ENABLED == "true" ]]; then
-    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
+    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
     if [[ $IMAGE_VERSION_MAJOR -ge 4 ]]; then
       MONGO_ARGS="--replSet overleaf"
     else
@@ -39,14 +39,14 @@ function __main__() {
     fi
   fi
   if [[ $SIBLING_CONTAINERS_ENABLED == "true" ]]; then
-    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
+    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   fi
   if [[ $NGINX_ENABLED == "true" ]]; then
-    compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
+    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
   fi
   if [[ $GIT_BRIDGE_ENABLED == "true" ]]; then
     if [[ $SERVER_PRO = "true" && $IMAGE_VERSION_MAJOR -ge 4 ]]; then
-      compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
+      compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
       GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
     else
       # Git bridge is only supported in Server Pro 4+
@@ -56,7 +56,7 @@ function __main__() {
 
   # Include docker-compose.override.yml if it is present
   if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
-    compose_file_flags+=("-f $TOOLKIT_ROOT/config/docker-compose.override.yml")
+    compose_file_flags+=(-f "$TOOLKIT_ROOT/config/docker-compose.override.yml")
   fi
 
   local image_name="sharelatex/sharelatex"
@@ -129,8 +129,7 @@ function __main__() {
   export TLS_PORT
   export TLS_PRIVATE_KEY_PATH
 
-  # shellcheck disable=SC2068
-  exec docker-compose -p "$PROJECT_NAME" ${compose_file_flags[@]} "$@"
+  exec docker-compose -p "$PROJECT_NAME" "${compose_file_flags[@]}" "$@"
 }
 
 __main__ "$@"
