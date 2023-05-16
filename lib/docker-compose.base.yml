@@ -15,6 +15,7 @@ services:
           GIT_BRIDGE_HOST: "git-bridge"
           GIT_BRIDGE_PORT: "8000"
           REDIS_HOST: "${REDIS_HOST}"
+          REDIS_PORT: "${REDIS_PORT}"
           SHARELATEX_MONGO_URL: "${MONGO_URL}"
           SHARELATEX_REDIS_HOST: "${REDIS_HOST}"
           V1_HISTORY_URL: "http://sharelatex:3100/api"

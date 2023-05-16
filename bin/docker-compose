@@ -18,79 +18,134 @@ fi
 
 source "$TOOLKIT_ROOT/lib/shared-functions.sh"
 
-function __main__() {
-  # Load the Overleaf version
-  read_image_version
+function build_environment() {
+  canonicalize_data_paths
+  set_base_vars
 
-  # Load vars from the rc file
-  read_config
-
-  # Select which docker-compose files to load
-  local compose_file_flags=(-f "$TOOLKIT_ROOT/lib/docker-compose.base.yml")
   if [[ $REDIS_ENABLED == "true" ]]; then
-    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.redis.yml")
+    set_redis_vars
   fi
   if [[ $MONGO_ENABLED == "true" ]]; then
-    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
-    if [[ $IMAGE_VERSION_MAJOR -ge 4 ]]; then
-      MONGO_ARGS="--replSet overleaf"
-    else
-      MONGO_ARGS=""
-    fi
+    set_mongo_vars
   fi
   if [[ $SIBLING_CONTAINERS_ENABLED == "true" ]]; then
-    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
+    set_sibling_containers_vars
   fi
   if [[ $NGINX_ENABLED == "true" ]]; then
-    compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
+    set_nginx_vars
   fi
   if [[ $GIT_BRIDGE_ENABLED == "true" ]]; then
-    if [[ $SERVER_PRO = "true" && $IMAGE_VERSION_MAJOR -ge 4 ]]; then
-      compose_file_flags+=(-f "$TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
-      GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
-    else
-      # Git bridge is only supported in Server Pro 4+
-      GIT_BRIDGE_ENABLED=false
-    fi
+    set_git_bridge_vars
   fi
 
   # Include docker-compose.override.yml if it is present
   if [[ -f "$TOOLKIT_ROOT/config/docker-compose.override.yml" ]]; then
-    compose_file_flags+=(-f "$TOOLKIT_ROOT/config/docker-compose.override.yml")
+    DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/config/docker-compose.override.yml")
   fi
+}
 
-  local image_name="sharelatex/sharelatex"
-  if [[ $SERVER_PRO == "true" ]]; then
-    image_name="quay.io/sharelatex/sharelatex-pro"
-  fi
-  image_name="${SHARELATEX_IMAGE_NAME:-${image_name}}"
-
-  local full_image_spec="$image_name:$IMAGE_VERSION"
-
-  # Canonicalize data paths
+function canonicalize_data_paths() {
   SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
   GIT_BRIDGE_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$GIT_BRIDGE_DATA_PATH")
+}
+
+# Set environment variables for docker-compose.base.yml
+function set_base_vars() {
+  DOCKER_COMPOSE_FLAGS=(-f "$TOOLKIT_ROOT/lib/docker-compose.base.yml")
+
+  local image_name
+  if [[ -n ${SHARELATEX_IMAGE_NAME:-} ]]; then
+    image_name="$SHARELATEX_IMAGE_NAME"
+  elif [[ $SERVER_PRO == "true" ]]; then
+    image_name="quay.io/sharelatex/sharelatex-pro"
+  else
+    image_name="sharelatex/sharelatex"
+  fi
+  export IMAGE="$image_name:$IMAGE_VERSION"
 
   if [[ ${SHARELATEX_LISTEN_IP:-null} == "null" ]];
   then
     echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0" >&2
     SHARELATEX_LISTEN_IP="0.0.0.0"
   fi
+  export SHARELATEX_LISTEN_IP
 
-  if [[ $NGINX_ENABLED == "true" ]]; then
-    if [[ -n ${TLS_PRIVATE_KEY_PATH-} ]]; then
-      TLS_PRIVATE_KEY_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_PRIVATE_KEY_PATH")
-    fi
-    if [[ -n ${TLS_CERTIFICATE_PATH-} ]]; then
-      TLS_CERTIFICATE_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_CERTIFICATE_PATH")
-    fi
-    if [[ -n ${NGINX_CONFIG_PATH-} ]]; then
-      NGINX_CONFIG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$NGINX_CONFIG_PATH")
-    fi
+  if [[ $SERVER_PRO != "true" || $IMAGE_VERSION_MAJOR -lt 4 ]]; then
+    # Force git bridge to be disabled if not ServerPro >= 4
+    GIT_BRIDGE_ENABLED=false
   fi
-  # Print debug info
+
+  export GIT_BRIDGE_ENABLED
+  export MONGO_URL
+  export REDIS_HOST
+  export REDIS_PORT
+  export SHARELATEX_DATA_PATH
+  export SHARELATEX_PORT
+}
+
+# Set environment variables for docker-compose.redis.yml
+function set_redis_vars() {
+  DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.redis.yml")
+  export REDIS_IMAGE
+  export REDIS_DATA_PATH
+}
+
+# Set environment variables for docker-compose.mongo.yml
+function set_mongo_vars() {
+  DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
+
+  if [[ $MONGO_ENABLED == "true" && $IMAGE_VERSION_MAJOR -ge 4 ]]; then
+    MONGO_ARGS="--replSet overleaf"
+  else
+    MONGO_ARGS=""
+  fi
+  export MONGO_ARGS
+
+  export MONGO_DATA_PATH
+  export MONGO_IMAGE
+}
+
+# Set environment variables for docker-compose.sibling-containers.yml
+function set_sibling_containers_vars() {
+  DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
+  export DOCKER_SOCKET_PATH
+  export SHARELATEX_DATA_PATH
+}
+
+# Set environment variables for docker-compose.nginx.yml
+function set_nginx_vars() {
+  DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
+
+  if [[ -n ${TLS_PRIVATE_KEY_PATH-} ]]; then
+    TLS_PRIVATE_KEY_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_PRIVATE_KEY_PATH")
+  fi
+  if [[ -n ${TLS_CERTIFICATE_PATH-} ]]; then
+    TLS_CERTIFICATE_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_CERTIFICATE_PATH")
+  fi
+  if [[ -n ${NGINX_CONFIG_PATH-} ]]; then
+    NGINX_CONFIG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$NGINX_CONFIG_PATH")
+  fi
+
+  export NGINX_CONFIG_PATH
+  export NGINX_IMAGE
+  export NGINX_HTTP_PORT
+  export NGINX_HTTP_LISTEN_IP
+  export NGINX_TLS_LISTEN_IP
+  export TLS_CERTIFICATE_PATH
+  export TLS_PORT
+  export TLS_PRIVATE_KEY_PATH
+}
+
+# Set environment variables for docker-compose.git-bridge.yml
+function set_git_bridge_vars() {
+  DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
+  export GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
+  export GIT_BRIDGE_DATA_PATH
+}
+
+function print_debug_info() {
   if [[ ${RC_DEBUG:-null} != "null" ]]; then
     echo ">>>>>>VARS>>>>>>"
     echo "$(set -o posix; set)" # print all vars
@@ -98,38 +153,18 @@ function __main__() {
     echo "<<<<<<<<<<<<<<<<"
     echo ">>>>COMPOSE-ARGS>>>>"
     echo "-p $PROJECT_NAME"
-    echo "${compose_file_flags[@]}"
+    echo "${DOCKER_COMPOSE_FLAGS[@]}"
     echo "$@"
     echo "<<<<<<<<<<<<<<<<<<<<"
   fi
-
-  # Export vars for use in docker-compose files
-  export DOCKER_SOCKET_PATH
-  export GIT_BRIDGE_DATA_PATH
-  export GIT_BRIDGE_ENABLED
-  export GIT_BRIDGE_IMAGE
-  export IMAGE="$full_image_spec"
-  export MONGO_ARGS
-  export MONGO_DATA_PATH
-  export MONGO_IMAGE
-  export MONGO_URL
-  export NGINX_CONFIG_PATH
-  export NGINX_IMAGE
-  export NGINX_HTTP_PORT
-  export NGINX_HTTP_LISTEN_IP
-  export NGINX_TLS_LISTEN_IP
-  export REDIS_DATA_PATH
-  export REDIS_HOST
-  export REDIS_IMAGE
-  export REDIS_PORT
-  export SHARELATEX_DATA_PATH
-  export SHARELATEX_PORT
-  export SHARELATEX_LISTEN_IP
-  export TLS_CERTIFICATE_PATH
-  export TLS_PORT
-  export TLS_PRIVATE_KEY_PATH
-
-  exec docker-compose -p "$PROJECT_NAME" "${compose_file_flags[@]}" "$@"
 }
 
-__main__ "$@"
+function run_docker_compose() {
+  exec docker-compose -p "$PROJECT_NAME" "${DOCKER_COMPOSE_FLAGS[@]}" "$@"
+}
+
+read_image_version
+read_config
+build_environment
+print_debug_info "$@"
+run_docker_compose "$@"
