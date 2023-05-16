@@ -27,24 +27,24 @@ function __main__() {
 
   # Select which docker-compose files to load
   local compose_file_flags=("-f $TOOLKIT_ROOT/lib/docker-compose.base.yml")
-  if [[ "$REDIS_ENABLED" == "true" ]]; then
+  if [[ $REDIS_ENABLED == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.redis.yml")
   fi
-  if [[ "$MONGO_ENABLED" == "true" ]]; then
+  if [[ $MONGO_ENABLED == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.mongo.yml")
-    if [[ "${IMAGE_VERSION_MAJOR}" -ge 4 ]]; then
+    if [[ $IMAGE_VERSION_MAJOR -ge 4 ]]; then
       MONGO_ARGS="--replSet overleaf"
     else
       MONGO_ARGS=""
     fi
   fi
-  if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+  if [[ $SIBLING_CONTAINERS_ENABLED == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   fi
-  if [[ "${NGINX_ENABLED}" == "true" ]]; then
+  if [[ $NGINX_ENABLED == "true" ]]; then
     compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.nginx.yml")
   fi
-  if [[ $GIT_BRIDGE_ENABLED = "true" ]]; then
+  if [[ $GIT_BRIDGE_ENABLED == "true" ]]; then
     if [[ $SERVER_PRO = "true" && $IMAGE_VERSION_MAJOR -ge 4 ]]; then
       compose_file_flags+=("-f $TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
       GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
@@ -60,7 +60,7 @@ function __main__() {
   fi
 
   local image_name="sharelatex/sharelatex"
-  if [[ "${SERVER_PRO}" == "true" ]]; then
+  if [[ $SERVER_PRO == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   fi
   image_name="${SHARELATEX_IMAGE_NAME:-${image_name}}"
@@ -73,25 +73,25 @@ function __main__() {
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
   GIT_BRIDGE_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$GIT_BRIDGE_DATA_PATH")
 
-  if [ "${SHARELATEX_LISTEN_IP:-null}" == "null" ];
+  if [[ ${SHARELATEX_LISTEN_IP:-null} == "null" ]];
   then
     echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0" >&2
     SHARELATEX_LISTEN_IP="0.0.0.0"
   fi
 
-  if [[ "$NGINX_ENABLED" == "true" ]]; then
-    if [[ -n "${TLS_PRIVATE_KEY_PATH-}" ]]; then
+  if [[ $NGINX_ENABLED == "true" ]]; then
+    if [[ -n ${TLS_PRIVATE_KEY_PATH-} ]]; then
       TLS_PRIVATE_KEY_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_PRIVATE_KEY_PATH")
     fi
-    if [[ -n "${TLS_CERTIFICATE_PATH-}" ]]; then
+    if [[ -n ${TLS_CERTIFICATE_PATH-} ]]; then
       TLS_CERTIFICATE_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$TLS_CERTIFICATE_PATH")
     fi
-    if [[ -n "${NGINX_CONFIG_PATH-}" ]]; then
+    if [[ -n ${NGINX_CONFIG_PATH-} ]]; then
       NGINX_CONFIG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$NGINX_CONFIG_PATH")
     fi
   fi
   # Print debug info
-  if [[ "${RC_DEBUG:-null}" != "null" ]]; then
+  if [[ ${RC_DEBUG:-null} != "null" ]]; then
     echo ">>>>>>VARS>>>>>>"
     echo "$(set -o posix; set)" # print all vars
     echo "IMAGE_VERSION=$IMAGE_VERSION"
