@@ -9,8 +9,8 @@
 
 ## 2023-05-15
 ### Added
-- Support listing container logs with /bin/logs command
-- "bin/logs -n all" shows all logs for a given service
+- Support listing container logs with `bin/logs` command
+- `bin/logs -n all` shows all logs for a given service
 
 ## 2023-05-11
 ### Added
