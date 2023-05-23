@@ -19,6 +19,8 @@ DEFAULT_TAIL_LINES=20
 ALL_SERVICES=(chat clsi contacts docstore document-updater filestore git-bridge \
     mongo notifications real-time redis spelling tags track-changes web)
 
+LOGS_PID_FILE="/tmp/toolkit-logs.$$.pid"
+
 function usage() {
     echo "Usage: bin/logs [OPTIONS] [SERVICES...]
 
@@ -76,12 +78,26 @@ function docker_compose() {
     "$TOOLKIT_ROOT/bin/docker-compose" "$@" 2>/dev/null || true
 }
 
+function kill_background_jobs() {
+    if [[ ${#COMPOSE_LOGS_PIDS[@]} -gt 0 ]]; then
+        # Kill "docker compose logs" processes
+        kill "${COMPOSE_LOGS_PIDS[@]}" 2>/dev/null || true
+    fi
+
+    # Kill "tail -f" processes started inside the sharelatex container
+    docker_compose exec -T sharelatex bash -c "
+        [[ -f $LOGS_PID_FILE ]] && kill \$(cat $LOGS_PID_FILE) 2>/dev/null
+        rm -f $LOGS_PID_FILE"
+}
+
 function show_logs() {
-    trap 'kill -INT $(jobs -p)' INT
+    COMPOSE_LOGS_PIDS=()
+    trap kill_background_jobs EXIT
 
     for service in "${SERVICES[@]}"; do
         if [[ $service =~ ^(git-bridge|mongo|redis)$ ]]; then
             show_compose_logs "$service" &
+            COMPOSE_LOGS_PIDS+=($!)
         else
             show_sharelatex_logs "$service" &
         fi
@@ -123,7 +139,7 @@ function show_sharelatex_logs() {
         flags+=(-n "$TAIL_LINES")
     fi
 
-    local logs_cmd="[[ -f $log_path ]] && tail ${flags[*]} $log_path"
+    local logs_cmd="[[ -f $log_path ]] && echo \$\$ >> $LOGS_PID_FILE && tail --pid=\$\$ ${flags[*]} $log_path"
     if [[ ${#SERVICES[@]} -gt 1 ]]; then
         # Roughly reproduce the service prefix format from docker compose
         local padded_service

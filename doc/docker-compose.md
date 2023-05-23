@@ -1,8 +1,8 @@
-# Working with Docker-Compose Services
+# Working with Docker Compose Services
 
 The Overleaf Toolkit runs Overleaf inside a docker container, plus the
 supporting databases (MongoDB and Redis), in their own containers. All of this
-is orchestrated with `docker-compose`.
+is orchestrated with `docker compose`.
 
 Note: for legacy reasons, the main Overleaf container is called `sharelatex`,
 and is based on the `sharelatex/sharelatex` docker image. This is because the
@@ -15,12 +15,12 @@ Overleaf naming scheme.
 
 ## The `bin/docker-compose` Wrapper
 
-The `bin/docker-compose` script is a wrapper around `docker-compose`. It
+The `bin/docker-compose` script is a wrapper around `docker compose`. It
 loads configuration from the `config/` directory, before invoking
-`docker-compose` with whatever arguments were passed to the script.
+`docker compose` with whatever arguments were passed to the script.
 
 You can treat `bin/docker-compose` as a transparent wrapper for the
-`docker-compose` program installed on your machine.
+`docker compose` program installed on your machine.
 
 For example, we can check which containers are running with the following:
 

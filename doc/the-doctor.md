@@ -38,10 +38,10 @@ You will see some output like this:
         - version info: 5.0.17(1)-release
     - docker
         - status: present
-        - version info: Docker version 19.03.6, build 369ce74a3c
-    - docker-compose
+        - version info: Docker version 23.0.6, build 369ce74a3c
+    - docker compose
         - status: present
-        - version info: docker-compose version 1.24.0, build 0aa59064
+        - version info: Docker Compose version v2.17.3
     - realpath
         - status: present
         - version info: realpath (GNU coreutils) 8.30

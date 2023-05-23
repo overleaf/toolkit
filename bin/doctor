@@ -113,7 +113,6 @@ function check_dependencies() {
   declare -a binaries=(
     bash
     docker
-    docker-compose
     realpath
     perl
     awk
@@ -123,6 +122,16 @@ function check_dependencies() {
   for binary in "${binaries[@]}"; do
     check_for_binary "$binary"
   done
+
+  if docker compose version > /dev/null 2>&1; then
+    print_point 1 "docker compose"
+    print_point 2 "status: present"
+    print_point 2 "version info: $(docker compose version)"
+  elif command -v docker-compose > /dev/null; then
+    check_for_binary docker-compose
+  else
+    add_warning "Docker Compose not found"
+  fi
 }
 
 function check_docker_daemon() {
