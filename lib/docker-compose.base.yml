@@ -20,6 +20,5 @@ services:
           SHARELATEX_REDIS_HOST: "${REDIS_HOST}"
           V1_HISTORY_URL: "http://sharelatex:3100/api"
         env_file:
-            - common.env
             - ../config/variables.env
         stop_grace_period: 60s
