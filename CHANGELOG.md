@@ -1,5 +1,9 @@
 # Changelog
 
+## 2023-05-30
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.1`.
+
 ## 2023-05-16
 ### Added
 - Use Docker Compose v2 by default. Fall back to Docker Compose v1 if v2 is
