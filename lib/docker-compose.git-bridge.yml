@@ -15,6 +15,7 @@ services:
             GIT_BRIDGE_OAUTH2_SERVER: "http://sharelatex"
             GIT_BRIDGE_POSTBACK_BASE_URL: "http://git-bridge:8000"
             GIT_BRIDGE_ROOT_DIR: "/data/git-bridge"
+            LOG_LEVEL: "${GIT_BRIDGE_LOG_LEVEL}"
         env_file:
             - ../config/variables.env
         user: root
