@@ -24,6 +24,7 @@ REDIS_DATA_PATH=data/redis
 # Git bridge configuration
 GIT_BRIDGE_ENABLED=false
 GIT_BRIDGE_DATA_PATH=data/git-bridge
+GIT_BRIDGE_LOG_LEVEL=INFO
 
 # TLS proxy configuration
 NGINX_ENABLED=false

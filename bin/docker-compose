@@ -140,9 +140,16 @@ function set_nginx_vars() {
 
 # Set environment variables for docker-compose.git-bridge.yml
 function set_git_bridge_vars() {
+  local image_name
+  if [[ -n ${GIT_BRIDGE_IMAGE:-} ]]; then
+    image_name="$GIT_BRIDGE_IMAGE"
+  else
+    image_name="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
+  fi
   DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
-  export GIT_BRIDGE_IMAGE="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
+  export GIT_BRIDGE_IMAGE=${image_name}
   export GIT_BRIDGE_DATA_PATH
+  export GIT_BRIDGE_LOG_LEVEL
 }
 
 function print_debug_info() {
