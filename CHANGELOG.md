@@ -1,5 +1,9 @@
 # Changelog
 
+## 2023-07-20
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.5`.
+
 ## 2023-07-14
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.4`.
