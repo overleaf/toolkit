@@ -1,5 +1,11 @@
 # Changelog
 
+## 2023-07-28
+### Added
+- Added support for a version suffix of `-with-texlive-full` to be able to load a custom image with TeXLive full backed in.
+
+  Server Pro customers: We strongly recommend using [Sandboxed compiles](https://github.com/overleaf/toolkit/blob/master/doc/sandboxed-compiles.md) instead of running a custom TeXLive full installation. Please reach out to us if you have any questions or need help with setting up Sandboxed compiles in Server Pro.
+
 ## 2023-07-20
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.5`.
