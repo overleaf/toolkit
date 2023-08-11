@@ -1,5 +1,15 @@
 # Changelog
 
+## 2023-08-11
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.6`.
+
+  From the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes--4.x.x#server-pro-406):
+
+  - Bring back the [History Migration Cleanup Script](https://github.com/overleaf/overleaf/wiki/Full-Project-History-Migration#clean-up-legacy-history-data) with a fix to free up mongo storage space.
+
+    > :warning: We advise customers to re-run the script again as per the documentation.
+
 ## 2023-07-28
 ### Added
 - Added support for a version suffix of `-with-texlive-full` to be able to load a custom image with TeXLive full backed in.
