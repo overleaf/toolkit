@@ -1,5 +1,10 @@
 # Changelog
 
+## 2023-09-18
+
+### Added
+- Prepare for addition of web-api service in upcoming Server Pro 4.2 release.
+
 ## 2023-09-06
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.1.1`.

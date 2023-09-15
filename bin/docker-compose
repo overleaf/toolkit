@@ -77,6 +77,13 @@ function set_base_vars() {
     GIT_BRIDGE_ENABLED=false
   fi
 
+  HAS_WEB_API=false
+  if [[ $IMAGE_VERSION_MAJOR -gt 4 ]]; then
+    HAS_WEB_API=true
+  elif [[ $IMAGE_VERSION_MAJOR == 4 && $IMAGE_VERSION_MINOR -ge 2 ]]; then
+    HAS_WEB_API=true
+  fi
+
   export GIT_BRIDGE_ENABLED
   export MONGO_URL
   export REDIS_HOST
@@ -146,7 +153,14 @@ function set_git_bridge_vars() {
   else
     image_name="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
   fi
+
+  GIT_BRIDGE_API_BASE_URL="http://sharelatex/api/v0/"
+  if [[ $HAS_WEB_API == "true" ]]; then
+    GIT_BRIDGE_API_BASE_URL="http://sharelatex:3000/api/v0/"
+  fi
+
   DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
+  export GIT_BRIDGE_API_BASE_URL
   export GIT_BRIDGE_IMAGE=${image_name}
   export GIT_BRIDGE_DATA_PATH
   export GIT_BRIDGE_LOG_LEVEL
