@@ -3,6 +3,7 @@
 ## 2023-10-24
 ### Added
 - `bin/logs`: Pick up logs from history-v1 and project-history
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.1.4`.
 
 ## 2023-10-06
 ### Added
