@@ -17,7 +17,8 @@ fi
 
 DEFAULT_TAIL_LINES=20
 ALL_SERVICES=(chat clsi contacts docstore document-updater filestore git-bridge \
-    mongo notifications real-time redis spelling tags track-changes web)
+    mongo notifications real-time redis spelling tags track-changes web \
+    history-v1 project-history)
 
 LOGS_PID_FILE="/tmp/toolkit-logs.$$.pid"
 
@@ -26,7 +27,7 @@ function usage() {
 
 Services:  chat, clsi, contacts, docstore, document-updater, filestore,
            git-bridge, mongo, notifications, real-time, redis, spelling,
-           tags, track-changes, web
+           tags, track-changes, web, history-v1, project-history
 
 Options:
   -f              follow log output
