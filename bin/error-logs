@@ -20,7 +20,7 @@ function usage() {
     echo ""
     echo "Services:  chat, clsi, contacts, docstore, document-updater,"
     echo "           filestore, notifications, real-time, spelling,"
-    echo "           tags, track-changes, web"
+    echo "           tags, track-changes, web, project-history, history-v1"
     echo ""
     echo "Options:"
     echo "  -f              follow log output"
