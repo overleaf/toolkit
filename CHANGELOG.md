@@ -3,6 +3,7 @@
 ## 2023-11-02
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.1.6`.
+  The previous release `4.1.5` is an important bug fix release for the history system, see the full [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes--4.x.x#server-pro-415).
 
 ## 2023-10-24
 ### Added
