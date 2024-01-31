@@ -23,8 +23,6 @@ function usage() {
   echo ""
   echo "Updates config/variables.env, adding new environment variables"
   echo ""
-  echo "This program will pass any extra flags to docker compose,"
-  echo "for example: 'bin/up -d' will run in detached mode"
 }
 
 function __main__() {
