@@ -45,7 +45,7 @@ function check_sharelatex_env_vars() {
     echo "WARNING: some environment variables defined in config/variables.env" 
     echo "contain '$invalid_prefix' in their name"
     echo "Starting with Overleaf CE and Server Pro 5.0.0 the environment variables" 
-    echo "use the prefix 'OVERLEAF_'  instead of '_SHARELATEX'."
+    echo "use the prefix 'OVERLEAF_'  instead of 'SHARELATEX_'."
     echo "Please check your config/version and config/variables.env files"
     prompt "Do you want to continue?"
   fi
