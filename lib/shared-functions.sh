@@ -17,3 +17,11 @@ function read_image_version() {
   IMAGE_VERSION_MAJOR=${BASH_REMATCH[1]}
   IMAGE_VERSION_MINOR=${BASH_REMATCH[2]}
 }
+
+prompt() {
+    read -p "$1 (y/n): " choice
+    if [[ ! "$choice" =~ [Yy] ]]; then
+        echo "Exiting."
+        exit 1
+    fi
+}
