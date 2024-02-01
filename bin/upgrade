@@ -161,8 +161,9 @@ function handle_image_upgrade() {
   if [[ "$IMAGE_VERSION_MAJOR" -le 4 && "$SEED_IMAGE_VERSION_MAJOR" -ge 5 ]]; then 
     echo "Renaming environment variables in config/variables.env"
     prompt "Proceed with the environment variable renaming?"
-    echo "Backing up old variables.env file to config/__old-variables.env"
-    cp "$TOOLKIT_ROOT/config/variables.env" "$TOOLKIT_ROOT/config/__old-variables.env"
+    local timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
+    echo "Backing up old variables.env file to config/__old-variables.env.$timestamp"
+    cp "$TOOLKIT_ROOT/config/variables.env" "$TOOLKIT_ROOT/config/__old-variables.env.$timestamp"
     sed -i "s/SHARELATEX_/OVERLEAF_/g" "$TOOLKIT_ROOT/config/variables.env"
   fi
 
