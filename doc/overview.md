@@ -64,4 +64,4 @@ The `bin/` directory contains a collection of scripts, which will be your main i
 
 ### Documentation
 
-You will find all of the documentation you need in the `doc/` directory. This documentation can also be viewed online, here: https://github.com/overleaf/toolkit/tree/master/doc/_index.md
+You will find all the documentation you need in the `doc/` directory. This documentation can also be viewed online, here: https://github.com/overleaf/toolkit/tree/master/doc/
