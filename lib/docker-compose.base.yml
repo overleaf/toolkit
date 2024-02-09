@@ -7,9 +7,9 @@ services:
         image: "${IMAGE}"
         container_name: sharelatex
         volumes:
-            - "${SHARELATEX_DATA_PATH}:/var/lib/sharelatex"
+            - "${OVERLEAF_DATA_PATH}:/var/lib/sharelatex"
         ports:
-            - "${SHARELATEX_LISTEN_IP:-127.0.0.1}:${SHARELATEX_PORT:-80}:80"
+            - "${OVERLEAF_LISTEN_IP:-127.0.0.1}:${OVERLEAF_PORT:-80}:80"
         environment:
           GIT_BRIDGE_ENABLED: "${GIT_BRIDGE_ENABLED}"
           GIT_BRIDGE_HOST: "git-bridge"

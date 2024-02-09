@@ -185,11 +185,11 @@ function check_config_files() {
         source "$TOOLKIT_ROOT/$config_file"
 
         # Check some vars from the RC file
-        if [[ "${SHARELATEX_DATA_PATH:-null}" != "null" ]]; then
-          print_point 2 "SHARELATEX_DATA_PATH: $SHARELATEX_DATA_PATH"
+        if [[ "${OVERLEAF_DATA_PATH:-null}" != "null" ]]; then
+          print_point 2 "OVERLEAF_DATA_PATH: $OVERLEAF_DATA_PATH"
         else
-          print_point 2 "SHARELATEX_DATA_PATH: MISSING !"
-          add_warning "rc file, SHARELATEX_DATA_PATH not set"
+          print_point 2 "OVERLEAF_DATA_PATH: MISSING !"
+          add_warning "rc file, OVERLEAF_DATA_PATH not set"
         fi
 
         print_point 2 "SERVER_PRO: $SERVER_PRO"
@@ -209,11 +209,11 @@ function check_config_files() {
           fi
           print_point 2 "SIBLING_CONTAINERS_ENABLED: $SIBLING_CONTAINERS_ENABLED"
         fi
-        if [[ "${SHARELATEX_LISTEN_IP:-null}" != "null" ]]; then
-          print_point 2 "SHARELATEX_LISTEN_IP: ${SHARELATEX_LISTEN_IP}"
+        if [[ "${OVERLEAF_LISTEN_IP:-null}" != "null" ]]; then
+          print_point 2 "OVERLEAF_LISTEN_IP: ${OVERLEAF_LISTEN_IP}"
         fi
-        if [[ "${SHARELATEX_PORT:-null}" != "null" ]]; then
-          print_point 2 "SHARELATEX_PORT: ${SHARELATEX_PORT}"
+        if [[ "${OVERLEAF_PORT:-null}" != "null" ]]; then
+          print_point 2 "OVERLEAF_PORT: ${OVERLEAF_PORT}"
         fi
 
         print_point 2 "MONGO_ENABLED: $MONGO_ENABLED"

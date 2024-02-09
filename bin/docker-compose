@@ -45,7 +45,7 @@ function build_environment() {
 }
 
 function canonicalize_data_paths() {
-  SHARELATEX_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$SHARELATEX_DATA_PATH")
+  OVERLEAF_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$OVERLEAF_DATA_PATH")
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
   GIT_BRIDGE_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$GIT_BRIDGE_DATA_PATH")
@@ -56,8 +56,8 @@ function set_base_vars() {
   DOCKER_COMPOSE_FLAGS=(-f "$TOOLKIT_ROOT/lib/docker-compose.base.yml")
 
   local image_name
-  if [[ -n ${SHARELATEX_IMAGE_NAME:-} ]]; then
-    image_name="$SHARELATEX_IMAGE_NAME"
+  if [[ -n ${OVERLEAF_IMAGE_NAME:-} ]]; then
+    image_name="$OVERLEAF_IMAGE_NAME"
   elif [[ $SERVER_PRO == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   else
@@ -65,12 +65,12 @@ function set_base_vars() {
   fi
   export IMAGE="$image_name:$IMAGE_VERSION"
 
-  if [[ ${SHARELATEX_LISTEN_IP:-null} == "null" ]];
+  if [[ ${OVERLEAF_LISTEN_IP:-null} == "null" ]];
   then
-    echo "WARNING: the value of SHARELATEX_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0" >&2
-    SHARELATEX_LISTEN_IP="0.0.0.0"
+    echo "WARNING: the value of OVERLEAF_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0" >&2
+    OVERLEAF_LISTEN_IP="0.0.0.0"
   fi
-  export SHARELATEX_LISTEN_IP
+  export OVERLEAF_LISTEN_IP
 
   if [[ $SERVER_PRO != "true" || $IMAGE_VERSION_MAJOR -lt 4 ]]; then
     # Force git bridge to be disabled if not ServerPro >= 4
@@ -88,8 +88,8 @@ function set_base_vars() {
   export MONGO_URL
   export REDIS_HOST
   export REDIS_PORT
-  export SHARELATEX_DATA_PATH
-  export SHARELATEX_PORT
+  export OVERLEAF_DATA_PATH
+  export OVERLEAF_PORT
 }
 
 # Set environment variables for docker-compose.redis.yml
@@ -118,7 +118,7 @@ function set_mongo_vars() {
 function set_sibling_containers_vars() {
   DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   export DOCKER_SOCKET_PATH
-  export SHARELATEX_DATA_PATH
+  export OVERLEAF_DATA_PATH
 }
 
 # Set environment variables for docker-compose.nginx.yml
