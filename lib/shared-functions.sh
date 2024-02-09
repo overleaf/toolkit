@@ -25,3 +25,11 @@ prompt() {
         exit 1
     fi
 }
+
+rebrand_sharelatex_env_variables() {
+  local timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
+  echo "Creating backup file config/__old-variables.env.$timestamp"
+  cp config/variables.env config/__old-variables.env.$timestamp
+  echo "Replacing 'SHARELATEX_' with 'OVERLEAF_' in config/variables.env"
+  sed -i "s/SHARELATEX_/OVERLEAF_/g" "$TOOLKIT_ROOT/config/variables.env"
+}
