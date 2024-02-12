@@ -1,5 +1,13 @@
 # Changelog
 
+## TODO
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.0`.
+
+  :warning: This is a major release. Please check the [release notes](TODO) for details.
+
+- Rebranded 'SHARELATEX_' variables to 'OVERLEAF_'
+
 ## 2024-01-12
 ### Added
 - Updated Mongo version from 4.4 to 5.0 in config seed. Documentation on Mongo updates can be found [here](https://github.com/overleaf/overleaf/wiki/Updating-Mongo-version).
