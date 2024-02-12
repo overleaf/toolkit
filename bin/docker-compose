@@ -84,12 +84,18 @@ function set_base_vars() {
     HAS_WEB_API=true
   fi
 
+  OVERLEAF_IN_CONTAINER_DATA_PATH=/var/lib/overleaf
+  if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
+    OVERLEAF_IN_CONTAINER_DATA_PATH=/var/lib/sharelatex
+  fi
+
   export GIT_BRIDGE_ENABLED
   export MONGO_URL
   export REDIS_HOST
   export REDIS_PORT
   export OVERLEAF_DATA_PATH
   export OVERLEAF_PORT
+  export OVERLEAF_IN_CONTAINER_DATA_PATH
 }
 
 # Set environment variables for docker-compose.redis.yml

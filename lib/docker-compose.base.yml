@@ -7,7 +7,7 @@ services:
         image: "${IMAGE}"
         container_name: sharelatex
         volumes:
-            - "${OVERLEAF_DATA_PATH}:/var/lib/sharelatex"
+            - "${OVERLEAF_DATA_PATH}:${OVERLEAF_IN_CONTAINER_DATA_PATH}"
         ports:
             - "${OVERLEAF_LISTEN_IP:-127.0.0.1}:${OVERLEAF_PORT:-80}:80"
         environment:
