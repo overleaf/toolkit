@@ -7,10 +7,21 @@ Run `bin/init --tls` to initialise local configuration with NGINX proxy configur
 A default config for NGINX is provided in `config/nginx/nginx.conf` which may be customised to your requirements. The path to the config file can be changed with the `NGINX_CONFIG_PATH` variable.
 
 In order for Overleaf to run correctly behind the proxy, the following variables should be uncommented in `config/variables.env`
+
+Since Overleaf CE/Server Pro `5.x`:
+
+```
+OVERLEAF_BEHIND_PROXY=true
+OVERLEAF_SECURE_COOKIE=true
+```
+
+For Overleaf CE/Server Pro `4.x` and older versions:
+
 ```
 SHARELATEX_BEHIND_PROXY=true
 SHARELATEX_SECURE_COOKIE=true
 ```
+
 Add the following section to your `config/overleaf.rc` file if it is not there already:
 ```
 # TLS proxy configuration (optional)
