@@ -21,7 +21,7 @@ source "$TOOLKIT_ROOT/lib/shared-functions.sh"
 function usage() {
   echo "Usage: bin/update-env"
   echo ""
-  echo "Updates config/variables.env, adding new environment variables"
+  echo "Updates config/variables.env and config/overleaf.rc, adding new environment variables"
   echo ""
 }
 
@@ -32,11 +32,12 @@ function __main__() {
   fi
 
   # read_image_version
-  echo "This script will update your config/variables.env."
+  echo "This script will update your config/variables.env and config/overleaf.rc."
   echo "We recommend backing up your config with bin/backup-config."
   prompt "Do you want to continue?"
 
-  rebrand_sharelatex_env_variables
+  rebrand_sharelatex_env_variables 'variables.env'
+  rebrand_sharelatex_env_variables 'overleaf.rc'
 
   echo "Done."
 }

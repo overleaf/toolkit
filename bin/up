@@ -41,12 +41,15 @@ function check_sharelatex_env_vars() {
     invalid_prefix="OVERLEAF_"
   fi
 
-  if grep -q "$invalid_prefix" "$TOOLKIT_ROOT/config/variables.env"; then
+  local env_occurrences=$(grep -o "$invalid_prefix" "$TOOLKIT_ROOT/config/variables.env" | wc -l | sed 's/ //g')
+  local rc_occurrences=$(grep -o "$invalid_prefix" "$TOOLKIT_ROOT/config/overleaf.rc" | wc -l | sed 's/ //g')
+
+   if [ "$env_occurrences" -gt 0 ] || [ "$rc_occurrences" -gt 0 ]; then
     echo "WARNING: some environment variables defined in config/variables.env" 
-    echo "contain '$invalid_prefix' in their name"
+    echo "or config/overleaf.rc contain '$invalid_prefix' in their name"
     echo "Starting with Overleaf CE and Server Pro 5.0.0 the environment variables" 
     echo "use the prefix 'OVERLEAF_'  instead of 'SHARELATEX_'."
-    echo "Please check your config/version and config/variables.env files"
+    echo "Please check your config/version, config/variables.env and config/overleaf.rc files"
     prompt "Do you want to continue?"
   fi
 }

@@ -159,9 +159,10 @@ function handle_image_upgrade() {
   cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/version"
 
   if [[ "$IMAGE_VERSION_MAJOR" -le 4 && "$SEED_IMAGE_VERSION_MAJOR" -ge 5 ]]; then 
-    echo "Renaming environment variables in config/variables.env"
+    echo "Renaming environment variables in config/variables.env and config/overleaf.rc"
     prompt "Proceed with the environment variable renaming?"
-    rebrand_sharelatex_env_variables
+    rebrand_sharelatex_env_variables 'variables.env'
+    rebrand_sharelatex_env_variables 'overleaf.rc'
   fi
 
   ## Maybe offer to start services again
