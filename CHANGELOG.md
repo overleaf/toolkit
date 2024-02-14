@@ -1,5 +1,11 @@
 # Changelog
 
+## 2024-02-14
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.2.2`.
+
+  :warning: This is a security release. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes--4.x.x#server-pro-422) for details.
+
 ## 2024-01-12
 ### Added
 - Updated Mongo version from 4.4 to 5.0 in config seed. Documentation on Mongo updates can be found [here](https://github.com/overleaf/overleaf/wiki/Updating-Mongo-version).
