@@ -120,7 +120,7 @@ function handle_image_upgrade() {
 
   local docker_compose_override_path="$TOOLKIT_ROOT/config/docker-compose.override.yml"
   if [ -f "$docker_compose_override_path" ]; then
-     if grep -E '^\s*image: sharelatex/sharelatex.*' "$docker_compose_override_path"; then
+     if grep -q -E '^\s*image: sharelatex/sharelatex.*' "$docker_compose_override_path"; then
         echo "WARNING: you are using a customized docker image, the server may not run on the latest version post upgrade."
         echo "* If you have followed the guide 'Upgrading TexLive', please remove and recreate the modified image."
         echo "* Remove the image: 'docker rm sharelatex/sharelatex:with-texlive-full'"
