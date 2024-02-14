@@ -35,6 +35,22 @@ function check_config() {
   fi
 }
 
+function check_sharelatex_env_vars() {
+  local invalid_prefix="SHARELATEX_"
+  if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
+    invalid_prefix="OVERLEAF_"
+  fi
+
+  if grep -q "$invalid_prefix" "$TOOLKIT_ROOT/config/variables.env"; then
+    echo "WARNING: some environment variables defined in config/variables.env" 
+    echo "contain '$invalid_prefix' in their name"
+    echo "Starting with Overleaf CE and Server Pro 5.0.0 the environment variables" 
+    echo "use the prefix 'OVERLEAF_'  instead of 'SHARELATEX_'."
+    echo "Please check your config/version and config/variables.env files"
+    prompt "Do you want to continue?"
+  fi
+}
+
 function initiate_mongo_replica_set() {
   echo "Initiating Mongo replica set..."
   "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
@@ -52,9 +68,10 @@ function __main__() {
     exit
   fi
 
-  check_config
-  read_config
   read_image_version
+  check_config
+  check_sharelatex_env_vars
+  read_config
 
   if [[ "$MONGO_ENABLED" == "true" && "$IMAGE_VERSION_MAJOR" -ge 4 ]]; then
     initiate_mongo_replica_set

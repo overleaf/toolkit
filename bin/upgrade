@@ -15,6 +15,8 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
   exit 1
 fi
 
+source "$TOOLKIT_ROOT/lib/shared-functions.sh"
+
 function usage() {
   echo "Usage: bin/upgrade"
   echo ""
@@ -87,22 +89,27 @@ function show_changes() {
   echo "----------"
 }
 
-function handle_image_upgrade() {
-  local user_image_version
-  user_image_version="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  local seed_image_version
-  seed_image_version="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
+function read_seed_image_version() {
+  SEED_IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/lib/config-seed/version")"
+  if [[ ! "$SEED_IMAGE_VERSION" =~ ^([0-9]+)\.([0-9]+)\.[0-9]+(-RC[0-9]*)?(-with-texlive-full)?$ ]]; then
+    echo "ERROR: invalid config-seed/version '${SEED_IMAGE_VERSION}'"
+    exit 1
+  fi
+  SEED_IMAGE_VERSION_MAJOR=${BASH_REMATCH[1]}
+  SEED_IMAGE_VERSION_MINOR=${BASH_REMATCH[2]}
+}
 
-  if [[ ! "$seed_image_version" > "$user_image_version" ]]; then
+function handle_image_upgrade() {
+  if [[ ! "$SEED_IMAGE_VERSION" > "$IMAGE_VERSION" ]]; then
     echo "No change to docker image version"
     return 0
   fi
 
-  echo "New docker image version available ($seed_image_version)"
-  echo "Current image version is '$user_image_version' (from config/version)"
+  echo "New docker image version available ($SEED_IMAGE_VERSION)"
+  echo "Current image version is '$IMAGE_VERSION' (from config/version)"
 
-  local user_image_major_version="$(echo "$user_image_version" | awk -F. '{print $1}')"
-  local seed_image_major_version="$(echo "$seed_image_version" | awk -F. '{print $1}')"
+  local user_image_major_version="$(echo "$IMAGE_VERSION" | awk -F. '{print $1}')"
+  local seed_image_major_version="$(echo "$SEED_IMAGE_VERSION" | awk -F. '{print $1}')"
   if [[ "$seed_image_major_version" > "$user_image_major_version" ]]; then
     echo "WARNING: this is a major version update, please check the Release Notes for breaking changes before proceeding:"
     echo "* https://github.com/overleaf/overleaf/wiki#release-notes"
@@ -112,11 +119,11 @@ function handle_image_upgrade() {
   read -r -p "Upgrade image? [y/n] " should_upgrade
 
   if [[ ! "$should_upgrade" =~ [Yy] ]]; then
-    echo "Keeping image version '$user_image_version'"
+    echo "Keeping image version '$IMAGE_VERSION'"
     return 0
   fi
 
-  echo "Upgrading config/version from $user_image_version to $seed_image_version"
+  echo "Upgrading config/version from $IMAGE_VERSION to $SEED_IMAGE_VERSION"
 
   ## Offer to stop docker services
   local services_stopped="false"
@@ -148,8 +155,14 @@ function handle_image_upgrade() {
   ## Set the new image version
   echo "Backing up old version file to config/__old-version"
   cp "$TOOLKIT_ROOT/config/version" "$TOOLKIT_ROOT/config/__old-version"
-  echo "Over-writing config/version with $seed_image_version"
+  echo "Over-writing config/version with $SEED_IMAGE_VERSION"
   cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/version"
+
+  if [[ "$IMAGE_VERSION_MAJOR" -le 4 && "$SEED_IMAGE_VERSION_MAJOR" -ge 5 ]]; then 
+    echo "Renaming environment variables in config/variables.env"
+    prompt "Proceed with the environment variable renaming?"
+    rebrand_sharelatex_env_variables
+  fi
 
   ## Maybe offer to start services again
   if [[ "${services_stopped:-null}" == "true" ]]; then
@@ -202,8 +215,13 @@ function __main__() {
     || [[ "${1:-null}" == "--help" ]] ; then
     usage && exit
   fi
+
   handle_git_update
+
+  read_seed_image_version
+  read_image_version
   handle_image_upgrade
+
   echo "Done"
   exit 0
 }
