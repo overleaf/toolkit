@@ -60,7 +60,7 @@ You will see some output like this:
 - config/overleaf.rc
     - status: present
     - values
-        - SHARELATEX_DATA_PATH: data/sharelatex
+        - OVERLEAF_DATA_PATH: data/sharelatex
         - SERVER_PRO: false
         - MONGO_ENABLED: true
         - REDIS_ENABLED: true
@@ -110,7 +110,7 @@ The `Configuration` section contains information about the files in the `config/
 - config/overleaf.rc
     - status: present
     - values
-        - SHARELATEX_DATA_PATH: /tmp/sharelatex 
+        - OVERLEAF_DATA_PATH: /tmp/sharelatex 
         - SERVER_PRO: false
         - MONGO_ENABLED: false
         - REDIS_ENABLED: true
@@ -120,7 +120,7 @@ The `Configuration` section contains information about the files in the `config/
 
 The above example shows a few problems:
 
-- The `SHARELATEX_DATA_PATH` variable is set to `/tmp/sharelatex`, which is probably not a safe place to put important data
+- The `OVERLEAF_DATA_PATH` variable is set to `/tmp/sharelatex`, which is probably not a safe place to put important data
 - The `MONGO_ENABLED` variable is set to `false`, so the toolkit will not provision it's own MongoDB database. In this case, we had better be sure to set `MONGO_URL` to point to a MongoDB database managed outside of the toolkit
 - the `config/variables.env` file is missing
 
@@ -133,7 +133,7 @@ The `Warnings` section shows a summary of problems discovered by the doctor scri
 ```
 ====== Warnings ======
 - configuration file variables.env not found
-- rc file, SHARELATEX_DATA_PATH not set
+- rc file, OVERLEAF_DATA_PATH not set
 ====== End =======
 ```
 
