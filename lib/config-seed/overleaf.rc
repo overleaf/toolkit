@@ -3,12 +3,12 @@
 PROJECT_NAME=overleaf
 
 # Sharelatex container
-# Uncomment the SHARELATEX_IMAGE_NAME variable to use a user-defined image.
-# SHARELATEX_IMAGE_NAME=sharelatex/sharelatex
-SHARELATEX_DATA_PATH=data/sharelatex
+# Uncomment the OVERLEAF_IMAGE_NAME variable to use a user-defined image.
+# OVERLEAF_IMAGE_NAME=sharelatex/sharelatex
+OVERLEAF_DATA_PATH=data/sharelatex
 SERVER_PRO=false
-SHARELATEX_LISTEN_IP=127.0.0.1
-SHARELATEX_PORT=80
+OVERLEAF_LISTEN_IP=127.0.0.1
+OVERLEAF_PORT=80
 
 # Sibling Containers
 SIBLING_CONTAINERS_ENABLED=false
