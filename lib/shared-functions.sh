@@ -27,18 +27,19 @@ prompt() {
 }
 
 rebrand_sharelatex_env_variables() {
+  local filename=$1
   set +o pipefail
-  sharelatex_occurrences=$(grep -o "SHARELATEX_" "$TOOLKIT_ROOT/config/variables.env" | wc -l | sed 's/ //g')
+  sharelatex_occurrences=$(grep -o "SHARELATEX_" "$TOOLKIT_ROOT/config/$filename" | wc -l | sed 's/ //g')
   set -o pipefail
   if [ "$sharelatex_occurrences" -gt 0 ]; then
-    echo "Found $sharelatex_occurrences lines with SHARELATEX_"
+    echo "Found $sharelatex_occurrences lines with SHARELATEX_ in $filename"
     local timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
-    echo "Creating backup file config/__old-variables.env.$timestamp"
-    cp config/variables.env config/__old-variables.env.$timestamp
-    echo "Replacing 'SHARELATEX_' with 'OVERLEAF_' in config/variables.env"
-    sed -i "s/SHARELATEX_/OVERLEAF_/g" "$TOOLKIT_ROOT/config/variables.env"
-    echo "Updated $sharelatex_occurrences lines in $TOOLKIT_ROOT/config/variables.env"
+    echo "Creating backup file config/__old-$filename.$timestamp"
+    cp config/$filename config/__old-$filename.$timestamp
+    echo "Replacing 'SHARELATEX_' with 'OVERLEAF_' in config/$filename"
+    sed -i "s/SHARELATEX_/OVERLEAF_/g" "$TOOLKIT_ROOT/config/$filename"
+    echo "Updated $sharelatex_occurrences lines in $TOOLKIT_ROOT/config/$filename"
   else
-    echo "No 'SHARELATEX_' ocurrences found in config/variables.env"
+    echo "No 'SHARELATEX_' ocurrences found in config/$filename"
   fi
 }
