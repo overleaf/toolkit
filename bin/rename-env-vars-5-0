@@ -19,7 +19,7 @@ fi
 source "$TOOLKIT_ROOT/lib/shared-functions.sh"
 
 function usage() {
-  echo "Usage: bin/update-env-vars-5-0"
+  echo "Usage: bin/rename-env-vars-5-0"
   echo ""
   echo "Updates config/variables.env to ensure variables are renamed from 'SHARELATEX_' to 'OVERLEAF_'"
   echo ""
