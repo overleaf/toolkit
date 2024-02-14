@@ -36,17 +36,34 @@ function check_config() {
 }
 
 function check_sharelatex_env_vars() {
+  set +o pipefail
+  local rc_occurrences=$(grep -o SHARELATEX_ "$TOOLKIT_ROOT/config/overleaf.rc" | wc -l | sed 's/ //g')
+  set -o pipefail
+
+  if [ "$rc_occurrences" -gt 0 ]; then
+    echo "WARNING: some runtime variables defined in config/overleaf.rc" 
+    echo "contain 'SHARELATEX_' in their name. The variables should be"
+    echo "renamed to 'OVERLEAF_'."
+    echo "you can upgrade your config/overleaf.rc by running bin/rename-rc-vars"
+    prompt "Do you want to continue?"
+  fi
+
   local invalid_prefix="SHARELATEX_"
   if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
     invalid_prefix="OVERLEAF_"
   fi
 
-  if grep -q "$invalid_prefix" "$TOOLKIT_ROOT/config/variables.env"; then
+  set +o pipefail
+  local env_occurrences=$(grep -o "$invalid_prefix" "$TOOLKIT_ROOT/config/variables.env" | wc -l | sed 's/ //g')
+  set -o pipefail
+
+  if [ "$env_occurrences" -gt 0 ]; then
     echo "WARNING: some environment variables defined in config/variables.env" 
     echo "contain '$invalid_prefix' in their name"
     echo "Starting with Overleaf CE and Server Pro 5.0.0 the environment variables" 
     echo "use the prefix 'OVERLEAF_'  instead of 'SHARELATEX_'."
-    echo "Please check your config/version and config/variables.env files"
+    echo "Please check your config/version, and config/variables.env files,"
+    echo "you can upgrade your config/variables.env to use 'OVERLEAF_' by running bin/rename-env-vars-5-0"
     prompt "Do you want to continue?"
   fi
 }
