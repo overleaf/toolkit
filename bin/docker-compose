@@ -65,14 +65,12 @@ function set_base_vars() {
   fi
   export IMAGE="$image_name:$IMAGE_VERSION"
 
-  OVERLEAF_LISTEN_IP=${OVERLEAF_LISTEN_IP:-${SHARELATEX_LISTEN_IP:-}}
   if [[ ${OVERLEAF_LISTEN_IP:-null} == "null" ]];
   then
     echo "WARNING: the value of OVERLEAF_LISTEN_IP is not set in config/overleaf.rc. This value must be set to the public IP address for direct container access. Defaulting to 0.0.0.0" >&2
     OVERLEAF_LISTEN_IP="0.0.0.0"
   fi
   export OVERLEAF_LISTEN_IP
-  OVERLEAF_PORT=${OVERLEAF_PORT:-${SHARELATEX_PORT:-}}
 
   if [[ $SERVER_PRO != "true" || $IMAGE_VERSION_MAJOR -lt 4 ]]; then
     # Force git bridge to be disabled if not ServerPro >= 4
