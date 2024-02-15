@@ -16,8 +16,6 @@ services:
           GIT_BRIDGE_PORT: "8000"
           REDIS_HOST: "${REDIS_HOST}"
           REDIS_PORT: "${REDIS_PORT}"
-          OVERLEAF_MONGO_URL: "${MONGO_URL}"
-          OVERLEAF_REDIS_HOST: "${REDIS_HOST}"
           ${MONGO_URL_KEY}: "${MONGO_URL}"
           ${REDIS_HOST_KEY}: "${REDIS_HOST}"
           V1_HISTORY_URL: "http://sharelatex:3100/api"
