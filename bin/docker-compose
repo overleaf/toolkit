@@ -19,9 +19,7 @@ fi
 source "$TOOLKIT_ROOT/lib/shared-functions.sh"
 
 function check_sharelatex_env_vars() {
-  set +o pipefail
-  local rc_occurrences=$(grep -o SHARELATEX_ "$TOOLKIT_ROOT/config/overleaf.rc" | wc -l | sed 's/ //g')
-  set -o pipefail
+  local rc_occurrences=$(set +o pipefail && grep -o SHARELATEX_ "$TOOLKIT_ROOT/config/overleaf.rc" | wc -l | sed 's/ //g')
 
   if [ "$rc_occurrences" -gt 0 ]; then
     echo "WARNING: some runtime variables defined in config/overleaf.rc"
@@ -36,9 +34,7 @@ function check_sharelatex_env_vars() {
     invalid_prefix="OVERLEAF_"
   fi
 
-  set +o pipefail
-  local env_occurrences=$(grep -o "$invalid_prefix" "$TOOLKIT_ROOT/config/variables.env" | wc -l | sed 's/ //g')
-  set -o pipefail
+  local env_occurrences=$(set +o pipefail && grep -o "$invalid_prefix" "$TOOLKIT_ROOT/config/variables.env" | wc -l | sed 's/ //g')
 
   if [ "$env_occurrences" -gt 0 ]; then
     echo "WARNING: some environment variables defined in config/variables.env"
