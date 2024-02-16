@@ -28,9 +28,7 @@ prompt() {
 
 rebrand_sharelatex_env_variables() {
   local filename=$1
-  set +o pipefail
-  sharelatex_occurrences=$(grep -o "SHARELATEX_" "$TOOLKIT_ROOT/config/$filename" | wc -l | sed 's/ //g')
-  set -o pipefail
+  sharelatex_occurrences=$(set +o pipefail && grep -o "SHARELATEX_" "$TOOLKIT_ROOT/config/$filename" | wc -l | sed 's/ //g')
   if [ "$sharelatex_occurrences" -gt 0 ]; then
     echo "Found $sharelatex_occurrences lines with SHARELATEX_ in $filename"
     local timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
