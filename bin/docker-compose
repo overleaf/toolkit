@@ -83,6 +83,11 @@ function canonicalize_data_paths() {
 # Set environment variables for docker-compose.base.yml
 function set_base_vars() {
   DOCKER_COMPOSE_FLAGS=(-f "$TOOLKIT_ROOT/lib/docker-compose.base.yml")
+  if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
+    DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.vars-legacy.yml")
+  else
+    DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.vars.yml")
+  fi
 
   local image_name
   if [[ -n ${OVERLEAF_IMAGE_NAME:-} ]]; then
@@ -114,19 +119,13 @@ function set_base_vars() {
   fi
 
   OVERLEAF_IN_CONTAINER_DATA_PATH=/var/lib/overleaf
-  MONGO_URL_KEY=OVERLEAF_MONGO_URL
-  REDIS_HOST_KEY=OVERLEAF_REDIS_HOST
   if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
     OVERLEAF_IN_CONTAINER_DATA_PATH=/var/lib/sharelatex
-    MONGO_URL_KEY=SHARELATEX_MONGO_URL
-    REDIS_HOST_KEY=SHARELATEX_REDIS_HOST
   fi
 
   export GIT_BRIDGE_ENABLED
   export MONGO_URL
-  export MONGO_URL_KEY
   export REDIS_HOST
-  export REDIS_HOST_KEY
   export REDIS_PORT
   export OVERLEAF_DATA_PATH
   export OVERLEAF_PORT
