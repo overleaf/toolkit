@@ -33,8 +33,10 @@ function check_sharelatex_env_vars() {
     exit 1
   fi
 
+  local expected_prefix="OVERLEAF_"
   local invalid_prefix="SHARELATEX_"
   if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
+    expected_prefix="SHARELATEX_"
     invalid_prefix="OVERLEAF_"
   fi
 
@@ -44,7 +46,7 @@ function check_sharelatex_env_vars() {
     echo "Rebranding from ShareLaTeX to Overleaf"
     echo "  Starting with Overleaf CE and Server Pro version 5.0.0 the environment variables will use the Overleaf brand."
     echo "  Previous versions used the ShareLaTeX brand for environment variables."
-    echo "  Your config/variables.env has $env_occurrences entries matching '$invalid_prefix'."
+    echo "  Your config/variables.env has $env_occurrences entries matching '$invalid_prefix', expected prefix '$expected_prefix'."
     echo "  Please align your config/version with the naming scheme of variables in config/variables.env."
     if [[ ! "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
       echo "  You can migrate your config/variables.env to use the Overleaf brand by running:"
