@@ -24,7 +24,7 @@ function check_sharelatex_env_vars() {
   if [ "$rc_occurrences" -gt 0 ]; then
     echo "Rebranding from ShareLaTeX to Overleaf"
     echo "  The Toolkit has adopted to Overleaf brand for its variables."
-    echo "  Your config/overleaf.rc still has variables using the previous ShareLaTeX brand."
+    echo "  Your config/overleaf.rc still has $rc_occurrences variables using the previous ShareLaTeX brand."
     echo "  Moving forward the 'SHARELATEX_' prefixed variables must be renamed to 'OVERLEAF_'."
     echo "  You can migrate your config/overleaf.rc to use the Overleaf brand by running:"
     echo ""
