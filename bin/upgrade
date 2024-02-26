@@ -170,8 +170,6 @@ function handle_image_upgrade() {
   echo "Over-writing config/version with $SEED_IMAGE_VERSION"
   cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/version"
 
-  ## Rename variables in overleaf.rc SHARELATEX_ -> OVERLEAF_
-  rebrand_sharelatex_env_variables 'overleaf.rc'
   if [[ "$IMAGE_VERSION_MAJOR" -le 4 && "$SEED_IMAGE_VERSION_MAJOR" -ge 5 ]]; then
     echo "Renaming environment variables in config/variables.env and config/overleaf.rc"
     prompt "Proceed with the environment variable renaming?"
@@ -226,6 +224,11 @@ function handle_git_update() {
   fi
 }
 
+function handle_rc_rebranding() {
+  ## Rename variables in overleaf.rc SHARELATEX_ -> OVERLEAF_
+  rebrand_sharelatex_env_variables 'overleaf.rc' silent_if_no_match
+}
+
 function __main__() {
   if [[ "${1:-null}" == "help" ]] \
     || [[ "${1:-null}" == "--help" ]] ; then
@@ -240,6 +243,7 @@ function __main__() {
 
   read_seed_image_version
   read_image_version
+  handle_rc_rebranding
   handle_image_upgrade
 
   echo "Done"

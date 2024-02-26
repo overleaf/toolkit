@@ -28,6 +28,7 @@ prompt() {
 
 rebrand_sharelatex_env_variables() {
   local filename=$1
+  local silent=${2:-no}
   sharelatex_occurrences=$(set +o pipefail && grep -o "SHARELATEX_" "$TOOLKIT_ROOT/config/$filename" | wc -l | sed 's/ //g')
   if [ "$sharelatex_occurrences" -gt 0 ]; then
     echo "Found $sharelatex_occurrences lines with SHARELATEX_ in $filename"
@@ -38,6 +39,8 @@ rebrand_sharelatex_env_variables() {
     sed -i "s/SHARELATEX_/OVERLEAF_/g" "$TOOLKIT_ROOT/config/$filename"
     echo "Updated $sharelatex_occurrences lines in $TOOLKIT_ROOT/config/$filename"
   else
-    echo "No 'SHARELATEX_' ocurrences found in config/$filename"
+    if [[ "$silent" != "silent_if_no_match" ]]; then
+      echo "No 'SHARELATEX_' occurrences found in config/$filename"
+    fi
   fi
 }
