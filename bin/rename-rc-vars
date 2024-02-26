@@ -33,7 +33,6 @@ function __main__() {
 
   echo "This script will update your config/overleaf.rc."
   echo "We recommend backing up your config with bin/backup-config."
-  prompt "Do you want to continue?"
 
   rebrand_sharelatex_env_variables 'overleaf.rc'
 

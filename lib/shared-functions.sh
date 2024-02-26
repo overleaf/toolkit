@@ -32,10 +32,13 @@ rebrand_sharelatex_env_variables() {
   sharelatex_occurrences=$(set +o pipefail && grep -o "SHARELATEX_" "$TOOLKIT_ROOT/config/$filename" | wc -l | sed 's/ //g')
   if [ "$sharelatex_occurrences" -gt 0 ]; then
     echo "Rebranding from ShareLaTeX to Overleaf"
-    echo "  Found $sharelatex_occurrences lines with SHARELATEX_ in $filename"
+    echo "  Found $sharelatex_occurrences lines with SHARELATEX_ in config/$filename"
     local timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
-    echo "  Creating backup file config/__old-$filename.$timestamp"
-    cp config/$filename config/__old-$filename.$timestamp
+    local backup_filename="__old-$filename.$timestamp"
+    echo "  Will create backup of config/$filename at config/$backup_filename"
+    prompt "  Proceed with the renaming in config/$filename?"
+    echo "  Creating backup file config/$backup_filename"
+    cp "$TOOLKIT_ROOT/config/$filename" "$TOOLKIT_ROOT/config/$backup_filename"
     echo "  Replacing 'SHARELATEX_' with 'OVERLEAF_' in config/$filename"
     sed -i "s/SHARELATEX_/OVERLEAF_/g" "$TOOLKIT_ROOT/config/$filename"
     echo "  Updated $sharelatex_occurrences lines in config/$filename"
