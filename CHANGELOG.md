@@ -1,5 +1,15 @@
 # Changelog
 
+## 2024-02-27
+### Fixed
+
+- Relaunch `bin/upgrade` after updating Toolkit code.
+
+  We are planning to expand the scope of the `bin/upgrade` script in a following release and these changes need to be applied _while_ running `bin/upgrade`.
+
+  Please restart `bin/upgrade` manually after fetching this code update.
+  After confirming "Perform code update?", please choose "n" at the next prompt "Upgrade image?".
+
 ## 2024-02-16
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.2.3`.
