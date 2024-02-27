@@ -218,6 +218,8 @@ function handle_git_update() {
       echo "Current commit is $current_commit"
       echo "Updating code..."
       git -C "$TOOLKIT_ROOT" pull origin "$current_branch"
+      echo "Relaunching bin/upgrade after code update"
+      exec $0 --skip-git-update
     fi
   fi
 }
@@ -228,7 +230,11 @@ function __main__() {
     usage && exit
   fi
 
-  handle_git_update
+  if [[ "${1:-null}" == "--skip-git-update" ]]; then
+    echo "Skipping git update"
+  else
+    handle_git_update
+  fi
 
   read_seed_image_version
   read_image_version
