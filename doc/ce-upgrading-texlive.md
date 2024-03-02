@@ -49,6 +49,8 @@ You can also install individual packages manually:
 # tlmgr install tikzlings tikzmarmots tikzducks
 ```
 
+**Important**: From `3.3.0` release onwards running `tlmgr path add` is required again after every use of `tlmgr install`, in order to correctly symlink all the binaries into the system path.
+
 Many more commands are available. Find out more with:
 
 ```
