@@ -11,7 +11,7 @@ EXTERNAL_AUTH=ldap
 ```
 
 (To preserve backward compatibility with older configuration files, if
-`EXTERNAL_AUTH` is not set, but `SHARELATEX_LDAP_URL` is set, then the LDAP
+`EXTERNAL_AUTH` is not set, but `OVERLEAF_LDAP_URL` is set (`SHARELATEX_LDAP_URL` for versions `4.x` and older), then the LDAP
 module will be activated. We still recommend setting `EXTERNAL_AUTH` explicitely)
 
 After bootstrapping Server Pro for the first time with LDAP authentication, an existing LDAP user must be given admin permissions visiting `/launchpad` page (or [via CLI](https://github.com/overleaf/overleaf/wiki/Creating-and-managing-users#creating-the-first-admin-user), but in this case ignoring password confirmation). 
@@ -26,17 +26,18 @@ At Overleaf, we test the LDAP integration against a [test openldap server](https
 
 ```
 # added to variables.env
+# For versions of Overleaf CE/Server Pro `4.x` and older use the 'SHARELATEX_' prefix instead of 'OVERLEAF_'
 
 EXTERNAL_AUTH=ldap
-SHARELATEX_LDAP_URL=ldap://ldap:389
-SHARELATEX_LDAP_SEARCH_BASE=ou=people,dc=planetexpress,dc=com
-SHARELATEX_LDAP_SEARCH_FILTER=(uid={{username}})
-SHARELATEX_LDAP_BIND_DN=cn=admin,dc=planetexpress,dc=com
-SHARELATEX_LDAP_BIND_CREDENTIALS=GoodNewsEveryone
-SHARELATEX_LDAP_EMAIL_ATT=mail
-SHARELATEX_LDAP_NAME_ATT=cn
-SHARELATEX_LDAP_LAST_NAME_ATT=sn
-SHARELATEX_LDAP_UPDATE_USER_DETAILS_ON_LOGIN=true
+OVERLEAF_LDAP_URL=ldap://ldap:389
+OVERLEAF_LDAP_SEARCH_BASE=ou=people,dc=planetexpress,dc=com
+OVERLEAF_LDAP_SEARCH_FILTER=(uid={{username}})
+OVERLEAF_LDAP_BIND_DN=cn=admin,dc=planetexpress,dc=com
+OVERLEAF_LDAP_BIND_CREDENTIALS=GoodNewsEveryone
+OVERLEAF_LDAP_EMAIL_ATT=mail
+OVERLEAF_LDAP_NAME_ATT=cn
+OVERLEAF_LDAP_LAST_NAME_ATT=sn
+OVERLEAF_LDAP_UPDATE_USER_DETAILS_ON_LOGIN=true
 ```
 
 The `openldap` needs to run in the same network as the `sharelatex` container (which by default would be `overleaf_default`), so we'll proceed with the following steps:

@@ -1,0 +1,8 @@
+---
+version: '2.2'
+services:
+
+  sharelatex:
+    environment:
+      OVERLEAF_MONGO_URL: "${MONGO_URL}"
+      OVERLEAF_REDIS_HOST: "${REDIS_HOST}"

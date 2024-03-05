@@ -16,25 +16,25 @@ This is useful when running multiple instances of Overleaf on one host, as each 
 - Default: overleaf
 
 
-### `SHARELATEX_DATA_PATH`
+### `OVERLEAF_DATA_PATH`
 
 Sets the path to the directory that will be mounted into the main `sharelatex` container, and used to store compile data. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit.
 
 - Default: data/sharelatex
 
-### `SHARELATEX_LISTEN_IP`
+### `OVERLEAF_LISTEN_IP`
 
 Sets the host IP address(es) that the container will bind to. For example, if this is set to `0.0.0.0`, then the web interface will be available on any host IP address.
 
-Since https://github.com/overleaf/toolkit/pull/77 the listen mode of the application container was changed to `localhost` only, so the value of `SHARELATEX_LISTEN_IP` must be set to the public IP address for direct container access.
+Since https://github.com/overleaf/toolkit/pull/77 the listen mode of the application container was changed to `localhost` only, so the value of `OVERLEAF_LISTEN_IP` must be set to the public IP address for direct container access.
 
-Setting `SHARELATEX_LISTEN_IP` to either `0.0.0.0` or the external IP of your host will typically cause errors when used in conjunction with the [TLS Proxy](tls-proxy.md).
+Setting `OVERLEAF_LISTEN_IP` to either `0.0.0.0` or the external IP of your host will typically cause errors when used in conjunction with the [TLS Proxy](tls-proxy.md).
 
 - Default: `127.0.0.1`
 
-### `SHARELATEX_PORT`
+### `OVERLEAF_PORT`
 
-Sets the host port that the container will bind to. For example, if this is set to `8099` and `SHARELATEX_LISTEN_IP` is set to `127.0.0.1`, then the web interface will be available on `http://localhost:8099`.
+Sets the host port that the container will bind to. For example, if this is set to `8099` and `OVERLEAF_LISTEN_IP` is set to `127.0.0.1`, then the web interface will be available on `http://localhost:8099`.
 
 - Default: 80
 
@@ -158,7 +158,7 @@ Sets the host port that the [TLS Proxy](tls-proxy.md) container will bind to for
 
 Sets the host IP address(es) that the [TLS Proxy](tls-proxy.md) container will bind to for http redirect. For example, if this is set to `127.0.1.1` then http connections to `127.0.1.1` will be redirected to the https web interface.
 
-Typically this should be set to the external IP of your host. Do not set it to `0.0.0.0` as this will typically cause a conflict with `SHARELATEX_LISTEN_IP`.
+Typically this should be set to the external IP of your host. Do not set it to `0.0.0.0` as this will typically cause a conflict with `OVERLEAF_LISTEN_IP`.
 
 - Default: `127.0.1.1`
 

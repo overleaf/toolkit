@@ -15,6 +15,8 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
   exit 1
 fi
 
+source "$TOOLKIT_ROOT/lib/shared-functions.sh"
+
 DEFAULT_TAIL_LINES=20
 ALL_SERVICES=(chat clsi contacts docstore document-updater filestore git-bridge \
     mongo notifications real-time redis spelling tags track-changes web \
@@ -127,8 +129,13 @@ function show_compose_logs() {
 }
 
 function show_sharelatex_logs() {
+    local base_path=/var/log/overleaf
+    if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
+      base_path=/var/log/sharelatex
+    fi
+
     local service="$1"
-    local log_path="/var/log/sharelatex/$service.log"
+    local log_path="${base_path}/$service.log"
     local flags=()
 
     if [[ $FOLLOW == "true" ]]; then
@@ -152,4 +159,5 @@ function show_sharelatex_logs() {
 }
 
 parse_args "$@"
+read_image_version
 show_logs

@@ -5,7 +5,7 @@ The Overleaf Toolkit needs to store persistent data, such as the files required 
 
 ## Data Directories
 
-The Overleaf container requires a directory in which to store data relating to LaTeX compiles. This directory is set with the `SHARELATEX_DATA_PATH` variable in `config/overleaf.rc`. 
+The Overleaf container requires a directory in which to store data relating to LaTeX compiles. This directory is set with the `OVERLEAF_DATA_PATH` variable in `config/overleaf.rc`. 
 
 The MongoDB container, if it is enabled, requires a directory in which to store it's database files, and the same is true of the Redis container. These directories can also be configured in `config/overleaf.rc`.
 
