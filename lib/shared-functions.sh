@@ -88,4 +88,16 @@ function check_sharelatex_env_vars() {
     fi
     exit 1
   fi
+
+  if [[ ! "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
+    if grep -q -e 'TEXMFVAR=/var/lib/sharelatex/tmp/texmf-var' "$TOOLKIT_ROOT/config/variables.env"; then
+      echo "Rebranding from ShareLaTeX to Overleaf"
+      echo "  The 'TEXMFVAR' override is not needed since Server Pro/Overleaf CE version 3.2 (August 2022) and it conflicts with the rebranded paths."
+      echo "  Please remove the following entry from your config/variables.env:"
+      echo ""
+      echo "    TEXMFVAR=/var/lib/sharelatex/tmp/texmf-var"
+      echo ""
+      exit 1
+    fi
+  fi
 }
