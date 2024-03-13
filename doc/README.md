@@ -11,6 +11,7 @@ documentation on the [Overleaf Wiki](https://github.com/overleaf/overleaf/wiki)
 - [Overview](./overview.md)
 - [Quick Start Guide](./quick-start-guide.md)
 - [Dependencies](./dependencies.md)
+- [docker-compose.yml to Toolkit migration](./docker-compose-to-toolkit-migration.md)
 
 
 ## Using the Toolkit
