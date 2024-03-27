@@ -6,6 +6,8 @@ services:
         restart: always
         image: "${IMAGE}"
         container_name: sharelatex
+        sysctls:
+            - net.ipv6.conf.all.disable_ipv6=1
         volumes:
             - "${SHARELATEX_DATA_PATH}:/var/lib/sharelatex"
         ports:
