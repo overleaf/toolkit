@@ -19,9 +19,9 @@ fi
 source "$TOOLKIT_ROOT/lib/shared-functions.sh"
 
 function usage() {
-  echo "Usage: bin/rename-env-vars-5-0"
+  echo "Usage: bin/rename-rc-vars"
   echo ""
-  echo "Updates config/variables.env to ensure variables are renamed from 'SHARELATEX_' to 'OVERLEAF_'"
+  echo "Updates config/overleaf.rc to ensure variables are renamed from 'SHARELATEX_' to 'OVERLEAF_'"
   echo ""
 }
 
@@ -31,10 +31,10 @@ function __main__() {
     exit
   fi
 
-  echo "This script will update your config/variables.env."
+  echo "This script will update your config/overleaf.rc."
   echo "We recommend backing up your config with bin/backup-config."
 
-  rebrand_sharelatex_env_variables 'variables.env'
+  rebrand_sharelatex_env_variables 'overleaf.rc'
 
   echo "Done."
 }

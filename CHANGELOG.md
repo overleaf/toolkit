@@ -1,5 +1,14 @@
 # Changelog
 
+## 2024-04-02
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.1`.
+
+  :warning: This is a major release. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-501) for details.
+
+- Rebranded 'SHARELATEX_' variables to 'OVERLEAF_'
+
+
 ## 2024-02-27
 ### Fixed
 

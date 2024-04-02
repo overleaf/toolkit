@@ -7,9 +7,9 @@ In Server Pro, it is possible to have each LaTeX project be compiled in a separa
 
 When sandboxed compiles are enabled, the toolkit will mount the docker socket from the host into the overleaf container, so that the compiler service in the container can create new docker containers on the host. Then for each run of the compiler in each project, the LaTeX compiler service (CLSI) will do the following:
 
-- Write out the project files to a location inside the `SHARELATEX_DATA_PATH`, 
+- Write out the project files to a location inside the `OVERLEAF_DATA_PATH`, 
 - Use the mounted docker socket to create a new `texlive` container for the compile run
-- Have the `texlive` container read the project data from the location under `SHARELATEX_DATA_PATH`
+- Have the `texlive` container read the project data from the location under `OVERLEAF_DATA_PATH`
 - Compile the project inside the `texlive` container
 
 
