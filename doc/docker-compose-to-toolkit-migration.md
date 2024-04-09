@@ -2,7 +2,7 @@
 
 If you're currently using Docker Compose via a `docker-compose.yml` file, migrating to the Toolkit can make running an on-premises version of Overleaf easier to deploy, upgrade and maintain.
 
-To upgrade, you'll need to convert your existing Docker Compose setup into the format used by the Toolkit. This process involves copying existing configuration into the Toolkit.
+To migrate, you'll need to convert your existing Docker Compose setup into the format used by the Toolkit. This process involves copying existing configuration into the Toolkit.
 
 This guide will walk you through each step of this process, ensuring a smooth migration from Docker Compose to the Toolkit.
 
@@ -32,7 +32,7 @@ services:
 
 When using the Toolkit, the image name is automatically resolved; the only requirement is to set `SERVER_PRO=true` in **config/overleaf.rc** to pick the Server Pro image or `SERVER_PRO=false` to use Community Edition.
 
-The desired version number is set in the **config/version** file. We recommend avoiding the use of "**latest**", and instead using a specific version number like "**4.2.3**".
+The desired Server Pro/Community Edition version number is set in the **config/version** file. The Toolkit requires a specific version number like "**4.2.3**". In case you are using `latest`, you can use `bin/images` to find the image id of your local `latest` version, then use the release notes for [2.x](https://github.com/overleaf/overleaf/wiki/Release-Notes-2.0), [3.x](https://github.com/overleaf/overleaf/wiki/Release-Notes-3.x.x), [4.x](https://github.com/overleaf/overleaf/wiki/Release-Notes--4.x.x) or [5.x](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x) to map the image id to the version.
 
 If you are sourcing the image from your own internal registry you can override the image the Toolkit uses by setting `SHARELATEX_IMAGE_NAME`. You do not need to specify the tag as the Toolkit will automatically add it based on your **config/version** file.
 
@@ -67,12 +67,20 @@ As mentioned above, there are several exceptions, as certain features are config
 
 For advanced configuration options, refer to the [overleaf.rc](./overleaf-rc.md) documentation.
 
+## NGINX Proxy ##
+
+For instructions on how to migrate `nginx`, please see [TLS Proxy for Overleaf Toolkit environment](tls-proxy.md)
+
 ## Volumes ##
+
+### ShareLaTeX ###
+
+The location of the data volume for the `sharelatex` container will need to be set using `SHARELATEX_DATA_PATH` in the **config/overleaf.rc** file.
 
 ### MongoDB ###
 
-The MongoDB volume will need to be set using `MONGO_DATA_PATH` in the **config/overleaf.rc** file.
+The location of the data volume for the `mongo` container will need to be set using `MONGO_DATA_PATH` in the **config/overleaf.rc** file.
 
 ### Redis ###
 
-The Redis volume will need to be set using `REDIS_DATA_PATH` in the **config/overleaf.rc** file.
+The location of the data volume for the `redis` container will need to be set using `REDIS_DATA_PATH` in the **config/overleaf.rc** file.
