@@ -75,7 +75,7 @@ For instructions on how to migrate `nginx`, please see [TLS Proxy for Overleaf T
 
 ### ShareLaTeX ###
 
-The location of the data volume for the `sharelatex` container will need to be set using `SHARELATEX_DATA_PATH` in the **config/overleaf.rc** file.
+The location of the data volume for the `sharelatex` container will need to be set using `OVERLEAF_DATA_PATH` in the **config/overleaf.rc** file.
 
 ### MongoDB ###
 
