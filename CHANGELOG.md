@@ -1,5 +1,11 @@
 # Changelog
 
+## 2024-04-09
+### Added
+
+- Print column headers from `bin/images`
+- List Git Bridge images via `bin/images`
+
 ## 2024-04-02
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.1`.
