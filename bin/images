@@ -34,6 +34,8 @@ function __main__() {
     docker images quay.io/sharelatex/sharelatex-pro
     echo "---- TexLive Images ----"
     docker images quay.io/sharelatex/texlive-full
+    echo "---- Git Bridge Images ----"
+    docker images quay.io/sharelatex/git-bridge
 }
 
 __main__ "$@"
