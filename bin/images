@@ -29,11 +29,11 @@ function __main__() {
     fi
 
     echo "---- Community Edition Images ----"
-    docker images | grep '^sharelatex/sharelatex\s'
+    docker images sharelatex/sharelatex
     echo "---- Server Pro Images ----"
-    docker images | grep '^quay.io/sharelatex/sharelatex-pro\s'
+    docker images quay.io/sharelatex/sharelatex-pro
     echo "---- TexLive Images ----"
-    docker images | grep '^quay.io/sharelatex/texlive'
+    docker images quay.io/sharelatex/texlive-full
 }
 
 __main__ "$@"
