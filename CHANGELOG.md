@@ -1,5 +1,11 @@
 # Changelog
 
+## 2024-04-11
+### Added
+
+- New `bin/flush-history-queues` to send queued history updates to the history system.
+- New `bin/force-history-resyncs` that forces a resync of any project that has a broken history.
+
 ## 2024-04-09
 ### Added
 
