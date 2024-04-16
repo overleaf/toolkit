@@ -34,13 +34,13 @@ When using the Toolkit, the image name is automatically resolved; the only requi
 
 The desired Server Pro/Community Edition version number is set in the **config/version** file. The Toolkit requires a specific version number like "**4.2.3**". In case you are using `latest`, you can use `bin/images` to find the image id of your local `latest` version, then use the release notes for [2.x](https://github.com/overleaf/overleaf/wiki/Release-Notes-2.0), [3.x](https://github.com/overleaf/overleaf/wiki/Release-Notes-3.x.x), [4.x](https://github.com/overleaf/overleaf/wiki/Release-Notes--4.x.x) or [5.x](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x) to map the image id to the version.
 
-If you are sourcing the image from your own internal registry you can override the image the Toolkit uses by setting `SHARELATEX_IMAGE_NAME`. You do not need to specify the tag as the Toolkit will automatically add it based on your **config/version** file.
+If you are sourcing the image from your own internal registry you can override the image the Toolkit uses by setting `OVERLEAF_IMAGE_NAME`. You do not need to specify the tag as the Toolkit will automatically add it based on your **config/version** file.
 
 ## Configuring external access ##
 
 By default, Overleaf will listen on **127.0.0.1:80**, only allowing traffic from the Docker host machine.
 
-To allow external access, you’ll need to set the `SHARELATEX_LISTEN_IP` and `SHARELATEX_PORT` in the **config/overleaf.rc** file.
+To allow external access, you’ll need to set the `OVERLEAF_LISTEN_IP` and `OVERLEAF_PORT` in the **config/overleaf.rc** file.
 
 ## Environment variable migration ##
 
