@@ -40,7 +40,7 @@ If you are sourcing the image from your own internal registry you can override t
 
 By default, Overleaf will listen on **127.0.0.1:80**, only allowing traffic from the Docker host machine.
 
-To allow external access, you’ll need to set the `SHARELATEX_LISTEN_IP` and `SHARELATEX_PORT` in the **config/overleaf.rc** file.
+To allow external access, you’ll need to set the `OVERLEAF_LISTEN_IP` and `OVERLEAF_PORT` in the **config/overleaf.rc** file.
 
 ## Environment variable migration ##
 
