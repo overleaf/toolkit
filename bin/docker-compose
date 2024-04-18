@@ -208,6 +208,7 @@ function docker_compose() {
 
 read_image_version
 read_config
+check_retracted_version
 check_sharelatex_env_vars
 build_environment
 print_debug_info "$@"

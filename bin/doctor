@@ -448,6 +448,7 @@ function cleanup() {
 function __main__() {
   read_image_version
   print_section_separator "Overleaf Doctor"
+  check_retracted_version
   check_sharelatex_env_vars
   check_host_information
   check_dependencies

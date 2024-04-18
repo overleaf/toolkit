@@ -10,12 +10,33 @@ function read_config() {
 
 function read_image_version() {
   IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  if [[ ! "$IMAGE_VERSION" =~ ^([0-9]+)\.([0-9]+)\.[0-9]+(-RC[0-9]*)?(-with-texlive-full)?$ ]]; then
+  if [[ ! "$IMAGE_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9])+(-RC[0-9]*)?(-with-texlive-full)?$ ]]; then
     echo "ERROR: invalid version '${IMAGE_VERSION}'"
     exit 1
   fi
   IMAGE_VERSION_MAJOR=${BASH_REMATCH[1]}
   IMAGE_VERSION_MINOR=${BASH_REMATCH[2]}
+  IMAGE_VERSION_PATCH=${BASH_REMATCH[3]}
+}
+
+function check_retracted_version() {
+  local version="$IMAGE_VERSION_MAJOR.$IMAGE_VERSION_MINOR.$IMAGE_VERSION_PATCH"
+  if [[ "$version" == "5.0.1" ]]; then
+    echo "-------------------------------------------------------"
+    echo "---------------------  WARNING  -----------------------"
+    echo "-------------------------------------------------------"
+    echo "  You are currently using a retracted version, $version."
+    echo ""
+    echo "  We have identified a critical bug in a database migration that causes data loss."
+    echo "  Please defer upgrading to release 5.0.1 until further notice on the mailing list."
+    echo "  Please keep any backups that were taken prior to upgrading to version 5.0.1."
+    echo "  Updates will be posted in the release notes:"
+    echo "  https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-501-retracted"
+    echo "-------------------------------------------------------"
+    echo "---------------------  WARNING  -----------------------"
+    echo "-------------------------------------------------------"
+    exit 1
+  fi
 }
 
 prompt() {
