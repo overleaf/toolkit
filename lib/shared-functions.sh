@@ -20,19 +20,23 @@ function read_image_version() {
 }
 
 function check_retracted_version() {
-  local retracted_versions=(
-    "5.0.1"
-  )
   local version="$IMAGE_VERSION_MAJOR.$IMAGE_VERSION_MINOR.$IMAGE_VERSION_PATCH"
-  for v in "${retracted_versions[@]}"; do
-    if [[ "$version" == "$v" ]]; then
-      echo "-------------------------------------------------------"
-      echo "  You are currently using a retracted version, $v."
-      echo "  Please check the release notes for further details."
-      echo "-------------------------------------------------------"
-      prompt "Ignore warning?"
-    fi
-  done
+  if [[ "$version" == "5.0.1" ]]; then
+    echo "-------------------------------------------------------"
+    echo "---------------------  WARNING  -----------------------"
+    echo "-------------------------------------------------------"
+    echo "  You are currently using a retracted version, $version."
+    echo ""
+    echo "  We have identified a critical bug in a database migration that causes data loss."
+    echo "  Please defer upgrading to release 5.0.1 until further notice on the mailing list."
+    echo "  Please keep any backups that were taken prior to upgrading to version 5.0.1."
+    echo "  Updates will be posted in the release notes:"
+    echo "  https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-501-retracted"
+    echo "-------------------------------------------------------"
+    echo "---------------------  WARNING  -----------------------"
+    echo "-------------------------------------------------------"
+    exit 1
+  fi
 }
 
 prompt() {
