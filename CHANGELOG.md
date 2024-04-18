@@ -1,5 +1,11 @@
 # Changelog
 
+## 2024-04-18
+### Fixed
+- Retracted release 5.0.1
+
+  :warning: We have identified a critical bug in a database migration that causes data loss. Please defer upgrading to release 5.0.1 until further notice on the mailing list. Please hold on to any backups that were taken prior to upgrading to version 5.0.1.
+
 ## 2024-04-09
 ### Added
 

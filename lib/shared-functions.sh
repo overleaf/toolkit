@@ -10,12 +10,29 @@ function read_config() {
 
 function read_image_version() {
   IMAGE_VERSION="$(head -n 1 "$TOOLKIT_ROOT/config/version")"
-  if [[ ! "$IMAGE_VERSION" =~ ^([0-9]+)\.([0-9]+)\.[0-9]+(-RC[0-9]*)?(-with-texlive-full)?$ ]]; then
+  if [[ ! "$IMAGE_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9])+(-RC[0-9]*)?(-with-texlive-full)?$ ]]; then
     echo "ERROR: invalid version '${IMAGE_VERSION}'"
     exit 1
   fi
   IMAGE_VERSION_MAJOR=${BASH_REMATCH[1]}
   IMAGE_VERSION_MINOR=${BASH_REMATCH[2]}
+  IMAGE_VERSION_PATCH=${BASH_REMATCH[3]}
+}
+
+function check_retracted_version() {
+  local retracted_versions=(
+    "5.0.1"
+  )
+  local version="$IMAGE_VERSION_MAJOR.$IMAGE_VERSION_MINOR.$IMAGE_VERSION_PATCH"
+  for v in "${retracted_versions[@]}"; do
+    if [[ "$version" == "$v" ]]; then
+      echo "-------------------------------------------------------"
+      echo "  You are currently using a retracted version, $v."
+      echo "  Please check the release notes for further details."
+      echo "-------------------------------------------------------"
+      prompt "Ignore warning?"
+    fi
+  done
 }
 
 prompt() {
