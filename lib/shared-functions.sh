@@ -20,10 +20,6 @@ function read_image_version() {
 }
 
 function check_retracted_version() {
-  if [[ "${OVERLEAF_SKIP_RETRACTION_CHECK:-null}" == "$IMAGE_VERSION" ]]; then
-    return
-  fi
-
   local version="$IMAGE_VERSION_MAJOR.$IMAGE_VERSION_MINOR.$IMAGE_VERSION_PATCH"
   if [[ "$version" == "5.0.1" ]]; then
     echo "-------------------------------------------------------"
@@ -31,10 +27,11 @@ function check_retracted_version() {
     echo "-------------------------------------------------------"
     echo "  You are currently using a retracted version, $version."
     echo ""
-    echo "  We have identified a critical bug in a database migration that causes data loss in the history system."
-    echo "  A new release is available with a fix and an automated recovery process."
-    echo "  Please follow the steps of the recovery process in the following wiki page:"
-    echo "  https://github.com/overleaf/overleaf/wiki/Doc-version-recovery"
+    echo "  We have identified a critical bug in a database migration that causes data loss."
+    echo "  Please defer upgrading to release 5.0.1 until further notice on the mailing list."
+    echo "  Please keep any backups that were taken prior to upgrading to version 5.0.1."
+    echo "  Updates will be posted in the release notes:"
+    echo "  https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-501-retracted"
     echo "-------------------------------------------------------"
     echo "---------------------  WARNING  -----------------------"
     echo "-------------------------------------------------------"

@@ -120,7 +120,6 @@ function handle_image_upgrade() {
 
   if [[ ! "$should_upgrade" =~ [Yy] ]]; then
     echo "Keeping image version '$IMAGE_VERSION'"
-    check_retracted_version
     return 0
   fi
 
@@ -137,24 +136,6 @@ function handle_image_upgrade() {
      fi
   fi
 
-
-  # Skip retraction check in sub-shells
-  export OVERLEAF_SKIP_RETRACTION_CHECK="$IMAGE_VERSION"
-  local version="$IMAGE_VERSION_MAJOR.$IMAGE_VERSION_MINOR.$IMAGE_VERSION_PATCH"
-  if [[ "$version" == "5.0.1" ]]; then
-    echo "-------------------------------------------------------"
-    echo "---------------------  WARNING  -----------------------"
-    echo "-------------------------------------------------------"
-    echo "  You are currently using a retracted version, $version."
-    echo ""
-    echo "  We have identified a critical bug in a database migration that causes data loss in the history system."
-    echo "  Please follow the steps of the recovery process in the following wiki page:"
-    echo "  https://github.com/overleaf/overleaf/wiki/Doc-version-recovery"
-    echo "-------------------------------------------------------"
-    echo "---------------------  WARNING  -----------------------"
-    echo "-------------------------------------------------------"
-    prompt "Are you following the recovery process?"
-  fi
 
   ## Offer to stop docker services
   local services_stopped="false"
@@ -260,6 +241,7 @@ function __main__() {
 
   read_seed_image_version
   read_image_version
+  check_retracted_version
   handle_rc_rebranding
   handle_image_upgrade
 
