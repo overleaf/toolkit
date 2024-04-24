@@ -1,5 +1,25 @@
 # Changelog
 
+## 2024-04-22
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.3`.
+
+  :warning: This is a security release. This release also fixes a critical bug in a database migration as included in release 5.0.1. The recovery procedure for doc versions has been updated compared to 5.0.2. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-503) for details.
+
+  Note: Server Pro version 4.2.4 contains the equivalent security update for the 4.x.x release line.
+
+## 2024-04-22
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.2`.
+
+  :warning: This is a security release. This release also fixes a critical bug in a database migration as included in release 5.0.1. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-502) for details.
+
+  Note: Server Pro version 4.2.4 contains the equivalent security update for the 4.x.x release line.
+### Fixed
+- Retracted release 5.0.2
+
+  :warning: We have identified a few corner cases in the recovery procedure for docs.
+
 ## 2024-04-18
 ### Fixed
 - Retracted release 5.0.1
