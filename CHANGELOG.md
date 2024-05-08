@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-05-08
+### Added
+- Add warning for using docker installing via `snap`.
+
 ## 2024-04-22
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.3`.

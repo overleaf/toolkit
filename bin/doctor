@@ -140,6 +140,10 @@ function check_docker_daemon() {
   print_point 0 "Docker Daemon"
   if docker ps &>/dev/null;  then
     print_point 1 "status: up"
+
+    if docker info | grep -q -e '/var/snap/docker/common/var-lib-docker'; then
+      add_warning "Installing Docker via snap is not supported. The sandboxed compiles feature may not be available. Please follow the steps for installing Docker CE on https://docs.docker.com/engine/install/."
+    fi
   else
     print_point 1 "status: DOWN !"
     add_warning "Docker daemon is not running"
