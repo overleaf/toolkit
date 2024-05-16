@@ -59,25 +59,20 @@ When you're done, type `exit` or press Control-D to exit the shell.
 
 ## Saving your changes
 
-The changes you've just made have changed the `sharelatex` container, but are ephemeral --- they will be lost if Compose recreates the container. To make them persistent, use `docker commit` to save the changes to a new docker image:
+The changes you've just made have changed the `sharelatex` container, but they are ephemeral --- they will be lost if Compose recreates the container, e.g. as part of updating the config.
+
+To make them persistent, use `docker commit` to save the changes to a new docker image:
 
 ```
-$ docker commit sharelatex sharelatex/sharelatex:with-texlive-full
+$ cat config/version
+5.0.3
+#^^^^ --------------- matching version ----------- |
+#                                                vvvvv
+$ docker commit sharelatex sharelatex/sharelatex:5.0.3-with-texlive-full
+
+$ echo 5.0.3-with-texlive-full > config/version
 ```
 
-Then add a `docker-compose.override.yml` file to the `config/` folder, and specify
-that the toolkit should use this new image to launch the `sharelatex` container in future:
+After committing the changes, update the `config/version` accordingly. Then run `bin/up`, to recreate the container.
 
-(Note: the version number in `docker-compose.override.yml` MUST match the version number used by the toolkit scripts (such as `lib/docker-compose.base.yml`))
-
-```yml
----
-version: '2.2'
-services:
-    sharelatex:
-        image: sharelatex/sharelatex:with-texlive-full
-```
-
-Then run `bin/stop && bin/docker-compose rm -f sharelatex && bin/up`, to recreate the container.
-
-Note that you will need to remove this committed container and repeat these steps when you [upgrade](./upgrading.md).
+Note that you will need to repeat these steps when you [upgrade](./upgrading.md).
