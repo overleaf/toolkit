@@ -53,7 +53,7 @@ prompt() {
 rebrand_sharelatex_env_variables() {
   local filename=$1
   local silent=${2:-no}
-  sharelatex_occurrences=$(set +o pipefail && grep -o "SHARELATEX_" "$TOOLKIT_ROOT/config/$filename" | wc -l | sed 's/ //g')
+  sharelatex_occurrences=$(set +o pipefail && grep -oE "^[ ]*SHARELATEX_" "$TOOLKIT_ROOT/config/$filename" | wc -l | sed 's/ //g')
   if [ "$sharelatex_occurrences" -gt 0 ]; then
     echo "Rebranding from ShareLaTeX to Overleaf"
     echo "  Found $sharelatex_occurrences lines with SHARELATEX_ in config/$filename"
