@@ -1,5 +1,10 @@
 # Changelog
 
+## 2024-05-24
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.4`.
+  :warning: This is a security release. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-504) for details.
+
 ## 2024-05-08
 ### Added
 - Add warning for using docker installing via `snap`.
