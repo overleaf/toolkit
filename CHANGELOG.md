@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-05-27
+### Added
+- Pull TeX Live images from `bin/up`
+
 ## 2024-05-24
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.4`.

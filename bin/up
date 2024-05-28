@@ -46,6 +46,29 @@ function initiate_mongo_replica_set() {
     mongo --eval "rs.initiate({ _id: \"overleaf\", members: [ { _id: 0, host: \"mongo:27017\" } ] })" > /dev/null'
 }
 
+function pull_sandboxed_compiles() {
+  if [[ "${SIBLING_CONTAINERS_PULL:-true}" == "false" ]]; then
+    echo "Skipping pulling of TeX Live images"
+    return
+  fi
+  local images=$(read_variable "ALL_TEX_LIVE_DOCKER_IMAGES")
+  if [[ -z "$images" ]]; then
+    echo
+    echo "Please configure ALL_TEX_LIVE_DOCKER_IMAGES in $TOOLKIT_ROOT/config/variables.env"
+    echo
+    echo "You can read more about configuring Sandboxed Compiles in our documentation:"
+    echo "  https://github.com/overleaf/overleaf/wiki/Server-Pro:-sandboxed-compiles#changing-the-texlive-image"
+    echo
+    exit 1
+  fi
+  echo "Pulling TeX Live images..."
+  for image in ${images//,/ }; do
+    echo "  - $image download started (may take some time)"
+    docker pull $image
+    echo "  - $image download finished"
+  done
+}
+
 function __main__() {
   if [[ "${1:-null}" == "help" ]] || [[ "${1:-null}" == "--help" ]]; then
     usage
@@ -58,6 +81,10 @@ function __main__() {
 
   if [[ "$MONGO_ENABLED" == "true" && "$IMAGE_VERSION_MAJOR" -ge 4 ]]; then
     initiate_mongo_replica_set
+  fi
+
+  if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+    pull_sandboxed_compiles
   fi
 
   exec "$TOOLKIT_ROOT/bin/docker-compose" up "$@"

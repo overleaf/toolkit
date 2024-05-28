@@ -125,3 +125,9 @@ function check_sharelatex_env_vars() {
     fi
   fi
 }
+
+function read_variable() {
+  local name=$1
+  grep -E "^$name=" "$TOOLKIT_ROOT/config/variables.env" \
+  | sed -r "s/^$name=([\"']*)(.+)\1*\$/\2/"
+}
