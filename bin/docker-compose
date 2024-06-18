@@ -109,6 +109,17 @@ function set_redis_vars() {
   DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.redis.yml")
   export REDIS_IMAGE
   export REDIS_DATA_PATH
+
+  if [[ -z "${REDIS_AOF_PERSISTENCE:-}" ]]; then
+    echo "WARNING: the value of REDIS_AOF_PERSISTENCE is not set in config/overleaf.rc"
+    echo "See https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-510"
+    REDIS_COMMAND="redis-server"
+  elif [[ $REDIS_AOF_PERSISTENCE == "true" ]]; then
+    REDIS_COMMAND="redis-server --appendonly yes"
+  else
+    REDIS_COMMAND="redis-server"
+  fi
+  export REDIS_COMMAND
 }
 
 # Set environment variables for docker-compose.mongo.yml

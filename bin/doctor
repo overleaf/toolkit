@@ -256,6 +256,9 @@ function check_config_files() {
         if [[ "${REDIS_IMAGE:-null}" != "null" ]]; then
           print_point 2 "REDIS_IMAGE: $REDIS_IMAGE"
         fi
+        if [[ "${REDIS_AOF_PERSISTENCE:-null}" != "null" ]]; then
+          print_point 2 "REDIS_AOF_PERSISTENCE: $REDIS_AOF_PERSISTENCE"
+        fi
         if [[ "${REDIS_DATA_PATH:-null}" != "null" ]]; then
           print_point 2 "REDIS_DATA_PATH: $REDIS_DATA_PATH"
         fi
