@@ -19,6 +19,45 @@ function read_image_version() {
   IMAGE_VERSION_PATCH=${BASH_REMATCH[3]}
 }
 
+function read_mongo_version() {
+
+  # Reads `MONGO_VERSION` from config/overleaf.rc to set the correct mongo shell
+  # as $MONGOSH. If `MONGO_VERSION` is not defined it tries to extract the version
+  # from `MONGO_IMAGE`, issuing a warning if it's a non-stock image.
+
+  local mongo_version=$(read_configuration "MONGO_VERSION")
+  if [ -z "${mongo_version}" ]; then
+    local mongo_image=$(read_configuration "MONGO_IMAGE")
+    if [[ "$mongo_image" =~ ^mongo:([0-9]+)\.(.*)$ ]]; then
+      MONGO_VERSION_MAJOR=${BASH_REMATCH[1]}
+    else
+      echo "---------------------  ERROR  -----------------------"
+      echo "  You are using a non-stock MONGO_IMAGE: $mongo_image"
+      echo ""
+      echo "  When using custom mongo docker images you must specify MONGO_VERSION in your config/overleaf.rc,"
+      echo "  otherwise you may experience problems communicating with your mongo instance."
+      echo ""
+      echo "  MONGO_VERSION must be of the form <major>.<minor>."
+      echo "  Example: MONGO_IMAGE=my.dockerhub.com/custom-mongo:v6"
+      echo "           MONGO_VERSION=6.0"
+      exit 1
+    fi
+  else
+    if [[ ! "$mongo_version" =~ ^([0-9]+)\.(.*)$ ]]; then
+      echo "---------------------  ERROR  -----------------------"
+      echo "invalid MONGO_VERSION: '${mongo_version}'"
+      exit 1
+    fi
+    MONGO_VERSION_MAJOR=${BASH_REMATCH[1]}
+  fi
+
+  if [[ "$MONGO_VERSION_MAJOR" -lt 6 ]]; then
+    MONGOSH="mongo"
+  else
+    MONGOSH="mongosh"
+  fi
+}
+
 function check_retracted_version() {
   if [[ "${OVERLEAF_SKIP_RETRACTION_CHECK:-null}" == "$IMAGE_VERSION" ]]; then
     return
@@ -129,5 +168,11 @@ function check_sharelatex_env_vars() {
 function read_variable() {
   local name=$1
   grep -E "^$name=" "$TOOLKIT_ROOT/config/variables.env" \
+  | sed -r "s/^$name=([\"']*)(.+)\1*\$/\2/"
+}
+
+function read_configuration() {
+  local name=$1
+  grep -E "^$name=" "$TOOLKIT_ROOT/config/overleaf.rc" \
   | sed -r "s/^$name=([\"']*)(.+)\1*\$/\2/"
 }

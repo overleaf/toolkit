@@ -15,8 +15,12 @@ if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
   exit 1
 fi
 
+source "$TOOLKIT_ROOT/lib/shared-functions.sh"
+
 function __main__() {
-  exec "$TOOLKIT_ROOT/bin/docker-compose" exec mongo mongo sharelatex
+  read_mongo_version
+
+  exec "$TOOLKIT_ROOT/bin/docker-compose" exec mongo $MONGOSH sharelatex
 }
 
 __main__ "$@"

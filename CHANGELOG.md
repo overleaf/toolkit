@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-06-17
+### Added
+- Added support for Mongo 6.0.
+
 ## 2024-06-11
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.5`.

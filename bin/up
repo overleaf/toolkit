@@ -39,11 +39,11 @@ function initiate_mongo_replica_set() {
   echo "Initiating Mongo replica set..."
   "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
   "$TOOLKIT_ROOT/bin/docker-compose" exec -T mongo sh -c '
-    while ! mongo --eval "db.version()" > /dev/null; do
+    while ! '$MONGOSH' --eval "db.version()" > /dev/null; do
       echo "Waiting for Mongo..."
       sleep 1
     done
-    mongo --eval "rs.initiate({ _id: \"overleaf\", members: [ { _id: 0, host: \"mongo:27017\" } ] })" > /dev/null'
+    '$MONGOSH' --eval "db.isMaster().primary || rs.initiate({ _id: \"overleaf\", members: [ { _id: 0, host: \"mongo:27017\" } ] })" > /dev/null'
 }
 
 function pull_sandboxed_compiles() {
@@ -76,6 +76,7 @@ function __main__() {
   fi
 
   read_image_version
+  read_mongo_version
   check_config
   read_config
 

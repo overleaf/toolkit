@@ -12,7 +12,7 @@ services:
         expose:
             - 27017
         healthcheck:
-            test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+            test: echo 'db.stats().ok' | ${MONGOSH} localhost:27017/test --quiet
             interval: 10s
             timeout: 10s
             retries: 5
