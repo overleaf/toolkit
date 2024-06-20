@@ -1,9 +1,9 @@
 # Changelog
 
-## 2024-06-11
+## 2024-06-20
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.6`.
-  :warning: This is a security release. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-505) for details.
+  :warning: This is a security release. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-506) for details.
 
   Note: Server Pro version 4.2.6 contains the equivalent security update for the 4.x.x release line.
 
