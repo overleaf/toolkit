@@ -141,6 +141,18 @@ function check_docker_daemon() {
   if docker ps &>/dev/null;  then
     print_point 1 "status: up"
 
+    local docker_server_version=$(docker version -f '{{.Server.Version}}')
+    print_point 1 "server version: $docker_server_version"
+    if [[ "$docker_server_version" =~ ^([0-9]+)\.([0-9]+) ]]; then
+      local major="${BASH_REMATCH[1]}"
+      local minor="${BASH_REMATCH[2]}"
+      if [[ "$major" -lt 23 ]]; then
+        add_warning "Docker v$major.$minor has reached its End Of Life. We recommend upgrading to a supported version."
+      fi
+    else
+      add_warning "Docker server version unknown ($docker_server_version)"
+    fi
+
     if docker info | grep -q -e '/var/snap/docker/common/var-lib-docker'; then
       add_warning "Installing Docker via snap is not supported. The sandboxed compiles feature may not be available. Please follow the steps for installing Docker CE on https://docs.docker.com/engine/install/."
     fi
