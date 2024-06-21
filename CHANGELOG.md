@@ -1,5 +1,13 @@
 # Changelog
 
+## 2024-06-21
+### Added
+- Added warning for usage of legacy docker-compose v1.
+
+  docker-compose v1 has reached its End Of Life in July 2023 (https://docs.docker.com/compose/migrate/).
+  Support for docker-compose v1 in the Overleaf Toolkit will be dropped with the release of Server Pro 5.2.
+  We recommend upgrading to Docker Compose v2 before then.
+
 ## 2024-06-20
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.6`.

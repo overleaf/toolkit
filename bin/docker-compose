@@ -199,6 +199,7 @@ function docker_compose() {
     exec docker compose "${flags[@]}"
   elif command -v docker-compose >/dev/null; then
     # Fall back to docker-compose v1
+    echo "WARNING: docker-compose v1 has reached its End Of Life in July 2023 (https://docs.docker.com/compose/migrate/). Support for docker-compose v1 in the Overleaf Toolkit will be dropped with the release of Server Pro 5.2. We recommend upgrading to Docker Compose v2 before then." >&2
     exec docker-compose "${flags[@]}"
   else
     echo "ERROR: Could not find Docker Compose." >&2
