@@ -130,6 +130,7 @@ function check_dependencies() {
     print_point 2 "status: present"
     print_point 2 "version info: $(docker compose version)"
   elif command -v docker-compose > /dev/null; then
+    add_warning "docker-compose v1 has reached its End Of Life in July 2023 (https://docs.docker.com/compose/migrate/). Support for docker-compose v1 in the Overleaf Toolkit will be dropped with the release of Server Pro 5.2. We recommend upgrading to Docker Compose v2 before then."
     check_for_binary docker-compose
   else
     add_warning "Docker Compose not found"
