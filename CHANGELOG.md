@@ -8,6 +8,8 @@
   Support for docker-compose v1 in the Overleaf Toolkit will be dropped with the release of Server Pro 5.2.
   We recommend upgrading to Docker Compose v2 before then.
 
+- Added warning for usage of End Of Life Docker versions before v23
+
 ## 2024-06-20
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.6`.
