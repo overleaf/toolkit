@@ -1,5 +1,12 @@
 # Changelog
 
+## 2024-06-26
+### Added
+- Added "--appendonly yes" configuration to redis.
+
+  Redis persistence documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
+  For more details on enabling this feature, see the Server Pro 5.1 release notes: https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-510
+
 ## 2024-06-17
 ### Added
 - Added support for Mongo 6.0.

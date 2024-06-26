@@ -23,6 +23,7 @@ MONGO_IMAGE=mongo:5.0
 REDIS_ENABLED=true
 REDIS_DATA_PATH=data/redis
 REDIS_IMAGE=redis:6.2
+REDIS_AOF_PERSISTENCE=true
 
 # Git-bridge configuration (Server Pro only)
 GIT_BRIDGE_ENABLED=false
