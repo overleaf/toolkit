@@ -1,5 +1,12 @@
 # Changelog
 
+## 2024-07-12
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.7`.
+  :warning: This is a security release. Please check the [release notes](https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-507) for details.
+
+  Note: Server Pro version 4.2.7 contains the equivalent security update for the 4.x.x release line.
+
 ## 2024-06-21
 ### Added
 - Added warning for usage of legacy docker-compose v1.
