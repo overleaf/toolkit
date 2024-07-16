@@ -123,7 +123,8 @@ function set_mongo_vars() {
   export MONGO_ARGS
 
   export MONGO_DATA_PATH
-  export MONGO_IMAGE
+  export MONGO_DOCKER_IMAGE
+  export MONGOSH
 }
 
 # Set environment variables for docker-compose.sibling-containers.yml
@@ -208,6 +209,7 @@ function docker_compose() {
 }
 
 read_image_version
+read_mongo_version
 read_config
 check_retracted_version
 check_sharelatex_env_vars
