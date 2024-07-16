@@ -33,6 +33,7 @@ function read_mongo_version() {
         echo "  your current configuration may stop working in future versions of the toolkit."
         echo "  Example: MONGO_IMAGE=mongo"
         echo "           MONGO_VERSION=6.0"
+        echo "-------------------  WARNING  ----------------------"
       fi
       MONGO_VERSION_MAJOR=${BASH_REMATCH[1]}
       MONGO_DOCKER_IMAGE="$mongo_image"
@@ -42,8 +43,9 @@ function read_mongo_version() {
       echo "  Please update your config/overleaf.rc."
       echo ""
       echo "  MONGO_VERSION must start with the actual major version of mongo, followed by a dot."
-      echo "  Example: MONGO_IMAGE=my.dockerhub.com/mongo"
+      echo "  Example: MONGO_IMAGE=my.dockerhub.com/custom-mongo"
       echo "           MONGO_VERSION=6.0-custom"
+      echo "---------------------  ERROR  -----------------------"
       exit 1
     fi
   else
@@ -53,7 +55,8 @@ function read_mongo_version() {
       echo ""
       echo "  MONGO_VERSION must start with the actual major version of mongo, followed by a dot."
       echo "  Example: MONGO_IMAGE=my.dockerhub.com/custom-mongo"
-      echo "           MONGO_VERSION=6.0.hotfix-1"
+      echo "           MONGO_VERSION=6.0-custom"
+      echo "---------------------  ERROR  -----------------------"
       exit 1
     fi
     MONGO_VERSION_MAJOR=${BASH_REMATCH[1]}
