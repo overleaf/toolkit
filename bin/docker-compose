@@ -112,7 +112,7 @@ function set_redis_vars() {
 
   if [[ -z "${REDIS_AOF_PERSISTENCE:-}" ]]; then
     echo "WARNING: the value of REDIS_AOF_PERSISTENCE is not set in config/overleaf.rc"
-    echo "See https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#server-pro-510"
+    echo "See https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x/_edit#redis-aof-persistence-enabled-by-default"
     REDIS_COMMAND="redis-server"
   elif [[ $REDIS_AOF_PERSISTENCE == "true" ]]; then
     REDIS_COMMAND="redis-server --appendonly yes"
