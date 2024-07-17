@@ -1,10 +1,17 @@
 # Changelog
 
-## 2024-07-27
+## 2024-07-17
 ### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.1.0`.
+
+- `SIBLING_CONTAINERS_ENABLED` is now set to `true` for new installs in [`config-seed/overleaf.rc`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/overleaf.rc).
+
+  We strongly recommend enabling the [Sandboxed Compiles feature](https://github.com/overleaf/toolkit/blob/master/doc/sandboxed-compiles.md) 
+  for existing installations as well.
+ 
 - Added "--appendonly yes" configuration to redis.
 
-  redis persistence documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
+  Redis persistence documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
 
 ## 2024-07-16
 ### Added
