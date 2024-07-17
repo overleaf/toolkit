@@ -8,6 +8,7 @@ services:
         volumes:
             - "${REDIS_DATA_PATH}:/data"
         container_name: redis
+        command: ${REDIS_COMMAND}
         expose:
             - 6379
 

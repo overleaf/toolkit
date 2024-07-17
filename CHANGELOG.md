@@ -1,5 +1,11 @@
 # Changelog
 
+## 2024-07-27
+### Added
+- Added "--appendonly yes" configuration to redis.
+
+  redis persistence documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
+
 ## 2024-07-16
 ### Added
 - Added support for Mongo 6.0.
