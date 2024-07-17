@@ -13,6 +13,10 @@
 
   Redis persistence documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
 
+- Updated mongo to 6.0 in [`config-seed/overleaf.rc`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/overleaf.rc).
+
+  Mongo image name needs to be split between `MONGO_IMAGE` (with just the image name) and `MONGO_VERSION` in `config/overleaf.rc`.
+
 ## 2024-07-16
 ### Added
 - Added support for Mongo 6.0.
