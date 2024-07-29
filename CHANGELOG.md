@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-07-29
+### Fixed
+- Sandboxed Compiles is available for Server Pro only
+
 ## 2024-07-17
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.1.0`.
