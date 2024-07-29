@@ -84,7 +84,7 @@ function __main__() {
     initiate_mongo_replica_set
   fi
 
-  if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+  if [[ $SERVER_PRO == "true" && "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     pull_sandboxed_compiles
   fi
 

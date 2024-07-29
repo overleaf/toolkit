@@ -28,7 +28,7 @@ function build_environment() {
   if [[ $MONGO_ENABLED == "true" ]]; then
     set_mongo_vars
   fi
-  if [[ $SIBLING_CONTAINERS_ENABLED == "true" ]]; then
+  if [[ $SERVER_PRO == "true" && "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     set_sibling_containers_vars
   fi
   if [[ $NGINX_ENABLED == "true" ]]; then
