@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+#### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+
+function usage() {
+  echo "Usage:
+    bin/run-script [SCRIPT...] [SCRIPT_ARGS..]
+    bin/run-script [OPTIONS]
+
+Options:
+    help              prints this help
+    ls                prints a list of all available scripts
+
+Examples:
+    bin/run-script create_project --user-id=649c3f45711ad101a13de737
+    bin/run-script ls"
+}
+
+
+function __main__() {
+  if [[ "${1:-null}" == "null" ]] \
+    || [[ "${1:-null}" == "help" ]] \
+    || [[ "${1:-null}" == "--help" ]] ; then
+    usage && exit
+  fi
+
+  if [[ "${1:-null}" == "ls" ]] || [[ "${1:-null}" == "--ls" ]]; then
+    # only prints files under services/web/scripts, no recursive lookup
+    local cmd='ls -p /overleaf/services/web/scripts | grep -v /'
+    exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$cmd"
+    exit
+  fi
+
+  local run_cmd="cd /overleaf/services/web; node scripts/$@"
+  exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$run_cmd"
+}
+
+__main__ "$@"

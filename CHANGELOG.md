@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-07-30
+### Added
+- New `bin/run-script` command
+
 ## 2024-07-29
 ### Fixed
 - Sandboxed Compiles is available for Server Pro only
