@@ -40,8 +40,7 @@ function __main__() {
 
   if [[ "${1:-null}" == "ls" ]] || [[ "${1:-null}" == "--ls" ]]; then
     # runs `ls` excluding dirs and adds the name of the directory as prefix
-    local cmd="ls -p /overleaf/services/web/scripts | grep -v / | xargs -I {} echo 'scripts/{}'"
-    cmd="${cmd} && ls -p /overleaf/services/web/modules/server-ce-scripts/scripts | grep -v / | xargs -I {} echo 'modules/server-ce-scripts/scripts/{}'"
+    local cmd="cd /overleaf/services/web && find scripts/ modules/server-ce-scripts/scripts/ -maxdepth 1 -type f"
     exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$cmd"
     exit
   fi
