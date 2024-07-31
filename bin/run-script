@@ -26,7 +26,7 @@ Options:
     ls                prints a list of all available scripts
 
 Examples:
-    bin/run-script create_project --user-id=649c3f45711ad101a13de737
+    bin/run-script scripts/create_project.js --user-id=649c3f45711ad101a13de737
     bin/run-script ls"
 }
 
@@ -39,13 +39,14 @@ function __main__() {
   fi
 
   if [[ "${1:-null}" == "ls" ]] || [[ "${1:-null}" == "--ls" ]]; then
-    # only prints files under services/web/scripts, no recursive lookup
-    local cmd='ls -p /overleaf/services/web/scripts | grep -v /'
+    # runs `ls` excluding dirs and adds the name of the directory as prefix
+    local cmd="ls -p /overleaf/services/web/scripts | grep -v / | xargs -I {} echo 'scripts/{}'"
+    cmd="${cmd} && ls -p /overleaf/services/web/modules/server-ce-scripts/scripts | grep -v / | xargs -I {} echo 'modules/server-ce-scripts/scripts/{}'"
     exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$cmd"
     exit
   fi
 
-  local run_cmd="cd /overleaf/services/web; node scripts/$@"
+  local run_cmd="cd /overleaf/services/web; node $@"
   exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$run_cmd"
 }
 
