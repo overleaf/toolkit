@@ -1,0 +1,66 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+#### Detect Toolkit Project Root ####
+# if realpath is not available, create a semi-equivalent function
+command -v realpath >/dev/null 2>&1 || realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+TOOLKIT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+if [[ ! -d "$TOOLKIT_ROOT/bin" ]] || [[ ! -d "$TOOLKIT_ROOT/config" ]]; then
+  echo "ERROR: could not find root of overleaf-toolkit project (inferred project root as '$TOOLKIT_ROOT')"
+  exit 1
+fi
+
+
+function usage() {
+  echo "Usage:
+    bin/run-script [-e 'VAR1=value VAR2=value'] [SCRIPT...] [SCRIPT_ARGS..]
+    bin/run-script [OPTIONS]
+
+Options:
+    help              prints this help
+    ls                prints a list of all available scripts
+    -e                space-separated list of environment variables (optional)
+
+Examples:
+    bin/run-script scripts/create_project.js --user-id=649c3f45711ad101a13de737
+    bin/run-script -e 'PROJECT_ID=5ac1011aa13de547c3fd' scripts/delete_dangling_file_refs.js
+    bin/run-script ls"
+}
+
+
+function __main__() {
+  local env_vars=''
+  while getopts ":e:" opt
+  do
+    case $opt in
+      e ) env_vars="${OPTARG}" ;;
+      \?) usage && exit ;;
+      : ) usage && exit ;;
+    esac
+  done
+  shift $(( OPTIND -1 ))
+
+  if [[ "${1:-null}" == "null" ]] \
+    || [[ "${1:-null}" == "help" ]] \
+    || [[ "${1:-null}" == "--help" ]] ; then
+    usage && exit
+  fi
+
+  if [[ "${1:-null}" == "ls" ]] || [[ "${1:-null}" == "--ls" ]]; then
+    # runs `ls` excluding dirs and adds the name of the directory as prefix
+    local cmd="cd /overleaf/services/web && find scripts/ modules/server-ce-scripts/scripts/ -maxdepth 1 -type f"
+    exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$cmd"
+    exit
+  fi
+
+  local container_env="source /etc/overleaf/env.sh || source /etc/sharelatex/env.sh && source /etc/container_environment.sh"
+  local run_cmd="${container_env} && cd /overleaf/services/web && ${env_vars} node $@"
+  exec "$TOOLKIT_ROOT/bin/docker-compose" exec sharelatex bash -c "$run_cmd"
+}
+
+__main__ "$@"
