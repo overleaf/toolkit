@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-08-13
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.1.1`.
+
 ## 2024-07-30
 ### Added
 - New `bin/run-script` command
