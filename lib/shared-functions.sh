@@ -180,11 +180,11 @@ function check_sharelatex_env_vars() {
 function read_variable() {
   local name=$1
   grep -E "^$name=" "$TOOLKIT_ROOT/config/variables.env" \
-  | sed -r "s/^$name=([\"']*)(.+)\1*\$/\2/"
+  | sed -r "s/^$name=([\"']?)(.+)\1\$/\2/"
 }
 
 function read_configuration() {
   local name=$1
   grep -E "^$name=" "$TOOLKIT_ROOT/config/overleaf.rc" \
-  | sed -r "s/^$name=([\"']*)(.+)\1*\$/\2/"
+  | sed -r "s/^$name=([\"']?)(.+)\1\$/\2/"
 }
