@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-08-20
+### Fixed
+- Fix unquoting of variables (e.g. `ALL_TEX_LIVE_DOCKER_IMAGES`)
+
 ## 2024-08-13
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.1.1`.
