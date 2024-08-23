@@ -72,6 +72,8 @@
 ### Added
 - Pull TeX Live images from `bin/up`
 
+  You can disable the automatic pulling using `SIBLING_CONTAINERS_PULL=false` in your `config/overleaf.rc` file.
+
 ## 2024-05-24
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.0.4`.
