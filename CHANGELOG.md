@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-08-27
+### Added
+- Surface `MONGO_VERSION` from `bin/doctor`
+
 ## 2024-08-20
 ### Fixed
 - Fix unquoting of variables (e.g. `ALL_TEX_LIVE_DOCKER_IMAGES`)
