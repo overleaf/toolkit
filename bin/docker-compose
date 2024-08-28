@@ -28,8 +28,17 @@ function build_environment() {
   if [[ $MONGO_ENABLED == "true" ]]; then
     set_mongo_vars
   fi
-  if [[ $SERVER_PRO == "true" && "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
-    set_sibling_containers_vars
+  if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+    if [[ $SERVER_PRO == "true" ]]; then
+      set_sibling_containers_vars
+    else
+      echo "ERROR: SIBLING_CONTAINERS_ENABLED=true is not supported in Overleaf Community Edition." >&2
+      echo "  Sibling containers are not available in Community Edition, which is intended for use in environments where all users are trusted. Community Edition is not appropriate for scenarios where isolation of users is required." >&2
+      echo "  When not using Sibling containers, users have full read and write access to the 'sharelatex' container resources (filesystem, network, environment variables) when running LaTeX compiles." >&2
+      echo "  Sibling containers are offered as part of our Server Pro offering and you can read more about the differences at https://www.overleaf.com/for/enterprises/features." >&2
+      echo "  Set SIBLING_CONTAINERS_ENABLED=false in config/overleaf.rc to continue using insecure in-container compiles." >&2
+      exit 1
+    fi
   fi
   if [[ $NGINX_ENABLED == "true" ]]; then
     set_nginx_vars
@@ -112,7 +121,7 @@ function set_redis_vars() {
 
   if [[ -z "${REDIS_AOF_PERSISTENCE:-}" ]]; then
     echo "WARNING: the value of REDIS_AOF_PERSISTENCE is not set in config/overleaf.rc"
-    echo "See https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#redis-aof-persistence-enabled-by-default"
+    echo "  See https://github.com/overleaf/overleaf/wiki/Release-Notes-5.x.x#redis-aof-persistence-enabled-by-default"
     REDIS_COMMAND="redis-server"
   elif [[ $REDIS_AOF_PERSISTENCE == "true" ]]; then
     REDIS_COMMAND="redis-server --appendonly yes"
