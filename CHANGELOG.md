@@ -3,7 +3,7 @@
 ## 2024-08-27
 ### Added
 - Add loud warning to `bin/doctor` when not using Sandboxed Compiles/`SIBLING_CONTAINERS_ENABLED=true`
-- Refuse to start Community Edition with `SIBLING_CONTAINERS_ENABLED=true`
+- Add loud warning for using Community Edition with `SIBLING_CONTAINERS_ENABLED=true`
 
 ## 2024-08-27
 ### Added
