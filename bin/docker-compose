@@ -36,7 +36,7 @@ function build_environment() {
       echo "  Sibling containers are not available in Community Edition, which is intended for use in environments where all users are trusted. Community Edition is not appropriate for scenarios where isolation of users is required." >&2
       echo "  When not using Sibling containers, users have full read and write access to the 'sharelatex' container resources (filesystem, network, environment variables) when running LaTeX compiles." >&2
       echo "  Sibling containers are offered as part of our Server Pro offering and you can read more about the differences at https://www.overleaf.com/for/enterprises/features." >&2
-      echo "  Set SIBLING_CONTAINERS_ENABLED=false in config/overleaf.rc to continue using insecure in-container compiles." >&2
+      echo "  Falling back using insecure in-container compiles. Set SIBLING_CONTAINERS_ENABLED=false in config/overleaf.rc to silence this warning." >&2
     fi
   fi
   if [[ $NGINX_ENABLED == "true" ]]; then
