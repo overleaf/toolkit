@@ -31,6 +31,9 @@ function build_environment() {
   if [[ $SERVER_PRO == "true" && "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     set_sibling_containers_vars
   fi
+  if [[ "${OVERLEAF_LOG_PATH:-null}" != "null" ]]; then
+    set_logging_vars
+  fi
   if [[ $NGINX_ENABLED == "true" ]]; then
     set_nginx_vars
   fi
@@ -46,6 +49,9 @@ function build_environment() {
 
 function canonicalize_data_paths() {
   OVERLEAF_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$OVERLEAF_DATA_PATH")
+  if [[ "${OVERLEAF_LOG_PATH:-null}" != "null" ]]; then
+    OVERLEAF_LOG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$OVERLEAF_LOG_PATH")
+  fi
   MONGO_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$MONGO_DATA_PATH")
   REDIS_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$REDIS_DATA_PATH")
   GIT_BRIDGE_DATA_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$GIT_BRIDGE_DATA_PATH")
@@ -143,6 +149,19 @@ function set_sibling_containers_vars() {
   DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   export DOCKER_SOCKET_PATH
   export OVERLEAF_DATA_PATH
+}
+
+# Set environment variables for docker-compose.logging.yml
+function set_logging_vars() {
+  DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.logging.yml")
+
+  if [[ $IMAGE_VERSION_MAJOR -ge 5 ]]; then
+    OVERLEAF_IN_CONTAINER_LOG_PATH="/var/log/overleaf"
+  else
+    OVERLEAF_IN_CONTAINER_LOG_PATH="/var/log/sharelatex"
+  fi
+  export OVERLEAF_IN_CONTAINER_LOG_PATH
+  export OVERLEAF_LOG_PATH
 }
 
 # Set environment variables for docker-compose.nginx.yml
