@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-09-03
+### Added
+- Add a new config option `OVERLEAF_LOG_PATH` for making [application logs](https://github.com/overleaf/overleaf/wiki/Log-files) available on the Docker host.
+
 ## 2024-08-27
 ### Added
 - Surface `MONGO_VERSION` from `bin/doctor`

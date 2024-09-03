@@ -77,6 +77,8 @@ For instructions on how to migrate `nginx`, please see [TLS Proxy for Overleaf T
 
 The location of the data volume for the `sharelatex` container will need to be set using `OVERLEAF_DATA_PATH` in the **config/overleaf.rc** file.
 
+In case you are bind-mounting the [application logs](https://github.com/overleaf/overleaf/wiki/Log-files), you can use `OVERLEAF_LOG_PATH` to configure the host path.
+
 ### MongoDB ###
 
 The location of the data volume for the `mongo` container will need to be set using `MONGO_DATA_PATH` in the **config/overleaf.rc** file.
