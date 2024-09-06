@@ -74,6 +74,15 @@ These are the three configuration files you will interact with:
 - `variables.env` : environment variables loaded into the docker container
 - `version` : the version of the docker images to use
 
+## Selecting Overleaf Community Edition or Server Pro
+
+By default, the Overleaf Toolkit uses the free Overleaf Community Edition.
+
+Overleaf Server Pro is a commercial version of Overleaf, with extra features and commercial support.
+See https://www.overleaf.com/for/enterprises/features for more details about Server Pro and how to
+buy a license.
+
+In case you are a Server Pro customer, or want to set up a Server Pro trial instance, please follow the [docs on switching to Server Pro](getting-server-pro.md) before continuing with the next step.
 
 ## Starting Up
 
