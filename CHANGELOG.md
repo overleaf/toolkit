@@ -1,5 +1,10 @@
 # Changelog
 
+## 2024-09-11
+### Added
+- Add loud warning to `bin/doctor` when not using Sandboxed Compiles/`SIBLING_CONTAINERS_ENABLED=true`
+- Add loud warning for using Community Edition with `SIBLING_CONTAINERS_ENABLED=true`
+
 ## 2024-09-03
 ### Added
 - Add a new config option `OVERLEAF_LOG_PATH` for making [application logs](https://github.com/overleaf/overleaf/wiki/Log-files) available on the Docker host.

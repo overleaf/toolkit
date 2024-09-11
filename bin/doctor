@@ -217,6 +217,10 @@ function check_config_files() {
         fi
 
         print_point 2 "SERVER_PRO: $SERVER_PRO"
+        print_point 2 "SIBLING_CONTAINERS_ENABLED: $SIBLING_CONTAINERS_ENABLED"
+        if [[ "${SIBLING_CONTAINERS_ENABLED:-null}" != "true" ]]; then
+          add_warning "Detected SIBLING_CONTAINERS_ENABLED=false. When not using Sibling containers, users have full read and write access to the 'sharelatex' container resources (filesystem, network, environment variables) when running LaTeX compiles. Only use this mode in environments where all users are trusted and no isolation of users is required."
+        fi
         if [[ "${SERVER_PRO:-null}" == "true" ]]; then
           local logged_in
           logged_in="$(grep -q quay.io ~/.docker/config.json && echo 'true' || echo 'false')"
@@ -231,7 +235,8 @@ function check_config_files() {
             )
             add_warning "${warning_message[@]}"
           fi
-          print_point 2 "SIBLING_CONTAINERS_ENABLED: $SIBLING_CONTAINERS_ENABLED"
+        elif [[ "${SIBLING_CONTAINERS_ENABLED:-null}" == "true" ]]; then
+          add_warning "Sibling containers are not available in Community Edition, which is intended for use in environments where all users are trusted. Community Edition is not appropriate for scenarios where isolation of users is required. Sibling containers are offered as part of our Server Pro offering and you can read more about the differences at https://www.overleaf.com/for/enterprises/features. Set SIBLING_CONTAINERS_ENABLED=false in config/overleaf.rc to continue using insecure in-container compiles."
         fi
         if [[ "${OVERLEAF_LISTEN_IP:-null}" != "null" ]]; then
           print_point 2 "OVERLEAF_LISTEN_IP: ${OVERLEAF_LISTEN_IP}"

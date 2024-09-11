@@ -1,6 +1,12 @@
 # Sandboxed Compiles
 
-In Server Pro, it is possible to have each LaTeX project be compiled in a separate docker container, achieving sandbox isolation between projects. 
+In Server Pro, it is possible to have each LaTeX project be compiled in a separate docker container, achieving sandbox isolation between projects.
+
+This feature is also known as "Sibling containers" as LaTeX compiles are running in a sibling container next to the Server Pro docker container.
+
+When not using Sandboxed Compiles, users have full read and write access to the `sharelatex` container resources (filesystem, network, environment variables) when running LaTeX compiles.
+
+Note: Sibling containers are not available in Community Edition, which is intended for use in environments where all users are trusted. Community Edition is not appropriate for scenarios where isolation of users is required.
 
 ## How It Works
 

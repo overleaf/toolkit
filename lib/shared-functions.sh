@@ -26,7 +26,7 @@ function read_mongo_version() {
     if [[ "$mongo_image" =~ ^mongo:([0-9]+)\.(.*)$ ]]; then
       # when running a chain of commands (example: bin/up -> bin/docker-compose) we're passing
       # SKIP_WARNINGS=true to prevent the warning message to be printed several times
-      if [[ -z ${SKIP_WARNINGS:-} ]]; then
+      if [[ ${SKIP_WARNINGS:-null} != "true" ]]; then
         echo "-------------------  WARNING  ----------------------"
         echo "  Deprecation warning: the mongo image is now split between MONGO_IMAGE"
         echo "  and MONGO_VERSION configurations. Please update your config/overleaf.rc as"
