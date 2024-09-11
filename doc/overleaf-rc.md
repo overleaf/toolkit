@@ -18,9 +18,17 @@ This is useful when running multiple instances of Overleaf on one host, as each 
 
 ### `OVERLEAF_DATA_PATH`
 
-Sets the path to the directory that will be mounted into the main `sharelatex` container, and used to store compile data. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit.
+Sets the path to the directory that will be mounted into the main `sharelatex` container, and used to store project and compile data. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit.
 
 - Default: data/sharelatex
+
+### `OVERLEAF_LOG_PATH`
+
+Sets the path to the directory that will be mounted into the main `sharelatex` container, and used for making application logs available on the Docker host. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit.
+
+Remove the config entry to disable the bind-mount. When not set, logs will be discarded when recreating the container.
+
+- Default: not set
 
 ### `OVERLEAF_LISTEN_IP`
 
