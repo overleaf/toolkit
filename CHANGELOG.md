@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-09-24
+### Added
+- Print warning when running `bin/up` without detach mode
+
 ## 2024-09-11
 ### Added
 - Add loud warning to `bin/doctor` when not using Sandboxed Compiles/`SIBLING_CONTAINERS_ENABLED=true`
