@@ -69,6 +69,24 @@ function pull_sandboxed_compiles() {
   done
 }
 
+function notify_about_not_using_detach_mode() {
+  local detached=false
+  for arg in "$@"; do
+    case "$arg" in
+        -d|--detach) detached=true;;
+    esac
+  done
+  if [[ "$detached" == false ]]; then
+    echo
+    echo '---'
+    echo
+    echo '  NOTICE: You are running "bin/up" without the detach mode ("-d" or "--detach" option). Behind the scenes, we will invoke "docker compose up", which will tail the container logs indefinitely until you issue a keyboard interrupt (CTRL+C).'
+    echo
+    echo '---'
+    echo
+  fi
+}
+
 function __main__() {
   if [[ "${1:-null}" == "help" ]] || [[ "${1:-null}" == "--help" ]]; then
     usage
@@ -88,6 +106,7 @@ function __main__() {
     pull_sandboxed_compiles
   fi
 
+  notify_about_not_using_detach_mode "$@"
   exec "$TOOLKIT_ROOT/bin/docker-compose" up "$@"
 }
 
