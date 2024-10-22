@@ -3,6 +3,7 @@
 ## 2024-10-23
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.2.0`.
+- Drop support for Docker Compose v1. [How to switch to Compose V2](https://docs.docker.com/compose/releases/migrate/#how-do-i-switch-to-compose-v2).
 
 ### Changed
 - If set, the `overleaf.rc` entry `GIT_BRIDGE_IMAGE` must be specified without the version now.
