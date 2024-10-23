@@ -206,7 +206,7 @@ function set_nginx_vars() {
 function set_git_bridge_vars() {
   local image_name
   if [[ -n ${GIT_BRIDGE_IMAGE:-} ]]; then
-    image_name="$GIT_BRIDGE_IMAGE"
+    image_name="$GIT_BRIDGE_IMAGE:$IMAGE_VERSION"
   else
     image_name="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
   fi
