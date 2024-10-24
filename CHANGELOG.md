@@ -1,5 +1,15 @@
 # Changelog
 
+## 2024-10-23
+### Changed
+- If set, the `overleaf.rc` entry `GIT_BRIDGE_IMAGE` must be specified without the version now.
+
+  Example:
+  ```diff
+  -GIT_BRIDGE_IMAGE=my.registry.com/overleaf/git-bridge:5.1.1
+  +GIT_BRIDGE_IMAGE=my.registry.com/overleaf/git-bridge
+  ```
+
 ## 2024-09-24
 ### Added
 - Print warning when running `bin/up` without detach mode
