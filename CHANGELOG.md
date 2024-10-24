@@ -1,6 +1,6 @@
 # Changelog
 
-## 2024-10-23
+## 2024-10-24
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.2.0`.
 - Drop support for Docker Compose v1. [How to switch to Compose V2](https://docs.docker.com/compose/releases/migrate/#how-do-i-switch-to-compose-v2).
