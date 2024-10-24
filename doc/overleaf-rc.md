@@ -46,6 +46,13 @@ Sets the host port that the container will bind to. For example, if this is set 
 
 - Default: 80
 
+### `OVERLEAF_IMAGE_NAME`
+
+Docker image as used by the Server Pro/CE application container. This is just the Docker image name, the Docker image tag is sourced from `config/version`.
+
+- Default:
+  - Server Pro: `quay.io/sharelatex/sharelatex-pro`
+  - Community Edition: `sharelatex/sharelatex`
 
 ### `SERVER_PRO`
 
@@ -73,6 +80,31 @@ Requires `SIBLING_CONTAINERS_ENABLED=true`
 
 - Default: /var/run/docker.sock
 
+### `GIT_BRIDGE_ENABLED`
+
+Set to `true` to enable the git-bridge feature (Server Pro only).
+
+User documentation: https://www.overleaf.com/learn/how-to/Git_integration
+
+- Default: false
+
+### `GIT_BRIDGE_IMAGE`
+
+Docker image as used by the git-bridge container (Server Pro only). This is just the Docker image name, the Docker image tag is sourced from `config/version`.
+
+- Default: `quay.io/sharelatex/git-bridge`
+
+### `GIT_BRIDGE_DATA_PATH`
+
+Sets the path to the directory that will be mounted into the `git-bridge` container (Server Pro only), and used to store the git-repositories. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit.
+
+- Default: data/git-bridge
+
+### `GIT_BRIDGE_LOG_LEVEL`
+
+Configure the logging level of the `git-bridge` container. Available levels: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`.
+
+- Default: INFO
 
 ### `MONGO_ENABLED`
 
@@ -95,6 +127,17 @@ Sets the path to the directory that will be mounted into the `mongo` container, 
 
 - Default: data/mongo
 
+### `MONGO_IMAGE`
+
+Docker image as used by the MongoDB container. This is just the name of the Docker image, the Docker image tag should go into `MONGO_VERSION` (see below).
+
+- Default: `mongo`
+
+### `MONGO_VERSION`
+
+MongoDB version as used by the MongoDB container. The value must start with the major MongoDB version and a dot, e.g. `6.0` or `6.0-with-suffix`.
+
+- Default: `6.0`
 
 ### `REDIS_ENABLED`
 
@@ -123,6 +166,20 @@ Specifies the Redis port to use when `REDIS_ENABLED` is `false`
 Sets the path to the directory that will be mounted into the `redis` container, and used to store the Redis database. This can be either a full path (beginning with a `/`), or relative to the base directory of the toolkit. This option only affects the local `redis` container that is created when `REDIS_ENABLED` is `true`.
 
 - Default: data/redis
+
+### `REDIS_IMAGE`
+
+Docker image as used by the Redis container.
+
+- Default: `redis:6.2`
+
+### `REDIS_AOF_PERSISTENCE`
+
+Turn on AOF (Append Only File) persistence for Redis. This is the recommended configuration for Redis persistence.
+
+For additional details, see https://github.com/overleaf/overleaf/wiki/Data-and-Backups/#redis
+
+- Default: true
 
 ### `NGINX_ENABLED`
 
