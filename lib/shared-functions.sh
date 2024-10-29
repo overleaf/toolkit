@@ -6,6 +6,11 @@ function read_config() {
   source "$TOOLKIT_ROOT/lib/default.rc"
   # shellcheck source=/dev/null
   source "$TOOLKIT_ROOT/config/overleaf.rc"
+
+  if [[ $SERVER_PRO != "true" || $IMAGE_VERSION_MAJOR -lt 4 ]]; then
+    # Force git bridge to be disabled if not ServerPro >= 4
+    GIT_BRIDGE_ENABLED=false
+  fi
 }
 
 function read_image_version() {
@@ -68,6 +73,30 @@ function read_mongo_version() {
   else
     MONGOSH="mongosh"
   fi
+}
+
+function set_server_pro_image_name() {
+  local version=$1
+  local image_name
+  if [[ -n ${OVERLEAF_IMAGE_NAME:-} ]]; then
+    image_name="$OVERLEAF_IMAGE_NAME"
+  elif [[ $SERVER_PRO == "true" ]]; then
+    image_name="quay.io/sharelatex/sharelatex-pro"
+  else
+    image_name="sharelatex/sharelatex"
+  fi
+  export IMAGE="$image_name:$version"
+}
+
+function set_git_bridge_image_name() {
+  local version=$1
+  local image_name
+  if [[ -n ${GIT_BRIDGE_IMAGE:-} ]]; then
+    image_name="$GIT_BRIDGE_IMAGE"
+  else
+    image_name="quay.io/sharelatex/git-bridge"
+  fi
+  export GIT_BRIDGE_IMAGE="$image_name:$version"
 }
 
 function check_retracted_version() {

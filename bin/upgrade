@@ -156,6 +156,14 @@ function handle_image_upgrade() {
     prompt "Are you following the recovery process?"
   fi
 
+  echo "Pulling new images"
+  set_server_pro_image_name "$SEED_IMAGE_VERSION"
+  docker pull "$IMAGE"
+  if [[ $GIT_BRIDGE_ENABLED == "true" ]]; then
+    set_git_bridge_image_name "$SEED_IMAGE_VERSION"
+    docker pull "$GIT_BRIDGE_IMAGE"
+  fi
+
   ## Offer to stop docker services
   local services_stopped="false"
   if services_up; then
@@ -260,6 +268,7 @@ function __main__() {
 
   read_seed_image_version
   read_image_version
+  read_config
   handle_rc_rebranding
   handle_image_upgrade
 
