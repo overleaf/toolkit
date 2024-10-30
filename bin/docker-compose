@@ -76,15 +76,7 @@ function set_base_vars() {
     DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.vars.yml")
   fi
 
-  local image_name
-  if [[ -n ${OVERLEAF_IMAGE_NAME:-} ]]; then
-    image_name="$OVERLEAF_IMAGE_NAME"
-  elif [[ $SERVER_PRO == "true" ]]; then
-    image_name="quay.io/sharelatex/sharelatex-pro"
-  else
-    image_name="sharelatex/sharelatex"
-  fi
-  export IMAGE="$image_name:$IMAGE_VERSION"
+  set_server_pro_image_name "$IMAGE_VERSION"
 
   if [[ ${OVERLEAF_LISTEN_IP:-null} == "null" ]];
   then
@@ -94,11 +86,6 @@ function set_base_vars() {
     OVERLEAF_LISTEN_IP="0.0.0.0"
   fi
   export OVERLEAF_LISTEN_IP
-
-  if [[ $SERVER_PRO != "true" || $IMAGE_VERSION_MAJOR -lt 4 ]]; then
-    # Force git bridge to be disabled if not ServerPro >= 4
-    GIT_BRIDGE_ENABLED=false
-  fi
 
   HAS_WEB_API=false
   if [[ $IMAGE_VERSION_MAJOR -gt 4 ]]; then
@@ -204,12 +191,7 @@ function set_nginx_vars() {
 
 # Set environment variables for docker-compose.git-bridge.yml
 function set_git_bridge_vars() {
-  local image_name
-  if [[ -n ${GIT_BRIDGE_IMAGE:-} ]]; then
-    image_name="$GIT_BRIDGE_IMAGE:$IMAGE_VERSION"
-  else
-    image_name="quay.io/sharelatex/git-bridge:$IMAGE_VERSION"
-  fi
+  set_git_bridge_image_name "$IMAGE_VERSION"
 
   GIT_BRIDGE_API_BASE_URL="http://sharelatex/api/v0/"
   if [[ $HAS_WEB_API == "true" ]]; then
@@ -218,7 +200,6 @@ function set_git_bridge_vars() {
 
   DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.git-bridge.yml")
   export GIT_BRIDGE_API_BASE_URL
-  export GIT_BRIDGE_IMAGE=${image_name}
   export GIT_BRIDGE_DATA_PATH
   export GIT_BRIDGE_LOG_LEVEL
 }

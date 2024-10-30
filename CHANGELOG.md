@@ -1,5 +1,9 @@
 # Changelog
 
+## 2024-10-29
+### Added
+- Pull new images from `bin/upgrade` ahead of stopping containers
+
 ## 2024-10-24
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.2.1`.
