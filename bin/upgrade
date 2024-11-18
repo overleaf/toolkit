@@ -169,12 +169,7 @@ function handle_image_upgrade() {
       echo "  If you try subsequently to restart your instance it will fail until the updated image with"
       echo "  tag $SEED_IMAGE_VERSION is available in your system"
       echo "-------------------  WARNING  ----------------------"
-      local should_continue="n"
-      read -r -p "Continue with the upgrade process? [y/n] " should_continue
-      if [[ ! "$should_continue" =~ [Yy] ]]; then
-        echo "Exiting."
-        exit 1
-      fi
+      prompt "Continue with the upgrade process?"
     else
       set_git_bridge_image_name "$SEED_IMAGE_VERSION"
       docker pull "$GIT_BRIDGE_IMAGE"
