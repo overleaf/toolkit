@@ -170,10 +170,9 @@ function handle_image_upgrade() {
       echo "  tag $SEED_IMAGE_VERSION is available in your system"
       echo "-------------------  WARNING  ----------------------"
       prompt "Continue with the upgrade process?"
-    else
-      set_git_bridge_image_name "$SEED_IMAGE_VERSION"
-      docker pull "$GIT_BRIDGE_IMAGE"
     fi
+    set_git_bridge_image_name "$SEED_IMAGE_VERSION"
+    docker pull "$GIT_BRIDGE_IMAGE"
   fi
 
   ## Offer to stop docker services
