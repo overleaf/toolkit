@@ -165,7 +165,7 @@ function handle_image_upgrade() {
       echo "  You're using a custom git bridge image: $GIT_BRIDGE_IMAGE"
       echo "  Upgrade of your custom image is skipped. You need to pull the image separately, making sure that:"
       echo "     1. The Docker image is tagged with the new version: $SEED_IMAGE_VERSION"
-      echo "     2. The environment variable GIT_BRIDGE_IMAGE only contains the image name, and not a tag/version."
+      echo "     2. The config/overleaf.rc entry GIT_BRIDGE_IMAGE only contains the image name, and not a tag/version."
       echo "  If you try subsequently to restart your instance it will fail until the updated image with"
       echo "  tag $SEED_IMAGE_VERSION is available in your system"
       echo "-------------------  WARNING  ----------------------"
