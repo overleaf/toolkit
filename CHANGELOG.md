@@ -1,5 +1,10 @@
 # Changelog
 
+## 2024-11-18
+### Added
+- When a custom `GIT_BRIDGE_IMAGE` is set, `bin/upgrade` no longer tries to pull the new version, and prompts
+  the user to update and tag the custom image separately.
+
 ## 2024-10-29
 ### Added
 - Pull new images from `bin/upgrade` ahead of stopping containers
