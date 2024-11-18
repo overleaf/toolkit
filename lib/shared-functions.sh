@@ -96,7 +96,15 @@ function set_git_bridge_image_name() {
   else
     image_name="quay.io/sharelatex/git-bridge"
   fi
-  export GIT_BRIDGE_IMAGE="$image_name:$version"
+
+  # since we're reusing the GIT_BRIDGE_IMAGE environment variable, we check here if the version
+  # has already been added to it, for scenarios where this function is called more than once
+  if [[ "$image_name" == *"$version" ]]; then
+    export GIT_BRIDGE_IMAGE="$image_name"
+  else
+    export GIT_BRIDGE_IMAGE="$image_name:$version"
+  fi
+
 }
 
 function check_retracted_version() {
