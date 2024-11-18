@@ -166,8 +166,8 @@ function handle_image_upgrade() {
       echo "  Upgrade of your custom image is skipped. You need to pull the image separately, making sure that:"
       echo "     1. The Docker image is tagged with the new version: $SEED_IMAGE_VERSION"
       echo "     2. The environment variable GIT_BRIDGE_IMAGE only contains the image name, and not a tag/version."
-      echo "  You can safely proceed with the upgrade process, but if you try subsequently to restart your instance"
-      echo "  it will fail until the updated image with tag $SEED_IMAGE_VERSION is available in your system"
+      echo "  If you try subsequently to restart your instance it will fail until the updated image with"
+      echo "  tag $SEED_IMAGE_VERSION is available in your system"
       echo "-------------------  WARNING  ----------------------"
       local should_continue="n"
       read -r -p "Continue with the upgrade process? [y/n] " should_continue
