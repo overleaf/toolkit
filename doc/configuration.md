@@ -55,4 +55,4 @@ The `config/version` file contains the version number of the docker images that 
 
 If present, the `config/docker-compose.override.yml` file will be included in the invocation to `docker compose`. This is useful for overriding configuration specific to docker compose.
 
-See the [docker-compose documentation](https://docs.docker.com/compose/extends/#adding-and-overriding-configuration) for more details.
+See the [docker-compose documentation](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/) for more details.
