@@ -41,3 +41,7 @@ NGINX_TLS_LISTEN_IP=127.0.1.1
 TLS_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
 TLS_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem
 TLS_PORT=443
+
+# In Air-gapped setups, skip pulling images
+# PULL_BEFORE_UPGRADE=false
+# SIBLING_CONTAINERS_PULL=false

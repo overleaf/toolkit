@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-01-06
+### Added
+- Add new config option for skipping docker pull before upgrading
+- Document config options for air-gapped setups
+
 ## 2024-11-18
 ### Added
 - When a custom `GIT_BRIDGE_IMAGE` is set, `bin/upgrade` no longer tries to pull the new version, and prompts

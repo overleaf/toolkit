@@ -16,3 +16,5 @@ If you do choose to switch versions, the script will then walk you through a pro
 The whole process looks like this:
 
 ![Demonstration of the upgrade script](./img/upgrade-demo.gif)
+
+> Note: For air-gapped setups that manually import docker images, please set `PULL_BEFORE_UPGRADE=false` in your `config/overleaf.rc` file.
