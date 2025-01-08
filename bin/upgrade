@@ -156,22 +156,24 @@ function handle_image_upgrade() {
     prompt "Are you following the recovery process?"
   fi
 
-  echo "Pulling new images"
-  set_server_pro_image_name "$SEED_IMAGE_VERSION"
-  docker pull "$IMAGE"
-  if [[ $GIT_BRIDGE_ENABLED == "true" ]]; then
-    if [[ -n ${GIT_BRIDGE_IMAGE:-} ]]; then
-      echo "-------------------  WARNING  ----------------------"
-      echo "  You're using the custom git bridge image $GIT_BRIDGE_IMAGE"
-      echo "  Before continuing you need to tag the updated image separately, making sure that:"
-      echo "     1. The Docker image is tagged with the new version: $SEED_IMAGE_VERSION"
-      echo "     2. The config/overleaf.rc entry GIT_BRIDGE_IMAGE only contains the image name, and not a tag/version."
-      echo "  You wont be able to continue with this upgrade until you've tagged your custom image with $SEED_IMAGE_VERSION"
-      echo "-------------------  WARNING  ----------------------"
-      prompt "Has the custom image been tagged?"
+  if [[ "${PULL_BEFORE_UPGRADE:-true}" == "true" ]]; then
+    echo "Pulling new images"
+    set_server_pro_image_name "$SEED_IMAGE_VERSION"
+    docker pull "$IMAGE"
+    if [[ $GIT_BRIDGE_ENABLED == "true" ]]; then
+      if [[ -n ${GIT_BRIDGE_IMAGE:-} ]]; then
+        echo "-------------------  WARNING  ----------------------"
+        echo "  You're using the custom git bridge image $GIT_BRIDGE_IMAGE"
+        echo "  Before continuing you need to tag the updated image separately, making sure that:"
+        echo "     1. The Docker image is tagged with the new version: $SEED_IMAGE_VERSION"
+        echo "     2. The config/overleaf.rc entry GIT_BRIDGE_IMAGE only contains the image name, and not a tag/version."
+        echo "  You wont be able to continue with this upgrade until you've tagged your custom image with $SEED_IMAGE_VERSION"
+        echo "-------------------  WARNING  ----------------------"
+        prompt "Has the custom image been tagged?"
+      fi
+      set_git_bridge_image_name "$SEED_IMAGE_VERSION"
+      docker pull "$GIT_BRIDGE_IMAGE"
     fi
-    set_git_bridge_image_name "$SEED_IMAGE_VERSION"
-    docker pull "$GIT_BRIDGE_IMAGE"
   fi
 
   ## Offer to stop docker services
