@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-01-29
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.3.1`.
+
 ## 2025-01-06
 ### Added
 - Add new config option for skipping docker pull before upgrading
