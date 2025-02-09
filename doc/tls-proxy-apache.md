@@ -78,6 +78,7 @@ RewriteCond %{HTTP:Upgrade} !=websocket [NC]
 RewriteRule /(.*)           http://127.0.0.1:8080/$1 [P,L]
 
 <IfModule mod_proxy.c>
+    ProxyRequests Off
     # There is no ProxyPass directive ! It is handled by the second RewriteCond
     ProxyPassReverse / http://127.0.0.1:8080/
 </IfModule>
