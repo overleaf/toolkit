@@ -185,6 +185,27 @@ First, we see some information about the host system (the machine that the toolk
 
 When you run into problems with your toolkit, you should first run the doctor script and check it's output. 
 
+## LaTeX environment
+
+To save bandwidth, the Overleaf image only comes with a minimal install of TeXLive. To upgrade to a complete TeXLive installation, run the installation script in the Overleaf container with the following command
+
+```sh
+$ docker exec sharelatex tlmgr install scheme-full
+```
+
+To make this changes persistent when docker restarts label current state (replace 0.0.0 with sharelatex version)
+
+```sh
+$ docker commit sharelatex sharelatex/sharelatex:0.0.0-with-texlive-full
+```
+
+thenn add `-with-texlive-full1` to the end of your version in config/version and run `bin/up -d` again.
+
+```sh
+$ cat config/version
+4.0.5-with-texlive-full
+```
+
 
 ## Getting Help
 
