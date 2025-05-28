@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-05-28
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.5.0`.
+
 ## 2025-04-30
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.4.1`.
