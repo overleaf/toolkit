@@ -6,6 +6,7 @@ The Overleaf Toolkit depends on the following programs:
 
 - bash
 - docker
+- docker-compose
 
 We recommend that you install the most recent version of docker that is
 available on your system.
