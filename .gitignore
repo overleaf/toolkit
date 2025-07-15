@@ -9,3 +9,8 @@ config/**/*
 
 data/**/*
 !data/.gitkeep
+
+!data/git-bridge/.gitkeep
+!data/mongo/.gitkeep
+!data/overleaf/.gitkeep
+!data/redis/.gitkeep
