@@ -94,9 +94,9 @@ function set_base_vars() {
     HAS_WEB_API=true
   fi
 
-  OVERLEAF_IN_CONTAINER_DATA_PATH=/var/lib/overleaf
+  OVERLEAF_IN_CONTAINER_DATA_PATH=//var/lib/overleaf
   if [[ "$IMAGE_VERSION_MAJOR" -lt 5 ]]; then
-    OVERLEAF_IN_CONTAINER_DATA_PATH=/var/lib/sharelatex
+    OVERLEAF_IN_CONTAINER_DATA_PATH=//var/lib/sharelatex
   fi
 
   export GIT_BRIDGE_ENABLED
