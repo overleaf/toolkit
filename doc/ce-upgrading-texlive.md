@@ -71,7 +71,8 @@ $ cat config/version
 #^^^^ --------------- matching version ----------- |
 #                                                vvvvv
 $ docker commit sharelatex sharelatex/sharelatex:5.0.3-with-texlive-full
-
+#^^^^ --- also here ---|
+       vvvvv-----------|
 $ echo 5.0.3-with-texlive-full > config/version
 ```
 
