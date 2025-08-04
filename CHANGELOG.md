@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-08-04
+### Fixed
+- Fix `Permission denied` errors when running `bin/upgrade`.
+
 ## 2025-07-29
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.5.3`.

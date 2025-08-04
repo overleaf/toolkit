@@ -35,6 +35,13 @@ function check_config() {
   fi
 }
 
+function ensure_data_dirs_exist() {
+  mkdir -p "$TOOLKIT_ROOT/data/git-bridge"
+  mkdir -p "$TOOLKIT_ROOT/data/mongo"
+  mkdir -p "$TOOLKIT_ROOT/data/overleaf"
+  mkdir -p "$TOOLKIT_ROOT/data/redis"
+}
+
 function initiate_mongo_replica_set() {
   echo "Initiating Mongo replica set..."
   env SKIP_WARNINGS=true "$TOOLKIT_ROOT/bin/docker-compose" up -d mongo
@@ -97,6 +104,8 @@ function __main__() {
   SKIP_WARNINGS=true read_mongo_version
   check_config
   read_config
+
+  ensure_data_dirs_exist
 
   if [[ "$MONGO_ENABLED" == "true" && "$IMAGE_VERSION_MAJOR" -ge 4 ]]; then
     initiate_mongo_replica_set
