@@ -1,5 +1,8 @@
 ---
 services:
+  sharelatex:
+    depends_on:
+      - nginx
 
   nginx:
     image: "${NGINX_IMAGE}"
@@ -12,5 +15,3 @@ services:
       - "${NGINX_CONFIG_PATH}:/etc/nginx/nginx.conf:ro"
     restart: always
     container_name: nginx
-    depends_on:
-      - sharelatex
