@@ -6,6 +6,7 @@
 - Fix graceful shutdown procedure with TLS proxy enabled.
   Swap the dependency between the TLS proxy and Server Pro/CE container. This ensures that `bin/stop` will wait for the application container to stop before taking down the TLS proxy. Notably this ensures that connected users can flush their changes as part of the graceful shutdown procedure.
   Please align your nginx config with the updated default configuration (added upstream, configure docker as resolver and switch proxy_pass to upstream) by comparing `config/nginx/nginx.conf` and `lib/config-seed/nginx.conf`.
+- Automatically configure `OVERLEAF_SECURE_COOKIE`/`OVERLEAF_BEHIND_PROXY`/`OVERLEAF_TRUSTED_PROXY_IPS` for TLS proxy.
 
 ## 2025-08-04
 ### Added

@@ -1,6 +1,12 @@
 ---
 services:
   sharelatex:
+    environment:
+      OVERLEAF_SECURE_COOKIE: 'true'
+      OVERLEAF_TRUSTED_PROXY_IPS: "${OVERLEAF_TRUSTED_PROXY_IPS}"
+      # Enabled by default in Server Pro 6.0
+      OVERLEAF_BEHIND_PROXY: 'true'
+
     depends_on:
       - nginx
 
