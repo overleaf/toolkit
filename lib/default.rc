@@ -28,7 +28,7 @@ GIT_BRIDGE_LOG_LEVEL=INFO
 
 # TLS proxy configuration
 NGINX_ENABLED=false
-NGINX_IMAGE=nginx:1.19-alpine
+NGINX_IMAGE=nginx:1.28-alpine
 NGINX_CONFIG_PATH=config/nginx/nginx.conf
 NGINX_HTTP_PORT=80
 TLS_PORT=443

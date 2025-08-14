@@ -1,5 +1,16 @@
 # Changelog
 
+## 2025-08-14
+### Changed
+- Upgrade default nginx version for TLS proxy to version 1.28. If you configured a custom `NGINX_IMAGE`, please upgrade it.
+- Fix graceful shutdown procedure with TLS proxy enabled.
+  Swap the dependency between the TLS proxy and Server Pro/CE container. This ensures that `bin/stop` will wait for the application container to stop before taking down the TLS proxy. Notably this ensures that connected users can flush their changes as part of the graceful shutdown procedure.
+  Please align your nginx config with the updated default configuration (add upstream, configure docker as resolver and switch proxy_pass to upstream) by comparing `config/nginx/nginx.conf` and `lib/config-seed/nginx.conf`.
+- Automatically configure `OVERLEAF_SECURE_COOKIE`/`OVERLEAF_BEHIND_PROXY`/`OVERLEAF_TRUSTED_PROXY_IPS` for TLS proxy.
+  In case you are using a subnet from `172.16.0.0/12` (default subnet for Docker networks) for your regular network, please set `OVERLEAF_TRUSTED_PROXY_IPS=loopback,<network>` in your `config/variables.env`. Where `<network>` is the `IPAM -> Config -> Subnet` value in `docker inspect overleaf_default`, e.g. `OVERLEAF_TRUSTED_PROXY_IPS=loopback,172.19.0.0/16`
+
+  Customers with an external TLS proxy (i.e. not managed by the Overleaf Toolkit), please ensure that `OVERLEAF_TRUSTED_PROXY_IPS=loopback,<ip-of-your-tls-proxy>` is set in your `config/variables.env`, e.g. `OVERLEAF_TRUSTED_PROXY_IPS=loopback,192.168.13.37`.
+
 ## 2025-08-04
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.5.4`.
@@ -17,7 +28,7 @@
 ## 2025-05-28
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.5.1`.
-- 
+-
 ## 2025-05-28
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.5.0`.
@@ -112,9 +123,9 @@
 
 - `SIBLING_CONTAINERS_ENABLED` is now set to `true` for new installs in [`config-seed/overleaf.rc`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/overleaf.rc).
 
-  We strongly recommend enabling the [Sandboxed Compiles feature](https://github.com/overleaf/toolkit/blob/master/doc/sandboxed-compiles.md) 
+  We strongly recommend enabling the [Sandboxed Compiles feature](https://github.com/overleaf/toolkit/blob/master/doc/sandboxed-compiles.md)
   for existing installations as well.
- 
+
 - Added "--appendonly yes" configuration to redis.
 
   Redis persistence documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
@@ -301,12 +312,12 @@
 ## 2023-06-29
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.3`.
-- 
+-
 
 ## 2023-06-08
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.2`.
-- 
+-
 ## 2023-05-30
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `4.0.1`.
@@ -398,7 +409,7 @@
 ## 2021-10-13
 ### Added
 - HTTP to HTTPS redirection.
-  - Listen mode of the `sharelatex` container now `localhost` only, so the value of `SHARELATEX_LISTEN_IP` must be set to the public IP address for direct container access. 
+  - Listen mode of the `sharelatex` container now `localhost` only, so the value of `SHARELATEX_LISTEN_IP` must be set to the public IP address for direct container access.
 
 ## 2021-08-12
 ### Added

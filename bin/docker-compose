@@ -178,6 +178,12 @@ function set_nginx_vars() {
   if [[ -n ${NGINX_CONFIG_PATH-} ]]; then
     NGINX_CONFIG_PATH=$(cd "$TOOLKIT_ROOT"; realpath "$NGINX_CONFIG_PATH")
   fi
+  OVERLEAF_TRUSTED_PROXY_IPS=$(read_variable OVERLEAF_TRUSTED_PROXY_IPS || echo "")
+  if [[ "${OVERLEAF_TRUSTED_PROXY_IPS:-null}" == "null" ]]; then
+    # https://en.wikipedia.org/wiki/Private_network
+    # Docker allocates subnets from 172.16.0.0/12 by default.
+    OVERLEAF_TRUSTED_PROXY_IPS="loopback,172.16.0.0/12"
+  fi
 
   export NGINX_CONFIG_PATH
   export NGINX_IMAGE
@@ -187,6 +193,7 @@ function set_nginx_vars() {
   export TLS_CERTIFICATE_PATH
   export TLS_PORT
   export TLS_PRIVATE_KEY_PATH
+  export OVERLEAF_TRUSTED_PROXY_IPS
 }
 
 # Set environment variables for docker-compose.git-bridge.yml

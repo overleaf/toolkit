@@ -1,5 +1,14 @@
 ---
 services:
+  sharelatex:
+    environment:
+      OVERLEAF_SECURE_COOKIE: 'true'
+      OVERLEAF_TRUSTED_PROXY_IPS: "${OVERLEAF_TRUSTED_PROXY_IPS}"
+      # Enabled by default in Server Pro 6.0
+      OVERLEAF_BEHIND_PROXY: 'true'
+
+    depends_on:
+      - nginx
 
   nginx:
     image: "${NGINX_IMAGE}"
@@ -12,5 +21,3 @@ services:
       - "${NGINX_CONFIG_PATH}:/etc/nginx/nginx.conf:ro"
     restart: always
     container_name: nginx
-    depends_on:
-      - sharelatex
