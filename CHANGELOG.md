@@ -5,8 +5,11 @@
 - Upgrade default nginx version for TLS proxy to version 1.28. If you configured a custom `NGINX_IMAGE`, please upgrade it.
 - Fix graceful shutdown procedure with TLS proxy enabled.
   Swap the dependency between the TLS proxy and Server Pro/CE container. This ensures that `bin/stop` will wait for the application container to stop before taking down the TLS proxy. Notably this ensures that connected users can flush their changes as part of the graceful shutdown procedure.
-  Please align your nginx config with the updated default configuration (added upstream, configure docker as resolver and switch proxy_pass to upstream) by comparing `config/nginx/nginx.conf` and `lib/config-seed/nginx.conf`.
+  Please align your nginx config with the updated default configuration (add upstream, configure docker as resolver and switch proxy_pass to upstream) by comparing `config/nginx/nginx.conf` and `lib/config-seed/nginx.conf`.
 - Automatically configure `OVERLEAF_SECURE_COOKIE`/`OVERLEAF_BEHIND_PROXY`/`OVERLEAF_TRUSTED_PROXY_IPS` for TLS proxy.
+  In case you are using a subnet from `172.16.0.0/12` (default subnet for Docker networks) for your regular network, please set `OVERLEAF_TRUSTED_PROXY_IPS=loopback,<network>` in your `config/variables.env`. Where `<network>` is the `IPAM -> Config -> Subnet` value in `docker inspect overleaf_default`, e.g. `OVERLEAF_TRUSTED_PROXY_IPS=loopback,172.19.0.0/16`
+
+  Customers with an external TLS proxy (i.e. not managed by the Overleaf Toolkit), please ensure that `OVERLEAF_TRUSTED_PROXY_IPS=loopback,<ip-of-your-tls-proxy>` is set in your `config/variables.env`, e.g. `OVERLEAF_TRUSTED_PROXY_IPS=loopback,192.168.13.37`.
 
 ## 2025-08-04
 ### Added

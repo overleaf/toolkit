@@ -180,6 +180,8 @@ function set_nginx_vars() {
   fi
   OVERLEAF_TRUSTED_PROXY_IPS=$(read_variable OVERLEAF_TRUSTED_PROXY_IPS || echo "")
   if [[ "${OVERLEAF_TRUSTED_PROXY_IPS:-null}" == "null" ]]; then
+    # https://en.wikipedia.org/wiki/Private_network
+    # Docker allocates subnets from 172.16.0.0/12 by default.
     OVERLEAF_TRUSTED_PROXY_IPS="loopback,172.16.0.0/12"
   fi
 
