@@ -6,8 +6,6 @@ Run `bin/init --tls` to initialise local configuration with NGINX proxy configur
 
 A default config for NGINX is provided in `config/nginx/nginx.conf` which may be customised to your requirements. The path to the config file can be changed with the `NGINX_CONFIG_PATH` variable.
 
-In order for Overleaf to run correctly behind the proxy, the following variables should be uncommented in `config/variables.env`
-
 Add the following section to your `config/overleaf.rc` file if it is not there already:
 ```
 # TLS proxy configuration (optional)
@@ -16,7 +14,7 @@ NGINX_ENABLED=false
 NGINX_CONFIG_PATH=config/nginx/nginx.conf
 NGINX_HTTP_PORT=80
 # Replace these IP addresses with the external IP address of your host
-NGINX_HTTP_LISTEN_IP=127.0.1.1 
+NGINX_HTTP_LISTEN_IP=127.0.1.1
 NGINX_TLS_LISTEN_IP=127.0.1.1
 TLS_PRIVATE_KEY_PATH=config/nginx/certs/overleaf_key.pem
 TLS_CERTIFICATE_PATH=config/nginx/certs/overleaf_certificate.pem
@@ -42,7 +40,7 @@ sequenceDiagram
     note over nginx: nginx:80
     nginx-->>-external: 301
     %% User connects to external host HTTPS
-    user->>+ external: HTTPS 
+    user->>+ external: HTTPS
     note over external: NGINX_TLS_LISTEN_IP:TLS_PORT
     external->>+ nginx: HTTPS
     note over nginx: nginx:443
