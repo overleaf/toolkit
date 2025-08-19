@@ -227,19 +227,20 @@ function print_debug_info() {
 
 function docker_compose() {
   local flags=(-p "$PROJECT_NAME" "${DOCKER_COMPOSE_FLAGS[@]}" "$@")
-  if docker compose version >/dev/null 2>&1; then
-    # Docker compose v2 is available
-    exec docker compose "${flags[@]}"
-  elif command -v docker-compose >/dev/null; then
-    # Fall back to docker-compose v1
-    if [[ ${SKIP_WARNINGS:-null} != "true" ]]; then
-      echo "WARNING: docker-compose v1 has reached its End Of Life in July 2023 (https://docs.docker.com/compose/migrate/). Support for docker-compose v1 in the Overleaf Toolkit will be dropped with the release of Server Pro 5.2. We recommend upgrading to Docker Compose v2 before then." >&2
-    fi
-    exec docker-compose "${flags[@]}"
-  else
-    echo "ERROR: Could not find Docker Compose." >&2
-    exit 1
-  fi
+  podman-compose "${flags[@]}"
+#  if docker compose version >/dev/null 2>&1; then
+#    # Docker compose v2 is available
+#    exec docker compose "${flags[@]}"
+#  elif command -v docker-compose >/dev/null; then
+#    # Fall back to docker-compose v1
+#    if [[ ${SKIP_WARNINGS:-null} != "true" ]]; then
+#      echo "WARNING: docker-compose v1 has reached its End Of Life in July 2023 (https://docs.docker.com/compose/migrate/). Support for docker-compose v1 in the Overleaf Toolkit will be dropped with the release of Server Pro 5.2. We recommend upgrading to Docker Compose v2 before then." >&2
+#    fi
+#    exec docker-compose "${flags[@]}"
+#  else
+#    echo "ERROR: Could not find Docker Compose." >&2
+#    exit 1
+#  fi
 }
 
 read_image_version
