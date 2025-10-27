@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-10-23
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.5.5`.
+
 ## 2025-08-14
 ### Changed
 - Upgrade default nginx version for TLS proxy to version 1.28. If you configured a custom `NGINX_IMAGE`, please upgrade it.
