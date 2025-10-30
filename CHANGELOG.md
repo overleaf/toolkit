@@ -2,6 +2,12 @@
 
 ## 2025-10-29
 ### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.0.0`.
+- Updated mongo default version to `8.0`.
+- Updated redis default version to `7.4`.
+
+## 2025-10-29
+### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `5.5.6`.
 
 ## 2025-10-23

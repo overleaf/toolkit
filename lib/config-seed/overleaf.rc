@@ -18,12 +18,12 @@ DOCKER_SOCKET_PATH=/var/run/docker.sock
 MONGO_ENABLED=true
 MONGO_DATA_PATH=data/mongo
 MONGO_IMAGE=mongo
-MONGO_VERSION=6.0
+MONGO_VERSION=8.0
 
 # Redis configuration
 REDIS_ENABLED=true
 REDIS_DATA_PATH=data/redis
-REDIS_IMAGE=redis:6.2
+REDIS_IMAGE=redis:7.4
 REDIS_AOF_PERSISTENCE=true
 
 # Git-bridge configuration (Server Pro only)
