@@ -143,6 +143,7 @@ function set_mongo_vars() {
   export MONGO_DATA_PATH
   export MONGO_DOCKER_IMAGE
   export MONGOSH
+  export TOOLKIT_ROOT
 }
 
 # Set environment variables for docker-compose.sibling-containers.yml

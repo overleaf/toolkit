@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-02-11
+### Added
+- Disable telemetry data collection in `mongosh`.
+
 ## 2026-02-02
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.1.1`.
