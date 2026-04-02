@@ -5,7 +5,7 @@ services:
         restart: always
         image: "${REDIS_IMAGE}"
         volumes:
-            - "${REDIS_DATA_PATH}:/data"
+            - "${REDIS_DATA_PATH}:/data:Z"
         container_name: redis
         command: ${REDIS_COMMAND}
         expose:
