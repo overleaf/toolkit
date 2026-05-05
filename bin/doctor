@@ -138,28 +138,141 @@ function check_dependencies() {
 }
 
 function check_docker_daemon() {
-  print_point 0 "Docker Daemon"
-  if docker ps &>/dev/null;  then
-    print_point 1 "status: up"
+  print_point 0 "Container Daemon"
 
-    local docker_server_version=$(docker version -f '{{.Server.Version}}')
+  local using_podman=false
+  if is_podman; then
+    using_podman=true
+  fi
+
+  if docker ps &>/dev/null; then
+    print_point 1 "status: up"
+    print_point 1 "runtime: $([[ "$using_podman" == true ]] && echo "podman" || echo "docker")"
+
+    local docker_server_version
+    docker_server_version=$(docker version -f '{{.Server.Version}}' 2>/dev/null || echo "unknown")
     print_point 1 "server version: $docker_server_version"
-    if [[ "$docker_server_version" =~ ^([0-9]+)\.([0-9]+) ]]; then
-      local major="${BASH_REMATCH[1]}"
-      local minor="${BASH_REMATCH[2]}"
-      if [[ "$major" -lt 23 ]]; then
-        add_warning "Docker v$major.$minor has reached its End Of Life. We recommend upgrading to a supported version."
+
+    if [[ "$using_podman" == false ]]; then
+      if [[ "$docker_server_version" =~ ^([0-9]+)\.([0-9]+) ]]; then
+        local major="${BASH_REMATCH[1]}"
+        local minor="${BASH_REMATCH[2]}"
+        if [[ "$major" -lt 23 ]]; then
+          add_warning "Docker v$major.$minor has reached its End Of Life. We recommend upgrading to a supported version."
+        fi
+      else
+        add_warning "Docker server version unknown ($docker_server_version)"
       fi
-    else
-      add_warning "Docker server version unknown ($docker_server_version)"
     fi
 
-    if docker info | grep -q -e '/var/snap/docker/common/var-lib-docker'; then
+    if docker info 2>/dev/null | grep -q -e '/var/snap/docker/common/var-lib-docker'; then
       add_warning "Installing Docker via snap is not supported. The sandboxed compiles feature may not be available. Please follow the steps for installing Docker CE on https://docs.docker.com/engine/install/."
     fi
   else
     print_point 1 "status: DOWN !"
     add_warning "Docker daemon is not running"
+  fi
+
+  local socket_path=""
+
+  if [[ -f "$TOOLKIT_ROOT/config/overleaf.rc" ]]; then
+    # shellcheck disable=SC1090
+    source "$TOOLKIT_ROOT/config/overleaf.rc"
+  fi
+
+  resolve_socket_path
+  socket_path="$RESOLVED_SOCKET_PATH"
+
+  if [[ -n "$socket_path" ]]; then
+    print_point 1 "socket: $socket_path"
+  else
+    print_point 1 "socket: not found"
+  fi
+
+  if [[ "${SERVER_PRO:-false}" == "true" && "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" && -n "$socket_path" ]]; then
+    if [[ "$using_podman" == true ]]; then
+      if [[ -n "${DOCKER_HOST:-}" ]]; then
+        print_point 1 "DOCKER_HOST: $DOCKER_HOST"
+      elif [[ -f "$TOOLKIT_ROOT/config/overleaf.rc" ]] && grep -q "^DOCKER_HOST=" "$TOOLKIT_ROOT/config/overleaf.rc" 2>/dev/null; then
+        local rc_docker_host
+        rc_docker_host=$(grep "^DOCKER_HOST=" "$TOOLKIT_ROOT/config/overleaf.rc" | head -1 | sed 's/^DOCKER_HOST=//' | sed 's/["'"'"']//g')
+        print_point 1 "DOCKER_HOST: $rc_docker_host"
+      else
+        print_point 1 "DOCKER_HOST: not set"
+        add_warning "DOCKER_HOST not set — ./bin/up will look for the default Docker socket"
+      fi
+
+      if [[ -f "$TOOLKIT_ROOT/config/variables.env" ]] && grep -q "DOCKER_HOST" "$TOOLKIT_ROOT/config/variables.env" 2>/dev/null; then
+        add_warning "DOCKER_HOST found in variables.env — it needs to be set in overleaf.rc instead"
+      fi
+    fi
+
+    if [[ ! -S "$socket_path" ]]; then
+      add_warning "Configured socket path '$socket_path' does not exist or is not a socket"
+    else
+      if [[ "$using_podman" == true ]] && command -v getenforce &>/dev/null; then
+        local enforce
+        enforce=$(getenforce 2>/dev/null || echo "Disabled")
+        print_point 1 "SELinux: $enforce"
+
+        if [[ "$enforce" != "Disabled" ]]; then
+          check_selinux_module "sudo -n"
+          if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
+            print_point 1 "SELinux module: present (podman_socket_clsi)"
+            check_selinux_rules "sudo -n"
+            if [[ "$SELINUX_RULES_OK" == false ]]; then
+              for rule in "${SELINUX_MISSING_RULES[@]}"; do
+                print_point 2 "rule MISSING: $rule"
+              done
+              add_warning "SELinux policy module podman_socket_clsi is missing required rules. Container cannot connect to Podman socket."
+            fi
+          else
+            print_point 1 "SELinux module (podman_socket_clsi): not found"
+            add_warning "SELinux is Enforcing but the podman_socket_clsi module is not loaded. The sharelatex container will be blocked from connecting to the Podman socket."
+          fi
+        fi
+      fi
+
+      test_socket_ping_host "$socket_path"
+      if [[ "$SOCKET_PING_HOST_OK" == true ]]; then
+        print_point 1 "host → socket: OK"
+      else
+        print_point 1 "host → socket: FAILED ($SOCKET_PING_HOST_OUTPUT)"
+        add_warning "Cannot connect to Docker/Podman socket from host"
+      fi
+
+      test_socket_ping_container
+      if [[ "$SOCKET_PING_CONTAINER_OK" == true ]]; then
+        print_point 1 "container → socket: OK"
+      elif [[ "$SOCKET_PING_CONTAINER_OUTPUT" == "sharelatex not running" ]]; then
+        print_point 1 "container → socket: skipped (sharelatex not running)"
+      else
+        print_point 1 "container → socket: FAILED ($SOCKET_PING_CONTAINER_OUTPUT)"
+        add_warning "sharelatex container cannot connect to the Docker/Podman socket at /var/run/docker.sock"
+      fi
+    fi
+  fi
+
+  if [[ "$using_podman" == true ]]; then
+    local seccomp_path
+    seccomp_path="$(get_seccomp_expected_path)"
+    check_seccomp_config
+
+    if [[ "$SECCOMP_FILE_EXISTS" == true && "$SECCOMP_ENV_MATCHES" == true ]]; then
+      print_point 1 "Seccomp profile: present"
+    else
+      if [[ "$SECCOMP_FILE_EXISTS" == false ]]; then
+        print_point 1 "Seccomp profile: MISSING (file not found at $seccomp_path)"
+        add_warning "Seccomp profile not installed at $seccomp_path"
+      fi
+      if [[ -z "$SECCOMP_ENV_VALUE" ]]; then
+        print_point 1 "SECCOMP_PROFILE: not set"
+        add_warning "SECCOMP_PROFILE not set in variables.env"
+      elif [[ "$SECCOMP_ENV_MATCHES" == false ]]; then
+        print_point 1 "SECCOMP_PROFILE: '$SECCOMP_ENV_VALUE' (expected '$seccomp_path')"
+        add_warning "SECCOMP_PROFILE should be '$seccomp_path'"
+      fi
+    fi
   fi
 }
 
@@ -222,18 +335,16 @@ function check_config_files() {
           add_warning "Detected SIBLING_CONTAINERS_ENABLED=false. When not using Sibling containers, users have full read and write access to the 'sharelatex' container resources (filesystem, network, environment variables) when running LaTeX compiles. Only use this mode in environments where all users are trusted and no isolation of users is required."
         fi
         if [[ "${SERVER_PRO:-null}" == "true" ]]; then
-          local logged_in
-          logged_in="$(grep -q quay.io ~/.docker/config.json && echo 'true' || echo 'false')"
-          print_point 3 "logged in to quay.io: $logged_in"
-          if [[ "${logged_in}" == "false" ]]; then
-            local warning_message=(
-              "Server Pro enabled, but not logged in to quay.io repository."
-              "These credentials are supplied by Overleaf with a Server Pro"
-              "license. See https://www.overleaf.com/for/enterprises/features"
-              "for more details about Server Pro, or contact support@overleaf.com"
-              "if you have any questions."
-            )
-            add_warning "${warning_message[@]}"
+          check_quay_login
+          if [[ "$QUAY_LOGIN_STATUS" == true ]]; then
+            if [[ -n "$QUAY_LOGIN_USER" ]]; then
+              print_point 3 "logged in to quay.io: true ($QUAY_LOGIN_USER)"
+            else
+              print_point 3 "logged in to quay.io: true"
+            fi
+          else
+            print_point 3 "logged in to quay.io: false"
+            add_warning "Server Pro enabled, but not logged in to quay.io repository. These credentials are supplied by Overleaf with a Server Pro license. See https://www.overleaf.com/for/enterprises/features for more details about Server Pro, or contact support@overleaf.com if you have any questions."
           fi
         elif [[ "${SIBLING_CONTAINERS_ENABLED:-null}" == "true" ]]; then
           add_warning "Sibling containers are not available in Community Edition, which is intended for use in environments where all users are trusted. Community Edition is not appropriate for scenarios where isolation of users is required. Sibling containers are offered as part of our Server Pro offering and you can read more about the differences at https://www.overleaf.com/for/enterprises/features. Set SIBLING_CONTAINERS_ENABLED=false in config/overleaf.rc to continue using insecure in-container compiles."
