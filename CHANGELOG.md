@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-06-23
+### Changed
+`OVERLEAF_INVITE_TOKEN_SECRET` is now required in `config/variables.env`. The secret can be generated
+with `openssl rand -base64 32`.
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.2.0`.
+- Updated nginx image to `nginx:1.30-alpine`.
+- `bin/init` updated to generate `OVERLEAF_INVITE_TOKEN_SECRET`.
+- Bumped `TEX_LIVE_DOCKER_IMAGE` and `ALL_TEX_LIVE_DOCKER_IMAGES` seed images to default to Tex Live 2026.
+
 ## 2026-02-19
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.1.2`.

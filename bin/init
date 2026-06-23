@@ -42,6 +42,10 @@ function set_up_config_files() {
   cp "$TOOLKIT_ROOT/lib/config-seed/overleaf.rc" "$TOOLKIT_ROOT/config/"
   cp "$TOOLKIT_ROOT/lib/config-seed/variables.env" "$TOOLKIT_ROOT/config/"
   cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/"
+  local invite_token_secret
+  invite_token_secret="$(openssl rand -base64 32)"
+  sed -i'' "s|OVERLEAF_INVITE_TOKEN_SECRET=|OVERLEAF_INVITE_TOKEN_SECRET=${invite_token_secret}|" \
+    "$TOOLKIT_ROOT/config/variables.env"
 }
 
 function set_up_tls_proxy() {
