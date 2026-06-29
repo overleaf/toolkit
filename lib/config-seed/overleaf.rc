@@ -18,7 +18,7 @@ DOCKER_SOCKET_PATH=/var/run/docker.sock
 MONGO_ENABLED=true
 MONGO_DATA_PATH=data/mongo
 MONGO_IMAGE=mongo
-MONGO_VERSION=8.0
+MONGO_VERSION=8.0.4
 
 # Redis configuration
 REDIS_ENABLED=true
