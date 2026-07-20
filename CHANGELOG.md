@@ -8,7 +8,6 @@
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.2.1`.
 
-
 ## 2026-06-23
 ### Changed
 `OVERLEAF_INVITE_TOKEN_SECRET` is now required in `config/variables.env`. The secret can be generated
