@@ -19,7 +19,3 @@ services:
             - ../config/variables.env
         user: root
         command: ["/server-pro-start.sh"]
-
-    sharelatex:
-      links:
-        - git-bridge

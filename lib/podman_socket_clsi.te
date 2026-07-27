@@ -1,0 +1,17 @@
+module podman_socket_clsi 1.1;
+
+# This module grants the sharelatex container permission to
+# interact with the rootless Podman socket under SELinux enforcing.
+# The socket lives at /run/user/$UID/podman/podman.sock with context user_tmp_t.
+
+require {
+    type container_t;
+    type user_tmp_t;
+    type container_runtime_t;
+    class sock_file { write getattr };
+    class unix_stream_socket connectto;
+}
+
+allow container_t user_tmp_t:sock_file write;
+allow container_t user_tmp_t:sock_file getattr;
+allow container_t container_runtime_t:unix_stream_socket connectto;
