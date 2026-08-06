@@ -16,6 +16,8 @@ git clone https://github.com/overleaf/toolkit.git ./overleaf-toolkit
 
 Then follow the [Quick Start Guide](./doc/quick-start-guide.md).
 
+For a community-maintained alternative deployment, [deploy Overleaf Community Edition on Sealos](https://sealos.io/products/app-store/overleaf).
+
 
 ## Documentation
 
