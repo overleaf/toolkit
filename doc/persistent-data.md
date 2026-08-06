@@ -46,3 +46,14 @@ services:
     volumes:
       - redis-data:/data
 ```
+
+## Moving the data directory
+
+If you want to move the data directory of an existing deployment to a different location, run the following commands from the `overleaf-tookit` repository:
+
+1. `bin/stop` to stop the overleaf service
+2. `bin/docker-compose rm mongo sharelatex redis` to remove the containers
+3. adjust the paths in the `config/overleaf.rc` configuration file and move the data directory (or leave the relative paths and just move the entire `overleaf-toolkit` directory)
+4. `bin/init` and `bin/start` to start the overleaf service again
+
+Note: Step 2 is required, since the old mount path of the data directory is stored in the stopped containers and will not update when they are restarted.
