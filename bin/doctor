@@ -157,7 +157,7 @@ function check_docker_daemon() {
       if [[ "$docker_server_version" =~ ^([0-9]+)\.([0-9]+) ]]; then
         local major="${BASH_REMATCH[1]}"
         local minor="${BASH_REMATCH[2]}"
-        if [[ "$major" -lt 23 ]]; then
+        if [[ "$major" -ne 25 ]] && [[ "$major" -lt 29 ]]; then
           add_warning "Docker v$major.$minor has reached its End Of Life. We recommend upgrading to a supported version."
         fi
       else
