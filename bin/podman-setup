@@ -29,6 +29,34 @@ fi
 
 source "$TOOLKIT_ROOT/lib/shared-functions.sh"
 
+DRY_RUN=true
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --apply) DRY_RUN=false; shift ;;
+    help|--help)
+      cat <<'HELP'
+Usage: bin/podman-setup [OPTIONS]
+
+Validates a RHEL-based system for Overleaf Server Pro
+with rootless Podman, sibling containers and SELinux enforcing.
+
+Requires an initialised toolkit (bin/init) with SERVER_PRO=true
+set in config/overleaf.rc.
+
+By default, this script checks for issues without fixing them.
+Use --apply to automatically fix detected issues.
+
+Options:
+  --apply       Fix detected issues (default: dry-run only)
+  --help        Show this help and exit
+HELP
+      exit
+      ;;
+    *) echo "Usage: $0 [--apply]" >&2; exit 2 ;;
+  esac
+done
+
 validate_os() {
   [[ -f /etc/os-release ]] || { echo "ERROR: /etc/os-release missing"; exit 1; }
 
@@ -47,14 +75,32 @@ validate_os() {
 
 validate_os
 
+# Sandboxed Compiles are a Server Pro only feature. With SERVER_PRO=false the image
+# name resolves to Community Edition, which includes neither the seccomp profile nor sandboxed compiles.
+validate_server_pro() {
+  [[ "$SERVER_PRO" == "true" ]] && return 0
+
+  echo "ERROR: SERVER_PRO=true is required in config/overleaf.rc (found '$SERVER_PRO')."
+  echo "  Sandboxed Compiles are a Server Pro feature."
+  echo "  See https://www.overleaf.com/for/enterprises/features for more details about Server Pro and how to buy a license."
+  echo "  Or, if you already have a license, contact support@overleaf.com if you need assistance."
+  exit 1
+}
+
+read_image_version
+read_config
+validate_server_pro
+
+set_server_pro_image_name "$IMAGE_VERSION"
+
 USER_NAME="$(id -un)"
 USER_UID="$(id -u)"
-DRY_RUN=true
 
 declare -i CHECK_PASS=0 CHECK_WARN=0 CHECK_FAIL=0
 SUMMARY=""
 
 REQUIRED_PKGS=(podman podman-docker git curl checkpolicy policycoreutils)
+SECCOMP_IMAGE_PATH=/overleaf/services/clsi/seccomp/clsi-profile.json
 
 report() {
   local level="$1" msg="$2"
@@ -383,8 +429,7 @@ ensure_selinux_policy() {
 
   check_loaded_selinux_policy "run_sudo" && return 0
 
-  # Install SELinux module
-  local dir="$HOME/.overleaf/selinux"
+  local dir="$TOOLKIT_ROOT/config/selinux"
   mkdir -p "$dir"
 
   cp "$TOOLKIT_ROOT/lib/podman_socket_clsi.te" "$dir/podman_socket_clsi.te" || { report fail "copy SELinux policy"; return 1; }
@@ -424,25 +469,58 @@ ensure_socket_connectivity() {
   fi
 }
 
+ensure_image_pulled() {
+  if podman image exists "$IMAGE"; then
+    report ok "image $IMAGE pulled"
+    return 0
+  fi
+
+  if is_dry_run; then
+    report warn "image $IMAGE not pulled"
+    return 1
+  fi
+
+  if podman pull "$IMAGE"; then
+    report fix "pulled $IMAGE"
+  else
+    report fail "pull $IMAGE"
+    return 1
+  fi
+}
+
+extract_seccomp_profile() {
+  local dest="$1"
+  local cid rc=0
+
+  if ! cid="$(podman create "$IMAGE" 2>/dev/null)"; then
+    report fail "create container from $IMAGE"
+    return 1
+  fi
+
+  mkdir -p "$(dirname "$dest")"
+  if podman cp "$cid:$SECCOMP_IMAGE_PATH" "$dest" 2>/dev/null; then
+    report fix "extracted seccomp profile from $IMAGE"
+  else
+    report fail "seccomp profile not found at $SECCOMP_IMAGE_PATH in $IMAGE"
+    rc=1
+  fi
+
+  podman rm -f "$cid" >/dev/null 2>&1 || true
+  return "$rc"
+}
+
 ensure_seccomp() {
   heading "Seccomp"
   local seccomp_path
   seccomp_path="$(get_seccomp_expected_path)"
-  local bundled="$TOOLKIT_ROOT/lib/clsi-profile.json"
 
   if [ -f "$seccomp_path" ]; then
-    report ok "Seccomp profile exists"
+    report ok "Seccomp profile installed for $IMAGE_VERSION"
   elif is_dry_run; then
-    report warn "Seccomp profile not installed"
-  elif [ ! -f "$bundled" ]; then
-    report fail "bundled seccomp profile not found"
-  else
-    mkdir -p "$HOME/.overleaf/seccomp"
-    if cp "$bundled" "$seccomp_path"; then
-      report fix "copied seccomp profile"
-    else
-      report fail "copy seccomp profile"
-    fi
+    report warn "Seccomp profile is not currently installed for $IMAGE_VERSION"
+    ensure_image_pulled || true
+  elif ensure_image_pulled; then
+    extract_seccomp_profile "$seccomp_path" || true
   fi
 
   # shellcheck disable=SC2153  # SECCOMP_ENV_* set by lib/shared-functions.sh
@@ -564,31 +642,6 @@ print_summary() {
     printf "[!] Warnings%s:\n%s\n" "$label" "$(printf '%s' "$SUMMARY" | grep '^\[!\]')"
   fi
 }
-
-DRY_RUN=true
-
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --apply) DRY_RUN=false; shift ;;
-    help|--help)
-      cat <<'HELP'
-Usage: bin/podman-setup [OPTIONS]
-
-Validates a RHEL-based system for Overleaf Server Pro
-with rootless Podman, sibling containers and SELinux enforcing.
-
-By default, this script checks for issues without fixing them.
-Use --apply to automatically fix detected issues.
-
-Options:
-  --apply       Fix detected issues (default: dry-run only)
-  --help        Show this help and exit
-HELP
-      exit
-      ;;
-    *) echo "Usage: $0 [--apply]" >&2; exit 2 ;;
-  esac
-done
 
 echo "=== Podman Setup ==="
 
