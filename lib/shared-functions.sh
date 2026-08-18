@@ -327,7 +327,11 @@ test_socket_ping_container() {
 }
 
 get_seccomp_expected_path() {
-  echo "$HOME/.overleaf/seccomp/clsi-profile.json"
+  local version="${IMAGE_VERSION:-}"
+  if [[ -z "$version" ]]; then
+    version="$(head -n 1 "$TOOLKIT_ROOT/config/version" 2>/dev/null)"
+  fi
+  echo "$TOOLKIT_ROOT/config/seccomp/$version/clsi-profile.json"
 }
 
 check_seccomp_config() {
