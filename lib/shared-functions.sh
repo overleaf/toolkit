@@ -359,6 +359,7 @@ SELINUX_MODULE_NAME="podman_socket_clsi"
 SELINUX_RULES=(
   "sharelatex_t container_runtime_t unix_stream_socket connectto"
   "sharelatex_t user_tmp_t sock_file write"
+  "sharelatex_t user_tmp_t sock_file getattr"
   "sharelatex_t container_runtime_t fifo_file setattr"
 )
 
