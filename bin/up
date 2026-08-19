@@ -76,6 +76,17 @@ function pull_sandboxed_compiles() {
   done
 }
 
+function notify_about_podman_limited_support() {
+  if [[ $SERVER_PRO != "true" ]] || [[ "$SIBLING_CONTAINERS_ENABLED" != "true" ]] || ! is_podman; then
+    return
+  fi
+  echo
+  echo '---'
+  echo '  WARNING: Podman support is experimental and comes with limited support. Running Server Pro with sibling containers on Podman is only tested on RHEL 9+ with rootless Podman and SELinux enforcing. Run "bin/podman-setup" to validate the host configuration, and "bin/doctor" to check a running setup.'
+  echo '---'
+  echo
+}
+
 function notify_about_not_using_detach_mode() {
   local detached=false
   for arg in "$@"; do
@@ -115,6 +126,7 @@ function __main__() {
     pull_sandboxed_compiles
   fi
 
+  notify_about_podman_limited_support
   notify_about_not_using_detach_mode "$@"
   exec "$TOOLKIT_ROOT/bin/docker-compose" up "$@"
 }
