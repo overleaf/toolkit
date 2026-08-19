@@ -57,6 +57,21 @@ HELP
   esac
 done
 
+validate_not_root() {
+  [[ "$EUID" -ne 0 ]] && return 0
+
+  local args=""
+  [[ "$DRY_RUN" == false ]] && args=" --apply"
+
+  echo "ERROR: do not run this script as root or with sudo."
+  echo "  Run it as the user that will own the rootless Podman setup:"
+  echo "    ./bin/podman-setup${args}"
+  echo "  It will prompt for a sudo password when a step needs one."
+  exit 1
+}
+
+validate_not_root
+
 validate_os() {
   [[ -f /etc/os-release ]] || { echo "ERROR: /etc/os-release missing"; exit 1; }
 
@@ -81,9 +96,9 @@ validate_server_pro() {
   [[ "$SERVER_PRO" == "true" ]] && return 0
 
   echo "ERROR: SERVER_PRO=true is required in config/overleaf.rc (found '$SERVER_PRO')."
-  echo "  Sandboxed Compiles are a Server Pro feature."
+  echo "  This script is for Server Pro setups."
   echo "  See https://www.overleaf.com/for/enterprises/features for more details about Server Pro and how to buy a license."
-  echo "  Or, if you already have a license, contact support@overleaf.com if you need assistance."
+  echo "  Or, if you already have a license, contact support+serverpro@overleaf.com if you need assistance."
   exit 1
 }
 
@@ -135,22 +150,21 @@ get_podman_socket_path() {
 
 ensure_lingering() {
   heading "Lingering"
-  local desc="lingering enabled for $USER_NAME"
 
   if loginctl show-user "$USER_NAME" -p Linger --value 2>/dev/null | grep -q yes; then
-    report ok "$desc"
+    report ok "lingering enabled for $USER_NAME"
     return 0
   fi
 
   if is_dry_run; then
-    report warn "$desc missing"
+    report warn "lingering not enabled for $USER_NAME"
     return 1
   fi
 
   if run_sudo loginctl enable-linger "$USER_NAME"; then
-    report fix "$desc configured"
+    report fix "lingering enabled for $USER_NAME"
   else
-    report fail "$desc"
+    report fail "failed to enable lingering for $USER_NAME"
     return 1
   fi
 }
@@ -163,7 +177,7 @@ ensure_packages() {
     if rpm -q "$pkg" &>/dev/null; then
       report ok "$pkg installed"
     else
-      report fail "$pkg missing"
+      report fail "$pkg not installed"
       missing+=("$pkg")
     fi
   done
@@ -172,7 +186,7 @@ ensure_packages() {
     if run_sudo dnf install -y "${missing[@]}"; then
       report fix "installed ${missing[*]}"
     else
-      report fail "dnf install"
+      report fail "failed to install ${missing[*]}"
     fi
   fi
 }
@@ -193,7 +207,7 @@ ensure_podman_socket() {
   if systemctl --user enable --now podman.socket; then
     report fix "enabled podman.socket"
   else
-    report fail "podman.socket"
+    report fail "failed to enable podman.socket"
   fi
 }
 
@@ -275,7 +289,7 @@ ensure_docker_compose() {
     version="$($compose_bin version 2>/dev/null | head -1 || echo "installed")"
     report ok "Docker Compose: $version"
   elif is_dry_run; then
-    report fail "Docker Compose missing"
+    report fail "Docker Compose not installed"
     return 1
   else
     mkdir -p "$HOME/.local/bin" "$HOME/.docker/cli-plugins"
@@ -287,10 +301,10 @@ ensure_docker_compose() {
     tmp_sum="$(mktemp)"
 
     if ! curl -sL "${base_url}/${binary}" -o "$tmp_bin"; then
-      report fail "download compose"
+      report fail "failed to download compose"
       rc=1
     elif ! curl -sL "${base_url}/${binary}.sha256" -o "$tmp_sum"; then
-      report fail "download compose checksum"
+      report fail "failed to download compose checksum"
       rc=1
     elif ! (cd "$(dirname "$tmp_bin")" && sed "s|[^ ]*$|$(basename "$tmp_bin")|" "$tmp_sum" | sha256sum --check --status); then
       report fail "compose checksum mismatch — binary discarded"
@@ -305,9 +319,9 @@ ensure_docker_compose() {
   fi
 
   if [ -L "$compose_plugin" ]; then
-    report ok "Compose plugin linked"
+    report ok "Compose plugin symlink present"
   elif is_dry_run; then
-    report warn "Compose plugin symlink missing"
+    report warn "Compose plugin symlink not present"
   else
     mkdir -p "$HOME/.docker/cli-plugins"
     ln -sf "$compose_bin" "$compose_plugin"
@@ -324,7 +338,7 @@ ensure_containers_config() {
   fi
 
   if is_dry_run; then
-    report warn "containers.conf incomplete"
+    report warn "compose provider not configured"
     return 1
   fi
 
@@ -342,14 +356,14 @@ EOF
 
 ensure_nodocker_file() {
   if [ -f /etc/containers/nodocker ]; then
-    report ok "nodocker exists"
+    report ok "nodocker file present"
   elif is_dry_run; then
-    report warn "nodocker missing"
+    report warn "nodocker file not present"
   else
     if run_sudo mkdir -p /etc/containers && run_sudo touch /etc/containers/nodocker; then
-      report fix "created nodocker"
+      report fix "created nodocker file"
     else
-      report fail "nodocker"
+      report fail "failed to create nodocker file"
     fi
   fi
 }
@@ -359,7 +373,7 @@ ensure_registries_config() {
   if [ -f "$reg_conf" ] && grep -qF '# overleaf-toolkit' "$reg_conf" 2>/dev/null; then
     report ok "registries.conf.d drop-in configured"
   elif is_dry_run; then
-    report warn "registries.conf.d drop-in missing"
+    report warn "registries.conf.d drop-in not configured"
   else
     mkdir -p "$(dirname "$reg_conf")"
     cat > "$reg_conf" << EOF
@@ -389,32 +403,43 @@ ensure_registry_auth() {
   check_quay_login
 
   if [[ "$QUAY_LOGIN_STATUS" == true ]]; then
-    report ok "quay.io credentials valid"
+    report ok "logged in to quay.io"
     return 0
   fi
 
-  report warn "quay.io auth missing or invalid"
+  report warn "not logged in to quay.io"
   is_apply && printf "\n    Run 'podman login quay.io' to authenticate.\n\n"
 }
 
 check_loaded_selinux_policy() {
-  local sudo_cmd="$1"
   # shellcheck disable=SC2153  # SELINUX_* set by lib/shared-functions.sh
-  check_selinux_module "$sudo_cmd"
-  if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
-    report ok "SELinux module loaded"
+  check_selinux_module
 
-    check_selinux_rules "$sudo_cmd"
-    if [[ "$SELINUX_RULES_OK" == true ]]; then
-      report ok "SELinux rules verified"
-    elif is_dry_run; then
-      report warn "SELinux rules incomplete"
-    else
-      for rule in "${SELINUX_MISSING_RULES[@]}"; do
-        report fail "Rule missing: $rule"
-      done
-    fi
+  if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
+    report ok "SELinux module loaded (podman_socket_clsi)"
+  elif [[ "$SELINUX_MODULE_CHECKED" == false ]]; then
+    report skip "SELinux module unknown"
+  else
+    report skip "SELinux module not loaded"
+  fi
+
+  check_selinux_rules
+
+  if [[ "$SELINUX_RULES_CHECKED" == false ]]; then
+    report skip "SELinux rules unknown"
+    [[ "$SELINUX_MODULE_LOADED" == true ]] && return 0
+    return 1
+  fi
+
+  if [[ "$SELINUX_RULES_OK" == true ]]; then
+    report ok "SELinux rules present"
     return 0
+  fi
+
+  if is_apply; then
+    for rule in "${SELINUX_MISSING_RULES[@]}"; do
+      report skip "rule $rule not present"
+    done
   fi
   return 1
 }
@@ -422,24 +447,36 @@ check_loaded_selinux_policy() {
 ensure_selinux_policy() {
   heading "SELinux Policy"
 
-  if is_dry_run; then
-    check_loaded_selinux_policy "sudo -n" || report warn "SELinux module status unknown (requires sudo)"
+  local enforce="Disabled"
+  command -v getenforce &>/dev/null && enforce="$(getenforce 2>/dev/null || echo Disabled)"
+
+  if [[ "$enforce" == "Disabled" ]]; then
+    report skip "SELinux disabled"
     return 0
   fi
 
-  check_loaded_selinux_policy "run_sudo" && return 0
+  check_loaded_selinux_policy && return 0
+
+  if is_dry_run; then
+    if [[ "$SELINUX_RULES_CHECKED" == false ]]; then
+      report warn "SELinux rules unknown, policy module not loaded (use --apply to install it)"
+    else
+      report warn "SELinux rules not present (use --apply to install the policy module)"
+    fi
+    return 0
+  fi
 
   local dir="$TOOLKIT_ROOT/config/selinux"
   mkdir -p "$dir"
 
-  cp "$TOOLKIT_ROOT/lib/podman_socket_clsi.te" "$dir/podman_socket_clsi.te" || { report fail "copy SELinux policy"; return 1; }
+  cp "$TOOLKIT_ROOT/lib/podman_socket_clsi.te" "$dir/podman_socket_clsi.te" || { report fail "failed to copy SELinux policy"; return 1; }
 
   if checkmodule -M -m -o "$dir/podman_socket_clsi.mod" "$dir/podman_socket_clsi.te" && \
      semodule_package -o "$dir/podman_socket_clsi.pp" -m "$dir/podman_socket_clsi.mod" && \
      run_sudo semodule -i "$dir/podman_socket_clsi.pp" 2>/dev/null; then
     report fix "compiled and loaded SELinux module"
   else
-    report fail "compile/load SELinux module"
+    report fail "failed to compile or load SELinux module"
     return 1
   fi
 }
@@ -452,20 +489,20 @@ ensure_socket_connectivity() {
   # shellcheck disable=SC2153  # SOCKET_PING_* set by lib/shared-functions.sh
   test_socket_ping_host "$sock_path"
   if [[ "$SOCKET_PING_HOST_OK" == true ]]; then
-    report ok "Host -> socket OK"
+    report ok "host → socket OK"
   elif [[ "$SOCKET_PING_HOST_OUTPUT" == "socket not found" ]]; then
-    report warn "socket not found, is podman.socket running?"
+    report warn "host → socket: socket not found, is podman.socket running?"
   else
-    report fail "Host -> socket failed ($SOCKET_PING_HOST_OUTPUT)"
+    report fail "host → socket failed ($SOCKET_PING_HOST_OUTPUT)"
   fi
 
   test_socket_ping_container
   if [[ "$SOCKET_PING_CONTAINER_OK" == true ]]; then
-    report ok "Container -> socket OK"
+    report ok "container → socket OK"
   elif [[ "$SOCKET_PING_CONTAINER_OUTPUT" == "sharelatex not running" ]]; then
-    report warn "sharelatex not running (skip container socket test)"
+    report warn "container → socket skipped (sharelatex not running)"
   else
-    report fail "Container -> socket failed ($SOCKET_PING_CONTAINER_OUTPUT)"
+    report fail "container → socket failed ($SOCKET_PING_CONTAINER_OUTPUT)"
   fi
 }
 
@@ -483,7 +520,7 @@ ensure_image_pulled() {
   if podman pull "$IMAGE"; then
     report fix "pulled $IMAGE"
   else
-    report fail "pull $IMAGE"
+    report fail "failed to pull $IMAGE"
     return 1
   fi
 }
@@ -493,7 +530,7 @@ extract_seccomp_profile() {
   local cid rc=0
 
   if ! cid="$(podman create "$IMAGE" 2>/dev/null)"; then
-    report fail "create container from $IMAGE"
+    report fail "failed to create container from $IMAGE"
     return 1
   fi
 
@@ -515,9 +552,9 @@ ensure_seccomp() {
   seccomp_path="$(get_seccomp_expected_path)"
 
   if [ -f "$seccomp_path" ]; then
-    report ok "Seccomp profile installed for $IMAGE_VERSION"
+    report ok "Seccomp profile present for $IMAGE_VERSION"
   elif is_dry_run; then
-    report warn "Seccomp profile is not currently installed for $IMAGE_VERSION"
+    report warn "Seccomp profile not present for $IMAGE_VERSION"
     ensure_image_pulled || true
   elif ensure_image_pulled; then
     extract_seccomp_profile "$seccomp_path" || true
@@ -552,7 +589,16 @@ ensure_data_permissions() {
   overleaf_data="$(read_configuration "OVERLEAF_DATA_PATH")"
   overleaf_data="${overleaf_data:-data/sharelatex}"
 
-  for entry in "mongo:${mongo_data}:999" "redis:${redis_data}:999" "overleaf:${overleaf_data}:33"; do
+  local entries=("mongo:${mongo_data}:999" "redis:${redis_data}:999" "overleaf:${overleaf_data}:33")
+
+  if [[ "${GIT_BRIDGE_ENABLED:-false}" == "true" ]]; then
+    local git_bridge_data
+    git_bridge_data="$(read_configuration "GIT_BRIDGE_DATA_PATH")"
+    git_bridge_data="${git_bridge_data:-data/git-bridge}"
+    entries+=("git-bridge:${git_bridge_data}:1000")
+  fi
+
+  for entry in "${entries[@]}"; do
     IFS=':' read -r name dir uid <<< "$entry"
     local full_path="$TOOLKIT_ROOT/$dir"
 
@@ -572,7 +618,7 @@ ensure_data_permissions() {
       if podman unshare chown -R "${uid}:${uid}" "$full_path" 2>/dev/null; then
         report fix "$name data dir ownership corrected"
       else
-        report fail "$name data dir permissions"
+        report fail "failed to correct $name data dir ownership"
       fi
     fi
   done
