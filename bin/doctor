@@ -216,19 +216,25 @@ function check_docker_daemon() {
         print_point 1 "SELinux: $enforce"
 
         if [[ "$enforce" != "Disabled" ]]; then
-          check_selinux_module "sudo -n"
-          if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
-            print_point 1 "SELinux module: present (podman_socket_clsi)"
-            check_selinux_rules "sudo -n"
-            if [[ "$SELINUX_RULES_OK" == false ]]; then
-              for rule in "${SELINUX_MISSING_RULES[@]}"; do
-                print_point 2 "rule MISSING: $rule"
-              done
-              add_warning "SELinux policy module podman_socket_clsi is missing required rules. Container cannot connect to Podman socket."
-            fi
+          check_selinux_rules
+          if [[ "$SELINUX_RULES_CHECKED" == false ]]; then
+            print_point 1 "SELinux rules: unknown"
+          elif [[ "$SELINUX_RULES_OK" == true ]]; then
+            print_point 1 "SELinux rules: present"
           else
-            print_point 1 "SELinux module (podman_socket_clsi): not found"
-            add_warning "SELinux is Enforcing but the podman_socket_clsi module is not loaded. The sharelatex container will be blocked from connecting to the Podman socket."
+            for rule in "${SELINUX_MISSING_RULES[@]}"; do
+              print_point 2 "rule $rule not present"
+            done
+            add_warning "SELinux is Enforcing but the rules the sharelatex container needs are not present — the container will be blocked from connecting to the Podman socket. Run './bin/podman-setup --apply'."
+          fi
+
+          check_selinux_module
+          if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
+            print_point 1 "SELinux module: loaded (podman_socket_clsi)"
+          elif [[ "$SELINUX_MODULE_CHECKED" == false ]]; then
+            print_point 1 "SELinux module: unknown"
+          else
+            print_point 1 "SELinux module: not loaded"
           fi
         fi
       fi

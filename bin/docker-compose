@@ -31,6 +31,9 @@ function build_environment() {
   if [[ "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     if [[ $SERVER_PRO == "true" ]]; then
       set_sibling_containers_vars
+      if use_selinux_label; then
+        set_selinux_vars
+      fi
     else
       if [[ ${SKIP_WARNINGS:-null} != "true" ]]; then
         echo "WARNING: SIBLING_CONTAINERS_ENABLED=true is not supported in Overleaf Community Edition." >&2
@@ -150,6 +153,11 @@ function set_sibling_containers_vars() {
   DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.sibling-containers.yml")
   export DOCKER_SOCKET_PATH
   export OVERLEAF_DATA_PATH
+}
+
+# Set environment variables for docker-compose.selinux.yml
+function set_selinux_vars() {
+  DOCKER_COMPOSE_FLAGS+=(-f "$TOOLKIT_ROOT/lib/docker-compose.selinux.yml")
 }
 
 # Set environment variables for docker-compose.logging.yml

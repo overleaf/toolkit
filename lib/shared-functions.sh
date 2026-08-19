@@ -355,44 +355,83 @@ check_seccomp_config() {
   fi
 }
 
-# Check if SELinux module is loaded.
 SELINUX_MODULE_NAME="podman_socket_clsi"
 SELINUX_RULES=(
-  "container_t container_runtime_t unix_stream_socket connectto"
-  "container_t user_tmp_t sock_file write"
-  "container_t user_tmp_t sock_file getattr"
+  "sharelatex_t container_runtime_t unix_stream_socket connectto"
+  "sharelatex_t user_tmp_t sock_file write"
+  "sharelatex_t container_runtime_t fifo_file setattr"
 )
 
-# Check if SELinux module is loaded.
-# Args: $1 = sudo command (e.g. "sudo -n" or "run_sudo")
-# Sets: SELINUX_MODULE_LOADED (true/false)
 check_selinux_module() {
-  local sudo_cmd="${1:-sudo -n}"
+  local sudo_cmd="${1:-sudo}"
+  local modules
   SELINUX_MODULE_LOADED=false
+  SELINUX_MODULE_CHECKED=true
 
-  if $sudo_cmd semodule -l 2>/dev/null | grep -q "^${SELINUX_MODULE_NAME}"; then
+  if ! modules=$($sudo_cmd semodule -l 2>/dev/null); then
+    SELINUX_MODULE_CHECKED=false
+    return 0
+  fi
+
+  if grep -q "^${SELINUX_MODULE_NAME}" <<< "$modules"; then
     SELINUX_MODULE_LOADED=true
   fi
 }
 
-# Verify SELinux module rules with sesearch.
-# Args: $1 = sudo command (e.g. "sudo -n" or "run_sudo")
-# Sets: SELINUX_RULES_OK (true/false), SELINUX_MISSING_RULES (array)
+selinux_access_allowed() {
+  local src="$1" target="$2" class="$3" perm="$4"
+  local index bit requested role allowed
+
+  index=$(cat "/sys/fs/selinux/class/${class}/index" 2>/dev/null) || return 2
+  bit=$(cat "/sys/fs/selinux/class/${class}/perms/${perm}" 2>/dev/null) || return 2
+  requested=$(( 1 << (bit - 1) ))
+
+  for role in system_r object_r; do
+    exec 3<>/sys/fs/selinux/access || return 2
+    if printf 'system_u:system_r:%s:s0 system_u:%s:%s:s0 %s %s' \
+        "$src" "$role" "$target" "$index" "$requested" >&3 2>/dev/null; then
+      read -r allowed _ <&3
+      exec 3>&-
+      (( 0x${allowed:-0} & requested )) && return 0
+      return 1
+    fi
+    exec 3>&-
+  done
+
+  return 2
+}
+
+# Returns 0 if 'label=type:sharelatex_t' can safely be applied: a Server Pro
+# podman deployment with sibling containers, and the podman_socket_clsi module loaded
+use_selinux_label() {
+  [[ "${SERVER_PRO:-false}" == "true" ]] || return 1
+  [[ "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]] || return 1
+  is_podman || return 1
+
+  check_selinux_rules
+  [[ "$SELINUX_RULES_CHECKED" == true && "$SELINUX_RULES_OK" == true ]]
+}
+
 check_selinux_rules() {
-  local sudo_cmd="${1:-sudo -n}"
   SELINUX_RULES_OK=true
+  SELINUX_RULES_CHECKED=true
   SELINUX_MISSING_RULES=()
 
-  if ! command -v sesearch &>/dev/null; then
-    return
-  fi
-
-  local rule
+  local rule src target class perm status
   for rule in "${SELINUX_RULES[@]}"; do
     read -r src target class perm <<< "$rule"
-    if ! $sudo_cmd sesearch --allow -s "$src" -t "$target" -c "$class" -p "$perm" 2>/dev/null | grep -q "allow"; then
-      SELINUX_RULES_OK=false
-      SELINUX_MISSING_RULES+=("$rule")
+
+    selinux_access_allowed "$src" "$target" "$class" "$perm" && continue
+    status=$?
+
+    if [[ "$status" -eq 2 ]]; then
+      SELINUX_RULES_CHECKED=false
+      return 0
     fi
+
+    SELINUX_RULES_OK=false
+    SELINUX_MISSING_RULES+=("$rule")
   done
+
+  return 0
 }
