@@ -690,6 +690,12 @@ print_summary() {
 }
 
 echo "=== Podman Setup ==="
+echo
+echo "---------------------------  WARNING  ----------------------------"
+echo "  Podman support is experimental and comes with limited support.  "
+echo "  It is only tested on RHEL 9+ with rootless Podman, Server Pro   "
+echo "  sibling containers and SELinux enforcing.                       "
+echo "---------------------------  WARNING  ----------------------------"
 
 run_checks
 print_summary
