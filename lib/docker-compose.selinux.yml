@@ -1,0 +1,4 @@
+services:
+  sharelatex:
+    security_opt:
+      - "label=type:sharelatex_t"
