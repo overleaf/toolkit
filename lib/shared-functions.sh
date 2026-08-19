@@ -356,25 +356,29 @@ check_seccomp_config() {
 }
 
 SELINUX_MODULE_NAME="podman_socket_clsi"
+SELINUX_MANAGED_LABEL="sharelatex_t"
+SELINUX_MODES=(managed custom disable none)
 SELINUX_RULES=(
-  "sharelatex_t container_runtime_t unix_stream_socket connectto"
-  "sharelatex_t user_tmp_t sock_file write"
-  "sharelatex_t user_tmp_t sock_file getattr"
-  "sharelatex_t container_runtime_t fifo_file setattr"
+  "container_runtime_t unix_stream_socket connectto"
+  "user_tmp_t sock_file write"
+  "user_tmp_t sock_file getattr"
+  "container_runtime_t fifo_file setattr"
 )
 
 check_selinux_module() {
   local sudo_cmd="${1:-sudo}"
   local modules
   SELINUX_MODULE_LOADED=false
-  SELINUX_MODULE_CHECKED=true
 
-  if ! modules=$($sudo_cmd semodule -l 2>/dev/null); then
-    SELINUX_MODULE_CHECKED=false
+  if modules=$($sudo_cmd semodule -l 2>/dev/null); then
+    if grep -q "^${SELINUX_MODULE_NAME}" <<< "$modules"; then
+      SELINUX_MODULE_LOADED=true
+    fi
     return 0
   fi
 
-  if grep -q "^${SELINUX_MODULE_NAME}" <<< "$modules"; then
+  # listing modules needs privileges, the type the module defines is equivalent
+  if selinux_label_valid "$SELINUX_MANAGED_LABEL"; then
     SELINUX_MODULE_LOADED=true
   fi
 }
@@ -402,36 +406,103 @@ selinux_access_allowed() {
   return 2
 }
 
-# Returns 0 if 'label=type:sharelatex_t' can safely be applied: a Server Pro
-# podman deployment with sibling containers, and the podman_socket_clsi module loaded
-use_selinux_label() {
-  [[ "${SERVER_PRO:-false}" == "true" ]] || return 1
-  [[ "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]] || return 1
-  is_podman || return 1
+selinux_enforce_mode() {
+  local mode="Disabled"
+  command -v getenforce &>/dev/null && mode="$(getenforce 2>/dev/null || echo Disabled)"
+  echo "$mode"
+}
 
-  check_selinux_rules
-  [[ "$SELINUX_RULES_CHECKED" == true && "$SELINUX_RULES_OK" == true ]]
+# Returns 0 if the type exists in the loaded policy, 1 if it does not,
+# 2 if the policy cannot be queried
+selinux_label_valid() {
+  local label="$1"
+
+  [[ "$label" =~ ^[a-zA-Z0-9_.-]+$ ]] || return 1
+  [[ -w /sys/fs/selinux/context ]] || return 2
+
+  # the kernel rejects a context whose type is not in the loaded policy
+  printf 'system_u:system_r:%s:s0' "$label" > /sys/fs/selinux/context 2>/dev/null
+}
+
+# Resolves SELINUX_MODE/SELINUX_LABEL, which only apply to a Server Pro podman
+# deployment with sibling containers and SELinux enabled.
+# Sets: SELINUX_MODE, SELINUX_LABEL (empty unless a label is applied),
+#       SELINUX_SECURITY_OPT (empty when no security_opt should be applied),
+#       SELINUX_ENFORCE_MODE, SELINUX_APPLIES, SELINUX_CONFIG_ERROR
+check_selinux_config() {
+  SELINUX_MODE="${SELINUX_MODE:-disable}"
+  SELINUX_LABEL="${SELINUX_LABEL:-}"
+  SELINUX_SECURITY_OPT=""
+  SELINUX_CONFIG_ERROR=""
+  SELINUX_APPLIES=false
+  SELINUX_ENFORCE_MODE="$(selinux_enforce_mode)"
+
+  case "$SELINUX_MODE" in
+    managed) SELINUX_LABEL="$SELINUX_MANAGED_LABEL" ;;
+    custom) ;;
+    disable|none) SELINUX_LABEL="" ;;
+    *)
+      SELINUX_CONFIG_ERROR="invalid SELINUX_MODE '$SELINUX_MODE' in config/overleaf.rc, expected one of: ${SELINUX_MODES[*]}"
+      SELINUX_LABEL=""
+      ;;
+  esac
+
+  [[ -z "$SELINUX_CONFIG_ERROR" ]] || return 0
+  [[ "${SERVER_PRO:-false}" == "true" ]] || return 0
+  [[ "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]] || return 0
+  is_podman || return 0
+  [[ "$SELINUX_ENFORCE_MODE" != "Disabled" ]] || return 0
+
+  SELINUX_APPLIES=true
+
+  local status=0
+  case "$SELINUX_MODE" in
+    managed)
+      # the managed type only exists once the policy module is installed
+      selinux_label_valid "$SELINUX_LABEL" || return 0
+      SELINUX_SECURITY_OPT="label=type:$SELINUX_LABEL"
+      ;;
+    custom)
+      if [[ -z "$SELINUX_LABEL" ]]; then
+        SELINUX_CONFIG_ERROR="SELINUX_MODE=custom requires SELINUX_LABEL to be set in config/overleaf.rc"
+        return 0
+      fi
+      selinux_label_valid "$SELINUX_LABEL" || status=$?
+      if [[ "$status" -eq 1 ]]; then
+        SELINUX_CONFIG_ERROR="SELINUX_LABEL '$SELINUX_LABEL' is not a valid SELinux type in the loaded policy"
+        return 0
+      fi
+      SELINUX_SECURITY_OPT="label=type:$SELINUX_LABEL"
+      ;;
+    disable)
+      SELINUX_SECURITY_OPT="label=disable"
+      ;;
+  esac
+
+  return 0
 }
 
 check_selinux_rules() {
+  local src="${1:-$SELINUX_MANAGED_LABEL}"
   SELINUX_RULES_OK=true
-  SELINUX_RULES_CHECKED=true
   SELINUX_MISSING_RULES=()
 
-  local rule src target class perm status
+  local rule target class perm
+
+  if ! selinux_label_valid "$src"; then
+    # the type is not in the loaded policy, so none of its rules can be present
+    SELINUX_RULES_OK=false
+    SELINUX_MISSING_RULES=("${SELINUX_RULES[@]/#/$src }")
+    return 0
+  fi
+
   for rule in "${SELINUX_RULES[@]}"; do
-    read -r src target class perm <<< "$rule"
+    read -r target class perm <<< "$rule"
 
     selinux_access_allowed "$src" "$target" "$class" "$perm" && continue
-    status=$?
-
-    if [[ "$status" -eq 2 ]]; then
-      SELINUX_RULES_CHECKED=false
-      return 0
-    fi
 
     SELINUX_RULES_OK=false
-    SELINUX_MISSING_RULES+=("$rule")
+    SELINUX_MISSING_RULES+=("$src $rule")
   done
 
   return 0

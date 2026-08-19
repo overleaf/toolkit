@@ -189,7 +189,7 @@ function check_docker_daemon() {
     print_point 1 "socket: not found"
   fi
 
-  if [[ "${SERVER_PRO:-false}" == "true" && "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" && -n "$socket_path" ]]; then
+  if [[ "${SERVER_PRO:-false}" == "true" && "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]]; then
     if [[ "$using_podman" == true ]]; then
       if [[ -n "${DOCKER_HOST:-}" ]]; then
         print_point 1 "DOCKER_HOST: $DOCKER_HOST"
@@ -207,38 +207,9 @@ function check_docker_daemon() {
       fi
     fi
 
-    if [[ ! -S "$socket_path" ]]; then
+    if [[ -n "$socket_path" ]] && [[ ! -S "$socket_path" ]]; then
       add_warning "Configured socket path '$socket_path' does not exist or is not a socket"
-    else
-      if [[ "$using_podman" == true ]] && command -v getenforce &>/dev/null; then
-        local enforce
-        enforce=$(getenforce 2>/dev/null || echo "Disabled")
-        print_point 1 "SELinux: $enforce"
-
-        if [[ "$enforce" != "Disabled" ]]; then
-          check_selinux_rules
-          if [[ "$SELINUX_RULES_CHECKED" == false ]]; then
-            print_point 1 "SELinux rules: unknown"
-          elif [[ "$SELINUX_RULES_OK" == true ]]; then
-            print_point 1 "SELinux rules: present"
-          else
-            for rule in "${SELINUX_MISSING_RULES[@]}"; do
-              print_point 2 "rule $rule not present"
-            done
-            add_warning "SELinux is Enforcing but the rules the sharelatex container needs are not present — the container will be blocked from connecting to the Podman socket. Run './bin/podman-setup --apply'."
-          fi
-
-          check_selinux_module
-          if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
-            print_point 1 "SELinux module: loaded (podman_socket_clsi)"
-          elif [[ "$SELINUX_MODULE_CHECKED" == false ]]; then
-            print_point 1 "SELinux module: unknown"
-          else
-            print_point 1 "SELinux module: not loaded"
-          fi
-        fi
-      fi
-
+    elif [[ -S "$socket_path" ]]; then
       test_socket_ping_host "$socket_path"
       if [[ "$SOCKET_PING_HOST_OK" == true ]]; then
         print_point 1 "host → socket: OK"
@@ -258,26 +229,75 @@ function check_docker_daemon() {
       fi
     fi
   fi
+}
 
-  if [[ "$using_podman" == true ]]; then
-    local seccomp_path
-    seccomp_path="$(get_seccomp_expected_path)"
-    check_seccomp_config
+function check_security() {
+  if ! is_podman; then
+    return
+  fi
 
-    if [[ "$SECCOMP_FILE_EXISTS" == true && "$SECCOMP_ENV_MATCHES" == true ]]; then
-      print_point 1 "Seccomp profile: present"
-    else
-      if [[ "$SECCOMP_FILE_EXISTS" == false ]]; then
-        print_point 1 "Seccomp profile: MISSING (file not found at $seccomp_path)"
-        add_warning "Seccomp profile not installed at $seccomp_path"
+  print_point 0 "Security"
+
+  if [[ -f "$TOOLKIT_ROOT/config/overleaf.rc" ]]; then
+    # shellcheck disable=SC1090
+    source "$TOOLKIT_ROOT/config/overleaf.rc"
+  fi
+
+  if [[ "${SERVER_PRO:-false}" == "true" && "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]]; then
+    check_selinux_config
+    print_point 1 "SELinux: $SELINUX_ENFORCE_MODE"
+
+    if [[ -n "$SELINUX_CONFIG_ERROR" ]]; then
+      add_warning "$SELINUX_CONFIG_ERROR"
+    elif [[ "$SELINUX_ENFORCE_MODE" != "Disabled" ]]; then
+      print_point 1 "SELINUX_MODE: $SELINUX_MODE"
+      print_point 1 "SELINUX_LABEL: ${SELINUX_LABEL:-not set}"
+
+      if [[ -z "$SELINUX_LABEL" ]]; then
+        print_point 1 "SELinux rules: not required"
+      else
+        check_selinux_module
+        if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
+          print_point 1 "SELinux module: loaded (podman_socket_clsi)"
+        else
+          print_point 1 "SELinux module: not loaded"
+        fi
+
+        check_selinux_rules "$SELINUX_LABEL"
+        if [[ "$SELINUX_RULES_OK" == true ]]; then
+          print_point 1 "SELinux rules: present"
+        else
+          print_point 1 "SELinux rules: not present"
+          for rule in "${SELINUX_MISSING_RULES[@]}"; do
+            print_point 2 "rule $rule not present"
+          done
+          if [[ "$SELINUX_MODE" == "custom" ]]; then
+            add_warning "SELinux is $SELINUX_ENFORCE_MODE but the rules the sharelatex container needs for the type '$SELINUX_LABEL' are not present — sandboxed compiles will not work. Add the missing rules to your own policy module."
+          else
+            add_warning "SELinux is $SELINUX_ENFORCE_MODE but the rules the sharelatex container needs are not present — the container will be blocked from connecting to the Podman socket. Run './bin/podman-setup --apply'."
+          fi
+        fi
       fi
-      if [[ -z "$SECCOMP_ENV_VALUE" ]]; then
-        print_point 1 "SECCOMP_PROFILE: not set"
-        add_warning "SECCOMP_PROFILE not set in variables.env"
-      elif [[ "$SECCOMP_ENV_MATCHES" == false ]]; then
-        print_point 1 "SECCOMP_PROFILE: '$SECCOMP_ENV_VALUE' (expected '$seccomp_path')"
-        add_warning "SECCOMP_PROFILE should be '$seccomp_path'"
-      fi
+    fi
+  fi
+
+  local seccomp_path
+  seccomp_path="$(get_seccomp_expected_path)"
+  check_seccomp_config
+
+  if [[ "$SECCOMP_FILE_EXISTS" == true && "$SECCOMP_ENV_MATCHES" == true ]]; then
+    print_point 1 "Seccomp profile: present"
+  else
+    if [[ "$SECCOMP_FILE_EXISTS" == false ]]; then
+      print_point 1 "Seccomp profile: MISSING (file not found at $seccomp_path)"
+      add_warning "Seccomp profile not installed at $seccomp_path"
+    fi
+    if [[ -z "$SECCOMP_ENV_VALUE" ]]; then
+      print_point 1 "SECCOMP_PROFILE: not set"
+      add_warning "SECCOMP_PROFILE not set in variables.env"
+    elif [[ "$SECCOMP_ENV_MATCHES" == false ]]; then
+      print_point 1 "SECCOMP_PROFILE: '$SECCOMP_ENV_VALUE' (expected '$seccomp_path')"
+      add_warning "SECCOMP_PROFILE should be '$seccomp_path'"
     fi
   fi
 }
@@ -603,6 +623,7 @@ function __main__() {
   check_host_information
   check_dependencies
   check_docker_daemon
+  check_security
   check_config_files
   print_warnings
   print_section_separator "End"

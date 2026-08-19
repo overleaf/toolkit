@@ -1,4 +1,4 @@
 services:
   sharelatex:
     security_opt:
-      - "label=type:sharelatex_t"
+      - "${SELINUX_SECURITY_OPT}"
