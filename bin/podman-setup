@@ -417,52 +417,58 @@ check_loaded_selinux_policy() {
 
   if [[ "$SELINUX_MODULE_LOADED" == true ]]; then
     report ok "SELinux module loaded (podman_socket_clsi)"
-  elif [[ "$SELINUX_MODULE_CHECKED" == false ]]; then
-    report skip "SELinux module unknown"
   else
     report skip "SELinux module not loaded"
   fi
 
-  check_selinux_rules
-
-  if [[ "$SELINUX_RULES_CHECKED" == false ]]; then
-    report skip "SELinux rules unknown"
-    [[ "$SELINUX_MODULE_LOADED" == true ]] && return 0
-    return 1
-  fi
+  check_selinux_rules "$SELINUX_LABEL"
 
   if [[ "$SELINUX_RULES_OK" == true ]]; then
     report ok "SELinux rules present"
     return 0
   fi
 
-  if is_apply; then
-    for rule in "${SELINUX_MISSING_RULES[@]}"; do
-      report skip "rule $rule not present"
-    done
-  fi
+  report skip "SELinux rules not present"
+  for rule in "${SELINUX_MISSING_RULES[@]}"; do
+    report skip "rule $rule not present"
+  done
   return 1
 }
 
 ensure_selinux_policy() {
   heading "SELinux Policy"
 
-  local enforce="Disabled"
-  command -v getenforce &>/dev/null && enforce="$(getenforce 2>/dev/null || echo Disabled)"
+  # shellcheck disable=SC2153  # SELINUX_* set by lib/shared-functions.sh
+  check_selinux_config
 
-  if [[ "$enforce" == "Disabled" ]]; then
-    report skip "SELinux disabled"
+  if [[ -n "$SELINUX_CONFIG_ERROR" ]]; then
+    report fail "$SELINUX_CONFIG_ERROR"
+    return 1
+  fi
+
+  if [[ "$SELINUX_ENFORCE_MODE" == "Disabled" ]]; then
+    report skip "SELinux: Disabled"
+    return 0
+  fi
+
+  report ok "SELinux: $SELINUX_ENFORCE_MODE"
+  report ok "SELINUX_MODE: $SELINUX_MODE"
+  report ok "SELINUX_LABEL: ${SELINUX_LABEL:-not set}"
+
+  if [[ -z "$SELINUX_LABEL" ]]; then
+    report skip "SELinux rules not required"
     return 0
   fi
 
   check_loaded_selinux_policy && return 0
 
+  if [[ "$SELINUX_MODE" == "custom" ]]; then
+    report warn "SELinux rules not present for '$SELINUX_LABEL' (add them to your own policy module)"
+    return 0
+  fi
+
   if is_dry_run; then
-    if [[ "$SELINUX_RULES_CHECKED" == false ]]; then
-      report warn "SELinux rules unknown, policy module not loaded (use --apply to install it)"
-    else
-      report warn "SELinux rules not present (use --apply to install the policy module)"
-    fi
+    report warn "SELinux rules not present (use --apply to install the policy module)"
     return 0
   fi
 

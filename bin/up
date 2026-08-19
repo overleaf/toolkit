@@ -87,6 +87,26 @@ function notify_about_podman_limited_support() {
   echo
 }
 
+function notify_about_missing_selinux_rules() {
+  check_selinux_config
+  if [[ -z "$SELINUX_LABEL" ]] || [[ -z "$SELINUX_SECURITY_OPT" ]]; then
+    return
+  fi
+
+  check_selinux_rules "$SELINUX_LABEL"
+  if [[ "$SELINUX_RULES_OK" == "true" ]]; then
+    return
+  fi
+
+  local missing
+  missing=$(printf '%s, ' "${SELINUX_MISSING_RULES[@]}")
+
+  echo '---'
+  echo "  WARNING: The SELinux policy module for the type '$SELINUX_LABEL' is missing rules the sharelatex container needs to reach the Podman socket, so sandboxed compiles will not work. Missing rules: ${missing%, }. With SELINUX_MODE=managed, run \"bin/podman-setup --apply\" to install the Overleaf policy module; with SELINUX_MODE=custom, add these rules to your own policy module."
+  echo '---'
+  echo
+}
+
 function notify_about_not_using_detach_mode() {
   local detached=false
   for arg in "$@"; do
@@ -127,6 +147,7 @@ function __main__() {
   fi
 
   notify_about_podman_limited_support
+  notify_about_missing_selinux_rules
   notify_about_not_using_detach_mode "$@"
   exec "$TOOLKIT_ROOT/bin/docker-compose" up "$@"
 }
