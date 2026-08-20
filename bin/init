@@ -44,8 +44,9 @@ function set_up_config_files() {
   cp "$TOOLKIT_ROOT/lib/config-seed/version" "$TOOLKIT_ROOT/config/"
   local invite_token_secret
   invite_token_secret="$(openssl rand -base64 32)"
-  sed -i'' "s|OVERLEAF_INVITE_TOKEN_SECRET=|OVERLEAF_INVITE_TOKEN_SECRET=${invite_token_secret}|" \
+  sed -i.bak "s|OVERLEAF_INVITE_TOKEN_SECRET=|OVERLEAF_INVITE_TOKEN_SECRET=${invite_token_secret}|" \
     "$TOOLKIT_ROOT/config/variables.env"
+  rm -f "$TOOLKIT_ROOT/config/variables.env.bak"
 }
 
 function set_up_tls_proxy() {
