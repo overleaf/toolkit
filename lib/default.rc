@@ -9,6 +9,14 @@ OVERLEAF_PORT=80
 SIBLING_CONTAINERS_ENABLED=false
 DOCKER_SOCKET_PATH=/var/run/docker.sock
 
+# SELinux (Podman, Server Pro sibling containers only)
+# managed - apply the toolkit managed label (sharelatex_t), ignoring SELINUX_LABEL
+# custom  - apply the label set in SELINUX_LABEL
+# disable - disable SELinux confinement for the sharelatex container
+# none    - do not set any SELinux options on the sharelatex container
+SELINUX_MODE=disable
+SELINUX_LABEL=
+
 # Mongo configuration
 MONGO_ENABLED=true
 MONGO_IMAGE=mongo:4.0

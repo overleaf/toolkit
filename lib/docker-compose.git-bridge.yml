@@ -5,7 +5,7 @@ services:
         restart: always
         image: "${GIT_BRIDGE_IMAGE}"
         volumes:
-            - "${GIT_BRIDGE_DATA_PATH}:/data/git-bridge"
+            - "${GIT_BRIDGE_DATA_PATH}:/data/git-bridge:z"
         container_name: git-bridge
         expose:
             - "8000"
@@ -19,7 +19,3 @@ services:
             - ../config/variables.env
         user: root
         command: ["/server-pro-start.sh"]
-
-    sharelatex:
-      links:
-        - git-bridge

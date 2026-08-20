@@ -1,0 +1,31 @@
+module podman_socket_clsi 2.0;
+
+# Scopes access to the rootless Podman socket (/run/user/$UID/podman/podman.sock,
+# user_tmp_t) to the sharelatex container.
+# Applied with 'security_opt: label=type:sharelatex_t'.
+
+require {
+    attribute container_domain;
+    attribute container_net_domain;
+    attribute domain;
+    attribute kernel_system_state_reader;
+    attribute mcs_constrained_type;
+    attribute process_user_target;
+    attribute svirt_sandbox_domain;
+    role system_r;
+    type container_runtime_t;
+    type user_tmp_t;
+    class fifo_file setattr;
+    class sock_file { write getattr };
+    class unix_stream_socket connectto;
+}
+
+type sharelatex_t;
+typeattribute sharelatex_t container_domain, container_net_domain, domain,
+    kernel_system_state_reader, mcs_constrained_type, process_user_target,
+    svirt_sandbox_domain;
+role system_r types sharelatex_t;
+
+allow sharelatex_t user_tmp_t:sock_file { write getattr };
+allow sharelatex_t container_runtime_t:unix_stream_socket connectto;
+allow sharelatex_t container_runtime_t:fifo_file setattr;

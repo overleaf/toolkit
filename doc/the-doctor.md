@@ -38,7 +38,7 @@ You will see some output like this:
         - version info: 5.0.17(1)-release
     - docker
         - status: present
-        - version info: Docker version 23.0.6, build 369ce74a3c
+        - version info: Docker version 29.7.2, build a7dcaa6
     - docker compose
         - status: present
         - version info: Docker Compose version v2.17.3
@@ -51,8 +51,11 @@ You will see some output like this:
     - awk
         - status: present
         - version info: GNU Awk 5.0.1, API: 2.0 (GNU MPFR 4.0.2, GNU MP 6.2.0)
-- Docker Daemon
+- Container Daemon
     - status: up
+    - runtime: docker
+    - server version: 29.7.2
+    - socket: /var/run/docker.sock
 ====== Configuration ======
 - config/version
     - status: present
@@ -85,7 +88,7 @@ If the tool is present on the system, it will be listed as `status: present`, al
 ```
 - docker
     - status: present
-    - version info: Docker version 19.03.6, build 369ce74a3c
+    - version info: Docker version 29.7.2, build a7dcaa6
 ```
 
 However, if the tool is missing, it will be listed as `status: MISSING!`, and a warning will be added to the bottom of the `doctor` output. For example:

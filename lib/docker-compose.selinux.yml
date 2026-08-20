@@ -1,0 +1,4 @@
+services:
+  sharelatex:
+    security_opt:
+      - "${SELINUX_SECURITY_OPT}"
