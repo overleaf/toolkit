@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-10-21
+### Added
+- Experimental support for running Server Pro with Sandboxed Compiles (`SIBLING_CONTAINERS_ENABLED=true`) on rootless Podman.
+
+  :warning: Podman support is experimental and comes with limited support. It is only tested on RHEL 9+ with rootless Podman and SELinux enforcing. Docker remains the recommended container runtime.
+
+  - New `bin/podman-setup` script checks the host configuration. Run it with `--apply` to fix the issues it finds. See the [Podman documentation](./doc/podman.md).
+  - New `SELINUX_MODE` and `SELINUX_LABEL` options in `config/overleaf.rc` control the SELinux label applied to the `sharelatex` container. See [`overleaf.rc` documentation](./doc/overleaf-rc.md).
+  - `bin/up` and `bin/upgrade` extract the seccomp profile from the Server Pro image and set `SECCOMP_PROFILE` in `config/variables.env`.
+  - `bin/doctor` reports the container runtime, socket connectivity, SELinux and seccomp status.
+### Changed
+- The nginx config is now mounted as a template, and the DNS resolver is set from `${NGINX_LOCAL_RESOLVERS}`. Existing `config/nginx/nginx.conf` files keep working with Docker. To use Podman, replace `resolver 127.0.0.11` with `resolver ${NGINX_LOCAL_RESOLVERS}` in `config/nginx/nginx.conf`, as in `lib/config-seed/nginx.conf`. If you configured a custom `NGINX_IMAGE`, it must support the template mechanism of the official nginx image.
+- Data volumes are mounted with the `:z` option, so Docker and Podman relabel them on hosts with SELinux enabled.
+- `bin/doctor` now warns for Docker versions older than 29, except 25.
+
 ## 2026-10-15
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.3.1`.

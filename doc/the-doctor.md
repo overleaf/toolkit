@@ -101,6 +101,37 @@ However, if the tool is missing, it will be listed as `status: MISSING!`, and a 
 If any of the dependencies are missing, the toolkit will almost certainly not work.
 
 
+### Container Daemon
+
+The `Container Daemon` section shows the status, runtime (`docker` or `podman`), version and socket of the container daemon. With `SIBLING_CONTAINERS_ENABLED=true`, it also checks the socket can be reached from the host and from the `sharelatex` container. For example:
+
+```
+- Container Daemon
+    - status: up
+    - runtime: podman
+    - server version: 5.4.0
+    - socket: /run/user/1000/podman/podman.sock
+    - DOCKER_HOST: unix:///run/user/1000/podman/podman.sock
+    - host → socket: OK
+    - container → socket: OK
+```
+
+
+### Security
+
+The `Security` section is only shown on [Podman](./podman.md). It shows the SELinux and seccomp configuration, and lists any missing SELinux rules. For example:
+
+```
+- Security
+    - SELinux: Enforcing
+    - SELINUX_MODE: managed
+    - SELINUX_LABEL: sharelatex_t
+    - SELinux module: loaded (podman_socket_clsi)
+    - SELinux rules: present
+    - Seccomp profile: present
+```
+
+
 ### Configuration
 
 The `Configuration` section contains information about the files in the `config/` directory. In the case of `config/overleaf.rc`, the doctor also prints out some of the more important values from the file. If any of the files are not present, they will be listed as `status: MISSING!`, and a warning will be added to the bottom of the `doctor` output. For example:

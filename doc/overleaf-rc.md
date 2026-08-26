@@ -76,6 +76,8 @@ Requires `SERVER_PRO=true`
 
 Sets the path to the docker socket on the host machine (the machine running the toolkit code). When `SIBLING_CONTAINERS_ENABLED` is `true`, the socket will be mounted into the container, to allow the compiler service to spawn new docker containers on the host.
 
+With [Podman](./podman.md), this is set to `/run/user/<uid>/podman/podman.sock` by `bin/podman-setup --apply`.
+
 Requires `SIBLING_CONTAINERS_ENABLED=true`
 
 - Default: /var/run/docker.sock
@@ -207,6 +209,10 @@ For additional details, see https://github.com/overleaf/overleaf/wiki/Data-and-B
 When set to `true`, tells the toolkit to create an NGINX container, to act as a [TLS Proxy](tls-proxy.md).
 
 - Default: false
+
+### `NGINX_IMAGE`
+
+Docker image as used by the [TLS Proxy](tls-proxy.md) container. Must support the templates of the [official NGINX image](https://hub.docker.com/_/nginx).
 
 ### `NGINX_CONFIG_PATH`
 
