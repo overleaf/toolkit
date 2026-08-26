@@ -281,23 +281,25 @@ function check_security() {
     fi
   fi
 
-  local seccomp_path
-  seccomp_path="$(get_seccomp_expected_path)"
-  check_seccomp_config
+  if [[ "${SERVER_PRO:-false}" == "true" && "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]]; then
+    local seccomp_path
+    seccomp_path="$(get_seccomp_expected_path)"
+    check_seccomp_config
 
-  if [[ "$SECCOMP_FILE_EXISTS" == true && "$SECCOMP_ENV_MATCHES" == true ]]; then
-    print_point 1 "Seccomp profile: present"
-  else
-    if [[ "$SECCOMP_FILE_EXISTS" == false ]]; then
-      print_point 1 "Seccomp profile: MISSING (file not found at $seccomp_path)"
-      add_warning "Seccomp profile not installed at $seccomp_path"
-    fi
-    if [[ -z "$SECCOMP_ENV_VALUE" ]]; then
-      print_point 1 "SECCOMP_PROFILE: not set"
-      add_warning "SECCOMP_PROFILE not set in variables.env"
-    elif [[ "$SECCOMP_ENV_MATCHES" == false ]]; then
-      print_point 1 "SECCOMP_PROFILE: '$SECCOMP_ENV_VALUE' (expected '$seccomp_path')"
-      add_warning "SECCOMP_PROFILE should be '$seccomp_path'"
+    if [[ "$SECCOMP_FILE_EXISTS" == true && "$SECCOMP_ENV_MATCHES" == true ]]; then
+      print_point 1 "Seccomp profile: present"
+    else
+      if [[ "$SECCOMP_FILE_EXISTS" == false ]]; then
+        print_point 1 "Seccomp profile: MISSING (file not found at $seccomp_path)"
+        add_warning "Seccomp profile not installed at $seccomp_path"
+      fi
+      if [[ -z "$SECCOMP_ENV_VALUE" ]]; then
+        print_point 1 "SECCOMP_PROFILE: not set"
+        add_warning "SECCOMP_PROFILE not set in variables.env"
+      elif [[ "$SECCOMP_ENV_MATCHES" == false ]]; then
+        print_point 1 "SECCOMP_PROFILE: '$SECCOMP_ENV_VALUE' (expected '$seccomp_path')"
+        add_warning "SECCOMP_PROFILE should be '$seccomp_path'"
+      fi
     fi
   fi
 }

@@ -355,6 +355,64 @@ check_seccomp_config() {
   fi
 }
 
+SECCOMP_IMAGE_PATH=/overleaf/services/clsi/seccomp/clsi-profile.json
+
+# Extracts the seccomp profile from $1 (image) into $2 (dest path) using podman.
+# Returns 0 on success, 1 if the profile isn't found in the image, 2 if the
+# image couldn't be used to create a container.
+extract_seccomp_profile_from_image() {
+  local image="$1" dest="$2"
+  local cid
+
+  cid="$(podman create "$image" 2>/dev/null)" || return 2
+
+  mkdir -p "$(dirname "$dest")"
+  if podman cp "$cid:$SECCOMP_IMAGE_PATH" "$dest" 2>/dev/null; then
+    podman rm -f "$cid" >/dev/null 2>&1 || true
+    return 0
+  else
+    podman rm -f "$cid" >/dev/null 2>&1 || true
+    return 1
+  fi
+}
+
+# Ensures the seccomp profile for the current $IMAGE is extracted to
+# config/seccomp/<version>/clsi-profile.json and SECCOMP_PROFILE is set in
+# variables.env. Requires $IMAGE and $TOOLKIT_ROOT to be set by the caller.
+# No-op unless running Server Pro with sibling containers on Podman.
+ensure_seccomp_profile() {
+  [[ "${SERVER_PRO:-false}" == "true" ]] || return 0
+  [[ "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]] || return 0
+  is_podman || return 0
+
+  local seccomp_path
+  seccomp_path="$(get_seccomp_expected_path)"
+
+  if [[ ! -f "$seccomp_path" ]]; then
+    if ! podman image exists "$IMAGE" && ! podman pull "$IMAGE"; then
+      echo "WARNING: could not pull $IMAGE to extract the seccomp profile. Run 'bin/podman-setup --apply' once the image is available." >&2
+      return 1
+    fi
+    echo "Extracting seccomp profile from $IMAGE..."
+    if extract_seccomp_profile_from_image "$IMAGE" "$seccomp_path"; then
+      echo "Extracted seccomp profile to $seccomp_path"
+    else
+      echo "WARNING: seccomp profile not found at $SECCOMP_IMAGE_PATH in $IMAGE. Sandboxed compiles may not work; run 'bin/podman-setup' for details." >&2
+      return 1
+    fi
+  fi
+
+  local ve="$TOOLKIT_ROOT/config/variables.env"
+  if ! grep -q "^SECCOMP_PROFILE=${seccomp_path}$" "$ve" 2>/dev/null; then
+    if grep -q "^SECCOMP_PROFILE=" "$ve" 2>/dev/null; then
+      sed -i "s|^SECCOMP_PROFILE=.*|SECCOMP_PROFILE=${seccomp_path}|" "$ve"
+    else
+      echo "SECCOMP_PROFILE=${seccomp_path}" >> "$ve"
+    fi
+    echo "Set SECCOMP_PROFILE=${seccomp_path} in config/variables.env"
+  fi
+}
+
 SELINUX_MODULE_NAME="podman_socket_clsi"
 SELINUX_MANAGED_LABEL="sharelatex_t"
 SELINUX_MODES=(managed custom disable none)

@@ -144,6 +144,8 @@ function __main__() {
 
   if [[ $SERVER_PRO == "true" && "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
     pull_sandboxed_compiles
+    set_server_pro_image_name "$IMAGE_VERSION"
+    ensure_seccomp_profile || true
   fi
 
   notify_about_podman_limited_support
