@@ -115,7 +115,6 @@ declare -i CHECK_PASS=0 CHECK_WARN=0 CHECK_FAIL=0
 SUMMARY=""
 
 REQUIRED_PKGS=(podman podman-docker git curl checkpolicy policycoreutils)
-SECCOMP_IMAGE_PATH=/overleaf/services/clsi/seccomp/clsi-profile.json
 
 report() {
   local level="$1" msg="$2"
@@ -533,22 +532,16 @@ ensure_image_pulled() {
 
 extract_seccomp_profile() {
   local dest="$1"
-  local cid rc=0
+  local rc=0
 
-  if ! cid="$(podman create "$IMAGE" 2>/dev/null)"; then
-    report fail "failed to create container from $IMAGE"
-    return 1
-  fi
+  extract_seccomp_profile_from_image "$IMAGE" "$dest" || rc=$?
 
-  mkdir -p "$(dirname "$dest")"
-  if podman cp "$cid:$SECCOMP_IMAGE_PATH" "$dest" 2>/dev/null; then
-    report fix "extracted seccomp profile from $IMAGE"
-  else
-    report fail "seccomp profile not found at $SECCOMP_IMAGE_PATH in $IMAGE"
-    rc=1
-  fi
+  case "$rc" in
+    0) report fix "extracted seccomp profile from $IMAGE" ;;
+    2) report fail "failed to create container from $IMAGE" ;;
+    *) report fail "seccomp profile not found at $SECCOMP_IMAGE_PATH in $IMAGE" ;;
+  esac
 
-  podman rm -f "$cid" >/dev/null 2>&1 || true
   return "$rc"
 }
 
