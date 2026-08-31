@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-28
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.3.0`.
+- Set TexLive 2026 as default image for Sandboxed Compiles.
+- Added `OVERLEAF_HEADER_IMAGE_URL_LIGHT` and `OVERLEAF_HEADER_IMAGE_URL_DARK` to [`config-seed/variables.env`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/variables.env).
+
 ## 2026-07-20
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.2.2`.
