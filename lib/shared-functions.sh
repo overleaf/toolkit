@@ -214,6 +214,51 @@ function check_sharelatex_env_vars() {
   fi
 }
 
+function invite_token_secret_required() {
+  local major=$1
+  local minor=$2
+  [[ "$major" -gt 6 ]] || [[ "$major" -eq 6 && "$minor" -ge 2 ]]
+}
+
+function invite_token_secret_is_set() {
+  local value
+  value=$(grep -E '^OVERLEAF_INVITE_TOKEN_SECRET=' "$TOOLKIT_ROOT/config/variables.env" \
+    | tail -n 1 | cut -d= -f2- | tr -d "\"' ") || true
+  [[ -n "$value" ]]
+}
+
+function set_invite_token_secret() {
+  local env_file="$TOOLKIT_ROOT/config/variables.env"
+  local secret
+  secret="$(openssl rand -base64 32)"
+  if grep -q -E '^OVERLEAF_INVITE_TOKEN_SECRET=' "$env_file"; then
+    SECRET="$secret" perl -i -pe 's/^OVERLEAF_INVITE_TOKEN_SECRET=.*$/OVERLEAF_INVITE_TOKEN_SECRET=$ENV{SECRET}/' "$env_file"
+  else
+    if [[ -s "$env_file" && -n "$(tail -c 1 "$env_file")" ]]; then
+      echo >> "$env_file"
+    fi
+    echo "OVERLEAF_INVITE_TOKEN_SECRET=$secret" >> "$env_file"
+  fi
+}
+
+function check_invite_token_secret() {
+  if [[ ${SKIP_WARNINGS:-null} == "true" ]] \
+      || ! invite_token_secret_required "$IMAGE_VERSION_MAJOR" "$IMAGE_VERSION_MINOR" \
+      || invite_token_secret_is_set; then
+    return
+  fi
+  {
+    echo "-------------------  WARNING  ----------------------"
+    echo "  OVERLEAF_INVITE_TOKEN_SECRET is not set in config/variables.env."
+    echo "  Overleaf CE and Server Pro 6.2.0 and later will not start without it."
+    echo "  Generate a secret with 'openssl rand -base64 32' and add it to config/variables.env:"
+    echo ""
+    echo "    OVERLEAF_INVITE_TOKEN_SECRET=<generated secret>"
+    echo ""
+    echo "-------------------  WARNING  ----------------------"
+  } >&2
+}
+
 function read_variable() {
   local name=$1
   grep -E "^$name=" "$TOOLKIT_ROOT/config/variables.env" \

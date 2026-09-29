@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-29
+### Added
+- `bin/docker-compose` warns when `OVERLEAF_INVITE_TOKEN_SECRET` is missing from `config/variables.env` on version `6.2.0` and later.
+- `bin/doctor` reports whether `OVERLEAF_INVITE_TOKEN_SECRET` is set on version `6.2.0` and later.
+- `bin/upgrade` offers to generate `OVERLEAF_INVITE_TOKEN_SECRET` when upgrading to version `6.2.0` or later without one.
+### Fixed
+- `bin/init` now generates `OVERLEAF_INVITE_TOKEN_SECRET` portably on macOS/BSD.
+
 ## 2026-08-28
 ### Added
 - Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.3.0`.
