@@ -213,6 +213,20 @@ function handle_image_upgrade() {
     rebrand_sharelatex_env_variables 'variables.env'
   fi
 
+  if invite_token_secret_required "$SEED_IMAGE_VERSION_MAJOR" "$SEED_IMAGE_VERSION_MINOR" \
+      && ! invite_token_secret_is_set; then
+    echo "Version $SEED_IMAGE_VERSION requires OVERLEAF_INVITE_TOKEN_SECRET in config/variables.env"
+    local should_generate="n"
+    read -r -p "Generate OVERLEAF_INVITE_TOKEN_SECRET now? [y/n] " should_generate
+    if [[ "$should_generate" =~ [Yy] ]]; then
+      set_invite_token_secret
+      echo "Added OVERLEAF_INVITE_TOKEN_SECRET to config/variables.env"
+    else
+      echo "WARNING: the sharelatex container will not start until OVERLEAF_INVITE_TOKEN_SECRET is set."
+      echo "Generate a secret with 'openssl rand -base64 32' and add it to config/variables.env"
+    fi
+  fi
+
   ## Maybe offer to start services again
   if [[ "${services_stopped:-null}" == "true" ]]; then
     local should_start="n"
