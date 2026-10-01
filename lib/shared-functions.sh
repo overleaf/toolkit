@@ -363,6 +363,7 @@ SELINUX_RULES=(
   "user_tmp_t sock_file write"
   "user_tmp_t sock_file getattr"
   "container_runtime_t fifo_file setattr"
+  "self netlink_audit_socket nlmsg_relay"
 )
 
 check_selinux_module() {
@@ -498,6 +499,7 @@ check_selinux_rules() {
 
   for rule in "${SELINUX_RULES[@]}"; do
     read -r target class perm <<< "$rule"
+    [[ "$target" == "self" ]] && target="$src"
 
     selinux_access_allowed "$src" "$target" "$class" "$perm" && continue
 
