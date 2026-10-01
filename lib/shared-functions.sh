@@ -225,3 +225,285 @@ function read_configuration() {
   grep -E "^$name=" "$TOOLKIT_ROOT/config/overleaf.rc" \
   | sed -r "s/^$name=([\"']?)(.+)\1\$/\2/"
 }
+
+# Returns 0 if podman runtime is available (podman binary or docker shim)
+is_podman() {
+  command -v podman &>/dev/null && return 0
+
+  if command -v docker &>/dev/null; then
+    docker version 2>/dev/null | grep -qi podman && return 0
+  fi
+
+  return 1
+}
+
+# Check for quay.io login credentials.
+# Sets: QUAY_LOGIN_STATUS ("true" or "false")
+#       QUAY_LOGIN_USER (username if found, empty otherwise)
+check_quay_login() {
+  QUAY_LOGIN_STATUS=false
+  QUAY_LOGIN_USER=""
+
+  # Try podman --get-login first
+  if command -v podman &>/dev/null; then
+    QUAY_LOGIN_USER=$(podman login quay.io --get-login 2>/dev/null) || true
+    if [[ -n "$QUAY_LOGIN_USER" ]]; then
+      QUAY_LOGIN_STATUS=true
+      return
+    fi
+  fi
+
+  # Fall back to checking auth config files
+  local auth_file
+  for auth_file in \
+    "$HOME/.config/containers/auth.json" \
+    "$HOME/.docker/config.json" \
+    "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/containers/auth.json"; do
+    if [[ -f "$auth_file" ]] && grep -q "quay.io" "$auth_file" 2>/dev/null; then
+      QUAY_LOGIN_STATUS=true
+      local auth_b64
+      auth_b64=$(awk '/"quay.io"/{f=1} f&&/"auth"/{gsub(/.*"auth": *"/,""); gsub(/".*/,""); print; exit}' "$auth_file" 2>/dev/null) || true
+      if [[ -n "$auth_b64" ]]; then
+        QUAY_LOGIN_USER=$(printf '%s' "$auth_b64" | base64 -d 2>/dev/null | cut -d: -f1) || true
+      fi
+      return
+    fi
+  done
+}
+
+resolve_socket_path() {
+  RESOLVED_SOCKET_PATH=""
+
+  if [[ -f "$TOOLKIT_ROOT/config/overleaf.rc" ]]; then
+    # shellcheck disable=SC1090
+    source "$TOOLKIT_ROOT/config/overleaf.rc"
+  fi
+
+  if [[ -n "${DOCKER_SOCKET_PATH:-}" ]]; then
+    RESOLVED_SOCKET_PATH="$DOCKER_SOCKET_PATH"
+  elif [[ -n "${DOCKER_HOST:-}" ]]; then
+    RESOLVED_SOCKET_PATH="${DOCKER_HOST#unix://}"
+  elif [[ -S "/var/run/docker.sock" ]]; then
+    RESOLVED_SOCKET_PATH="/var/run/docker.sock"
+  else
+    local runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    if [[ -S "$runtime_dir/podman/podman.sock" ]]; then
+      RESOLVED_SOCKET_PATH="$runtime_dir/podman/podman.sock"
+    fi
+  fi
+}
+
+test_socket_ping_host() {
+  local socket_path="$1"
+  SOCKET_PING_HOST_OK=false
+  SOCKET_PING_HOST_OUTPUT="socket not found"
+
+  if [[ ! -S "$socket_path" ]]; then
+    return
+  fi
+
+  if ! command -v curl &>/dev/null; then
+    SOCKET_PING_HOST_OUTPUT="curl not available"
+    return
+  fi
+
+  SOCKET_PING_HOST_OUTPUT=$(curl -s --max-time 3 --unix-socket "$socket_path" http://localhost/_ping 2>&1) || true
+  if [[ "$SOCKET_PING_HOST_OUTPUT" == "OK" ]]; then
+    SOCKET_PING_HOST_OK=true
+  fi
+}
+
+test_socket_ping_container() {
+  local docker_cmd="${1:-docker}"
+  SOCKET_PING_CONTAINER_OK=false
+  SOCKET_PING_CONTAINER_OUTPUT="sharelatex not running"
+
+  if $docker_cmd ps --format '{{.Names}}' 2>/dev/null | grep -qx sharelatex; then
+    SOCKET_PING_CONTAINER_OUTPUT=$($docker_cmd exec sharelatex sh -c 'curl -s --max-time 3 --unix-socket /var/run/docker.sock http://localhost/_ping 2>&1') || true
+    if [[ "$SOCKET_PING_CONTAINER_OUTPUT" == "OK" ]]; then
+      SOCKET_PING_CONTAINER_OK=true
+    fi
+  fi
+}
+
+get_seccomp_expected_path() {
+  local version="${IMAGE_VERSION:-}"
+  if [[ -z "$version" ]]; then
+    version="$(head -n 1 "$TOOLKIT_ROOT/config/version" 2>/dev/null)"
+  fi
+  echo "$TOOLKIT_ROOT/config/seccomp/$version/clsi-profile.json"
+}
+
+check_seccomp_config() {
+  local seccomp_path
+  seccomp_path=$(get_seccomp_expected_path)
+  local ve="$TOOLKIT_ROOT/config/variables.env"
+
+  SECCOMP_FILE_EXISTS=false
+  SECCOMP_ENV_MATCHES=false
+  SECCOMP_ENV_VALUE=""
+
+  if [[ -f "$seccomp_path" ]]; then
+    SECCOMP_FILE_EXISTS=true
+  fi
+
+  if [[ -f "$ve" ]]; then
+    SECCOMP_ENV_VALUE=$(grep "^SECCOMP_PROFILE=" "$ve" 2>/dev/null | tail -1 | sed 's/^SECCOMP_PROFILE=//; s/["'\'']//g') || true
+    if [[ "$SECCOMP_ENV_VALUE" == "$seccomp_path" ]]; then
+      SECCOMP_ENV_MATCHES=true
+    fi
+  fi
+}
+
+SELINUX_MODULE_NAME="podman_socket_clsi"
+SELINUX_MANAGED_LABEL="sharelatex_t"
+SELINUX_MODES=(managed custom disable none)
+SELINUX_RULES=(
+  "container_runtime_t unix_stream_socket connectto"
+  "user_tmp_t sock_file write"
+  "user_tmp_t sock_file getattr"
+  "container_runtime_t fifo_file setattr"
+)
+
+check_selinux_module() {
+  local sudo_cmd="${1:-sudo}"
+  local modules
+  SELINUX_MODULE_LOADED=false
+
+  if modules=$($sudo_cmd semodule -l 2>/dev/null); then
+    if grep -q "^${SELINUX_MODULE_NAME}" <<< "$modules"; then
+      SELINUX_MODULE_LOADED=true
+    fi
+    return 0
+  fi
+
+  # listing modules needs privileges, the type the module defines is equivalent
+  if selinux_label_valid "$SELINUX_MANAGED_LABEL"; then
+    SELINUX_MODULE_LOADED=true
+  fi
+}
+
+selinux_access_allowed() {
+  local src="$1" target="$2" class="$3" perm="$4"
+  local index bit requested role allowed
+
+  index=$(cat "/sys/fs/selinux/class/${class}/index" 2>/dev/null) || return 2
+  bit=$(cat "/sys/fs/selinux/class/${class}/perms/${perm}" 2>/dev/null) || return 2
+  requested=$(( 1 << (bit - 1) ))
+
+  for role in system_r object_r; do
+    exec 3<>/sys/fs/selinux/access || return 2
+    if printf 'system_u:system_r:%s:s0 system_u:%s:%s:s0 %s %s' \
+        "$src" "$role" "$target" "$index" "$requested" >&3 2>/dev/null; then
+      read -r allowed _ <&3
+      exec 3>&-
+      (( 0x${allowed:-0} & requested )) && return 0
+      return 1
+    fi
+    exec 3>&-
+  done
+
+  return 2
+}
+
+selinux_enforce_mode() {
+  local mode="Disabled"
+  command -v getenforce &>/dev/null && mode="$(getenforce 2>/dev/null || echo Disabled)"
+  echo "$mode"
+}
+
+# Returns 0 if the type exists in the loaded policy, 1 if it does not,
+# 2 if the policy cannot be queried
+selinux_label_valid() {
+  local label="$1"
+
+  [[ "$label" =~ ^[a-zA-Z0-9_.-]+$ ]] || return 1
+  [[ -w /sys/fs/selinux/context ]] || return 2
+
+  # the kernel rejects a context whose type is not in the loaded policy
+  printf 'system_u:system_r:%s:s0' "$label" > /sys/fs/selinux/context 2>/dev/null
+}
+
+# Resolves SELINUX_MODE/SELINUX_LABEL, which only apply to a Server Pro podman
+# deployment with sibling containers and SELinux enabled.
+# Sets: SELINUX_MODE, SELINUX_LABEL (empty unless a label is applied),
+#       SELINUX_SECURITY_OPT (empty when no security_opt should be applied),
+#       SELINUX_ENFORCE_MODE, SELINUX_APPLIES, SELINUX_CONFIG_ERROR
+check_selinux_config() {
+  SELINUX_MODE="${SELINUX_MODE:-disable}"
+  SELINUX_LABEL="${SELINUX_LABEL:-}"
+  SELINUX_SECURITY_OPT=""
+  SELINUX_CONFIG_ERROR=""
+  SELINUX_APPLIES=false
+  SELINUX_ENFORCE_MODE="$(selinux_enforce_mode)"
+
+  case "$SELINUX_MODE" in
+    managed) SELINUX_LABEL="$SELINUX_MANAGED_LABEL" ;;
+    custom) ;;
+    disable|none) SELINUX_LABEL="" ;;
+    *)
+      SELINUX_CONFIG_ERROR="invalid SELINUX_MODE '$SELINUX_MODE' in config/overleaf.rc, expected one of: ${SELINUX_MODES[*]}"
+      SELINUX_LABEL=""
+      ;;
+  esac
+
+  [[ -z "$SELINUX_CONFIG_ERROR" ]] || return 0
+  [[ "${SERVER_PRO:-false}" == "true" ]] || return 0
+  [[ "${SIBLING_CONTAINERS_ENABLED:-false}" == "true" ]] || return 0
+  is_podman || return 0
+  [[ "$SELINUX_ENFORCE_MODE" != "Disabled" ]] || return 0
+
+  SELINUX_APPLIES=true
+
+  local status=0
+  case "$SELINUX_MODE" in
+    managed)
+      # the managed type only exists once the policy module is installed
+      selinux_label_valid "$SELINUX_LABEL" || return 0
+      SELINUX_SECURITY_OPT="label=type:$SELINUX_LABEL"
+      ;;
+    custom)
+      if [[ -z "$SELINUX_LABEL" ]]; then
+        SELINUX_CONFIG_ERROR="SELINUX_MODE=custom requires SELINUX_LABEL to be set in config/overleaf.rc"
+        return 0
+      fi
+      selinux_label_valid "$SELINUX_LABEL" || status=$?
+      if [[ "$status" -eq 1 ]]; then
+        SELINUX_CONFIG_ERROR="SELINUX_LABEL '$SELINUX_LABEL' is not a valid SELinux type in the loaded policy"
+        return 0
+      fi
+      SELINUX_SECURITY_OPT="label=type:$SELINUX_LABEL"
+      ;;
+    disable)
+      SELINUX_SECURITY_OPT="label=disable"
+      ;;
+  esac
+
+  return 0
+}
+
+check_selinux_rules() {
+  local src="${1:-$SELINUX_MANAGED_LABEL}"
+  SELINUX_RULES_OK=true
+  SELINUX_MISSING_RULES=()
+
+  local rule target class perm
+
+  if ! selinux_label_valid "$src"; then
+    # the type is not in the loaded policy, so none of its rules can be present
+    SELINUX_RULES_OK=false
+    SELINUX_MISSING_RULES=("${SELINUX_RULES[@]/#/$src }")
+    return 0
+  fi
+
+  for rule in "${SELINUX_RULES[@]}"; do
+    read -r target class perm <<< "$rule"
+
+    selinux_access_allowed "$src" "$target" "$class" "$perm" && continue
+
+    SELINUX_RULES_OK=false
+    SELINUX_MISSING_RULES+=("$src $rule")
+  done
+
+  return 0
+}
