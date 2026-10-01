@@ -12,12 +12,15 @@ services:
 
   nginx:
     image: "${NGINX_IMAGE}"
+    environment:
+      NGINX_ENTRYPOINT_LOCAL_RESOLVERS: 'true'
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
     ports:
       - "${NGINX_TLS_LISTEN_IP:-0.0.0.0}:${TLS_PORT:-443}:443"
       - "${NGINX_HTTP_LISTEN_IP:-127.0.1.1}:${NGINX_HTTP_PORT:-80}:80"
     volumes:
-      - "${TLS_PRIVATE_KEY_PATH}:/certs/nginx_key.pem:ro"
-      - "${TLS_CERTIFICATE_PATH}:/certs/nginx_certificate.pem:ro"
-      - "${NGINX_CONFIG_PATH}:/etc/nginx/nginx.conf:ro"
+      - "${TLS_PRIVATE_KEY_PATH}:/certs/nginx_key.pem:ro,z"
+      - "${TLS_CERTIFICATE_PATH}:/certs/nginx_certificate.pem:ro,z"
+      - "${NGINX_CONFIG_PATH}:/etc/nginx/templates/nginx.conf.template:ro,z"
     restart: always
     container_name: nginx

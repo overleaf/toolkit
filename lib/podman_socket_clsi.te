@@ -16,6 +16,7 @@ require {
     type container_runtime_t;
     type user_tmp_t;
     class fifo_file setattr;
+    class netlink_audit_socket nlmsg_relay;
     class sock_file { write getattr };
     class unix_stream_socket connectto;
 }
@@ -29,3 +30,4 @@ role system_r types sharelatex_t;
 allow sharelatex_t user_tmp_t:sock_file { write getattr };
 allow sharelatex_t container_runtime_t:unix_stream_socket connectto;
 allow sharelatex_t container_runtime_t:fifo_file setattr;
+allow sharelatex_t self:netlink_audit_socket nlmsg_relay;
