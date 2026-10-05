@@ -213,6 +213,12 @@ function handle_image_upgrade() {
     rebrand_sharelatex_env_variables 'variables.env'
   fi
 
+  if [[ $SERVER_PRO == "true" && "$SIBLING_CONTAINERS_ENABLED" == "true" ]]; then
+    read_image_version
+    set_server_pro_image_name "$IMAGE_VERSION"
+    ensure_seccomp_profile || true
+  fi
+
   ## Maybe offer to start services again
   if [[ "${services_stopped:-null}" == "true" ]]; then
     local should_start="n"
