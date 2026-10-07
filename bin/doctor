@@ -308,6 +308,15 @@ function check_config_files() {
         # shellcheck disable=SC1090
         source "$TOOLKIT_ROOT/$config_file"
 
+        if invite_token_secret_required "$IMAGE_VERSION_MAJOR" "$IMAGE_VERSION_MINOR"; then
+          if invite_token_secret_is_set; then
+            print_point 2 "OVERLEAF_INVITE_TOKEN_SECRET: [set here]"
+          else
+            print_point 2 "OVERLEAF_INVITE_TOKEN_SECRET: MISSING !"
+            add_warning "OVERLEAF_INVITE_TOKEN_SECRET is missing, it is required from version 6.2.0. Generate one with 'openssl rand -base64 32'"
+          fi
+        fi
+
         if [[ "${SHARELATEX_FILESTORE_BACKEND:-fs}" == "s3" ]]; then
           print_point 2 "SHARELATEX_FILESTORE_BACKEND: s3"
           if [[ "${SHARELATEX_FILESTORE_USER_FILES_BUCKET_NAME:-null}" != "null" ]]; then
