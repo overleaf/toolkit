@@ -7,7 +7,7 @@ services:
         command: "${MONGO_ARGS}"
         container_name: mongo
         volumes:
-            - "${MONGO_DATA_PATH}:/data/db"
+            - "${MONGO_DATA_PATH}:/data/db:z"
         expose:
             - 27017
         healthcheck:
@@ -20,5 +20,4 @@ services:
       depends_on:
         mongo:
           condition: service_healthy
-      links:
-        - mongo
+

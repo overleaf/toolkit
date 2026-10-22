@@ -38,7 +38,7 @@ You will see some output like this:
         - version info: 5.0.17(1)-release
     - docker
         - status: present
-        - version info: Docker version 23.0.6, build 369ce74a3c
+        - version info: Docker version 29.7.2, build a7dcaa6
     - docker compose
         - status: present
         - version info: Docker Compose version v2.17.3
@@ -51,8 +51,11 @@ You will see some output like this:
     - awk
         - status: present
         - version info: GNU Awk 5.0.1, API: 2.0 (GNU MPFR 4.0.2, GNU MP 6.2.0)
-- Docker Daemon
+- Container Daemon
     - status: up
+    - runtime: docker
+    - server version: 29.7.2
+    - socket: /var/run/docker.sock
 ====== Configuration ======
 - config/version
     - status: present
@@ -85,7 +88,7 @@ If the tool is present on the system, it will be listed as `status: present`, al
 ```
 - docker
     - status: present
-    - version info: Docker version 19.03.6, build 369ce74a3c
+    - version info: Docker version 29.7.2, build a7dcaa6
 ```
 
 However, if the tool is missing, it will be listed as `status: MISSING!`, and a warning will be added to the bottom of the `doctor` output. For example:
@@ -96,6 +99,37 @@ However, if the tool is missing, it will be listed as `status: MISSING!`, and a 
 ```
 
 If any of the dependencies are missing, the toolkit will almost certainly not work.
+
+
+### Container Daemon
+
+The `Container Daemon` section shows the status, runtime (`docker` or `podman`), version and socket of the container daemon. With `SIBLING_CONTAINERS_ENABLED=true`, it also checks the socket can be reached from the host and from the `sharelatex` container. For example:
+
+```
+- Container Daemon
+    - status: up
+    - runtime: podman
+    - server version: 5.4.0
+    - socket: /run/user/1000/podman/podman.sock
+    - DOCKER_HOST: unix:///run/user/1000/podman/podman.sock
+    - host → socket: OK
+    - container → socket: OK
+```
+
+
+### Security
+
+The `Security` section is only shown on [Podman](./podman.md). It shows the SELinux and seccomp configuration, and lists any missing SELinux rules. For example:
+
+```
+- Security
+    - SELinux: Enforcing
+    - SELINUX_MODE: managed
+    - SELINUX_LABEL: sharelatex_t
+    - SELinux module: loaded (podman_socket_clsi)
+    - SELinux rules: present
+    - Seccomp profile: present
+```
 
 
 ### Configuration
