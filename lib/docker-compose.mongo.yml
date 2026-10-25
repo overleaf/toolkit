@@ -7,7 +7,7 @@ services:
         command: "${MONGO_ARGS}"
         container_name: mongo
         volumes:
-            - "${MONGO_DATA_PATH}:/data/db"
+            - "${MONGO_DATA_PATH}:/data/db:Z"
         expose:
             - 27017
         healthcheck:
