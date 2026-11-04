@@ -1,6 +1,6 @@
 # Changelog
 
-## 2026-10-21
+## 2026-11-04
 ### Added
 - Experimental support for running Server Pro with Sandboxed Compiles (`SIBLING_CONTAINERS_ENABLED=true`) on rootless Podman.
 
@@ -14,6 +14,10 @@
 - The nginx config is now mounted as a template, and the DNS resolver is set from `${NGINX_LOCAL_RESOLVERS}`. Existing `config/nginx/nginx.conf` files keep working with Docker. To use Podman, replace `resolver 127.0.0.11` with `resolver ${NGINX_LOCAL_RESOLVERS}` in `config/nginx/nginx.conf`, as in `lib/config-seed/nginx.conf`. If you configured a custom `NGINX_IMAGE`, it must support the template mechanism of the official nginx image.
 - Data volumes are mounted with the `:z` option, so Docker and Podman relabel them on hosts with SELinux enabled.
 - `bin/doctor` now warns for Docker versions older than 29, except 25.
+
+## 2026-10-23
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.3.2`.
 
 ## 2026-10-15
 ### Added
