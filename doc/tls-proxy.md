@@ -6,6 +6,8 @@ Run `bin/init --tls` to initialise local configuration with NGINX proxy configur
 
 A default config for NGINX is provided in `config/nginx/nginx.conf` which may be customised to your requirements. The path to the config file can be changed with the `NGINX_CONFIG_PATH` variable.
 
+The config file is used as a template, so variables such as `${NGINX_LOCAL_RESOLVERS}` are replaced when the container starts. A custom `NGINX_IMAGE` must support the templates of the [official NGINX image](https://hub.docker.com/_/nginx).
+
 Add the following section to your `config/overleaf.rc` file if it is not there already:
 ```
 # TLS proxy configuration (optional)

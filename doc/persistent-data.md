@@ -14,6 +14,10 @@ The MongoDB container, if it is enabled, requires a directory in which to store 
 
 Because docker runs as `root`, the data directories will end up being owned by the `root` user, even if the toolkit is being used by a non-root user. This is not a problem, but is worth being aware of, if you intend to alter the persistent data from outside of the containers.
 
+With rootless [Podman](./podman.md), `bin/podman-setup` sets the ownership of the data directories for you.
+
+On hosts with SELinux enabled, the data directories are relabelled when the containers start, so the containers can access them.
+
 
 ## Backups
 
