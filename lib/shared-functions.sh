@@ -222,8 +222,7 @@ function read_variable() {
 
 function read_configuration() {
   local name=$1
-  grep -E "^$name=" "$TOOLKIT_ROOT/config/overleaf.rc" \
-  | sed -E "s/^$name=([\"']?)(.+)\1\$/\2/"
+  grep -E "^$name=" "$TOOLKIT_ROOT/config/overleaf.rc" | cut -d '=' -f2- | sed -E "s/^([\"']?)(.+)\1$/\2/"
 }
 
 # Returns 0 if podman runtime is available (podman binary or docker shim)
