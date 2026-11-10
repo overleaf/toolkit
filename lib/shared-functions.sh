@@ -79,7 +79,12 @@ function set_server_pro_image_name() {
   local version=$1
   local image_name
   if [[ -n ${OVERLEAF_IMAGE_NAME:-} ]]; then
-    image_name="$OVERLEAF_IMAGE_NAME"
+    if [[ "$OVERLEAF_IMAGE_NAME" == *:* ]]; then
+      image_name="${OVERLEAF_IMAGE_NAME%%:*}"
+      version="${OVERLEAF_IMAGE_NAME##*:}"
+    else
+      image_name="$OVERLEAF_IMAGE_NAME"
+    fi
   elif [[ $SERVER_PRO == "true" ]]; then
     image_name="quay.io/sharelatex/sharelatex-pro"
   else
