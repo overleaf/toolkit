@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-23
+### Added
+- Updated default [`version`](https://github.com/overleaf/toolkit/blob/master/lib/config-seed/version) to `6.3.3`.
+
 ## 2026-11-04
 ### Added
 - Experimental support for running Server Pro with Sandboxed Compiles (`SIBLING_CONTAINERS_ENABLED=true`) on rootless Podman.
